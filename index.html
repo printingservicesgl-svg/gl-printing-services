@@ -1,167 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GL Printing Services | Quality Prints</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL PRINTS | Digital Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-gold: #ffcc00;
+            --deep-ads: #0a0a0a;
+            --text-gray: #888;
+        }
 
-<style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: #0a0a0a;
-        color: #fff;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* We will create a custom cursor */
+        }
 
-    header {
-        background: linear-gradient(135deg, #000, #1a1a1a);
-        padding: 20px;
-        text-align: center;
-        border-bottom: 2px solid gold;
-    }
+        body {
+            background-color: var(--deep-ads);
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
 
-    header img {
-        width: 120px;
-        border-radius: 50%;
-        border: 2px solid gold;
-    }
+        /* Custom Cursor */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
 
-    header h1 {
-        margin: 10px 0 5px;
-        color: gold;
-        letter-spacing: 2px;
-    }
+        /* Grid Background Effect */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 204, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 204, 0, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
 
-    nav {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 10px;
-        background: #111;
-    }
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle, rgba(255,204,0,0.1) 0%, rgba(0,0,0,1) 70%);
+        }
 
-    nav a {
-        color: gold;
-        text-decoration: none;
-        font-weight: bold;
-    }
+        .gl-logo {
+            width: 150px;
+            filter: drop-shadow(0 0 15px var(--neon-gold));
+            animation: float 3s ease-in-out infinite;
+        }
 
-    nav a:hover {
-        color: white;
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
 
-    .hero {
-        text-align: center;
-        padding: 60px 20px;
-        background: radial-gradient(circle, #111, #000);
-    }
+        h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 4rem;
+            letter-spacing: 15px;
+            margin-top: 20px;
+            background: linear-gradient(to right, #fff, var(--neon-gold), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .hero h2 {
-        font-size: 2.5em;
-        color: gold;
-    }
+        /* Floating Nav */
+        nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            display: flex;
+            gap: 25px;
+            z-index: 1000;
+        }
 
-    .hero p {
-        color: #ccc;
-    }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
 
-    .btn {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 25px;
-        background: gold;
-        color: black;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: 0.3s;
-    }
+        nav a:hover {
+            color: var(--neon-gold);
+            text-shadow: 0 0 10px var(--neon-gold);
+        }
 
-    .btn:hover {
-        background: white;
-    }
+        /* Glass Cards with Tilt */
+        .container {
+            padding: 100px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
 
-    section {
-        padding: 50px 20px;
-        text-align: center;
-    }
+        .tilt-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: 0.3s;
+            transform-style: preserve-3d;
+        }
 
-    .services {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-    }
+        .tilt-card:hover {
+            border-color: var(--neon-gold);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
+        }
 
-    .card {
-        background: #111;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #222;
-        transition: 0.3s;
-    }
+        .tilt-card h3 {
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-gold);
+            margin-bottom: 15px;
+            transform: translateZ(50px);
+        }
 
-    .card:hover {
-        transform: scale(1.05);
-        border-color: gold;
-    }
+        .btn-glitch {
+            padding: 15px 40px;
+            border: none;
+            background: var(--neon-gold);
+            color: black;
+            font-family: 'Syncopate', sans-serif;
+            font-weight: bold;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+            transition: 0.3s;
+            margin-top: 20px;
+        }
 
-    footer {
-        text-align: center;
-        padding: 20px;
-        background: #000;
-        border-top: 1px solid gold;
-    }
-</style>
+        .btn-glitch:hover {
+            transform: scale(1.1);
+            box-shadow: -5px 0px 0px #00fff2, 5px 0px 0px #ff00c1;
+        }
+
+    </style>
 </head>
-
 <body>
 
-<header>
-    <img src="GL_Logo.png" alt="GL Prnts Logo">
-    <h1>GL PRINTS</h1>
-    <p>We own the night, and your urgent prints/services</p>
-</header>
+    <div id="cursor"></div>
+    <div class="grid-bg"></div>
 
-<nav>
-    <a href="#">Home</a>
-    <a href="#services">Services</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#contact">Contact</a>
-</nav>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
 
-<div class="hero">
-    <h2>High Quality Prints That Stand Out</h2>
-    <p>Sticker • Instax • Layout • Custom Prints</p>
-    <a href="#contact" class="btn">Order Now</a>
-</div>
+    <header id="home">
+        <img src="GL_Logo.png" alt="Logo" class="gl-logo">
+        <h1>GL PRINTS</h1>
+        <p style="letter-spacing: 5px; color: var(--text-gray);">EST. 2026 | MUNTINLUPA CITY</p>
+        <button class="btn-glitch" onclick="window.location.href='#services'">ENTER SYSTEM</button>
+    </header>
 
-<section id="services">
-    <h2 style="color:gold;">Our Services</h2>
-    <div class="services">
-        <div class="card">Sticker Printing</div>
-        <div class="card">Instax Printing</div>
-        <div class="card">ID & Business Prints</div>
-        <div class="card">Layout Design</div>
+    <div class="container" id="services">
+        <div class="tilt-card" data-tilt>
+            <h3>PRINTING</h3>
+            <p>High-resolution sticker labels, Instax, and ID services.</p>
+        </div>
+        <div class="tilt-card" data-tilt>
+            <h3>DESIGN</h3>
+            <p>Professional layouts for business and personal branding.</p>
+        </div>
+        <div class="tilt-card" data-tilt>
+            <h3>REPAIR</h3>
+            <p>Mobile diagnostics and software troubleshooting.</p>
+        </div>
     </div>
-</section>
 
-<section id="gallery">
-    <h2 style="color:gold;">Our Works</h2>
-    <p>We're adding print images here soon 🔥</p>
-</section>
+    <section id="contact" style="text-align: center; padding: 100px 0;">
+        <h2 style="font-family: 'Syncopate';">OPERATIONAL SECTOR</h2>
+        <p>0991 636 1742</p>
+        <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-glitch" style="display:inline-block; text-decoration:none; margin-top:20px;">MESSAGE FACEBOOK</a>
+    </section>
 
-<section id="contact">
-    <h2 style="color:gold;">Contact Us</h2>
-    <p>📍 Muntinlupa City</p>
-    <p>📞 0991 636 1742</p>
-    <p>
-        <a class="btn" href="https://www.facebook.com/GLprinting.services/" target="_blank">Message Us</a>
-    </p>
-</section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-<footer>
-    <p>© 2026 GL Prnts | Thank you! Come again!</p>
-</footer>
+        document.addEventListener('mousedown', () => cursor.style.transform = 'scale(0.8)');
+        document.addEventListener('mouseup', () => cursor.style.transform = 'scale(1)');
 
+        // Initialize 3D Tilt
+        VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
+            max: 25,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.5,
+        });
+    </script>
 </body>
 </html>
