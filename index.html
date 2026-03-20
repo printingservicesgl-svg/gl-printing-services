@@ -8,46 +8,33 @@
 <link rel="icon" type="image/png" href="GL_Logo.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/scrollreveal"></script>
 
 <style>
 :root {
-    --neon-gold: #ffcc00;
-    --deep-ads: #0a0a0a;
-    --text-gray: #888;
-    --glass: rgba(255,255,255,0.03);
-    --glass-border: rgba(255,255,255,0.1);
+    --neon-gold:#ffcc00;
+    --deep:#0a0a0a;
+    --glass:rgba(255,255,255,0.03);
+    --border:rgba(255,255,255,0.1);
 }
 
-* { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
-
-body {
-    background: var(--deep-ads);
+/* GLOBAL */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background:var(--deep);
     color:white;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:'Space Grotesk';
     overflow-x:hidden;
 }
 
 /* PARTICLES */
-#particles {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -2;
+#particles{
+    position:fixed;
+    width:100%;
+    height:100%;
+    z-index:-2;
 }
 
-/* CURSOR */
-#cursor {
-    width:20px;height:20px;border:2px solid var(--neon-gold);
-    border-radius:50%;position:fixed;pointer-events:none;z-index:9999;
-    display:none;
-}
-@media(min-width:1024px){
-    *{cursor:none;}
-    #cursor{display:block;}
-}
-
-/* GRID BG */
+/* GRID */
 .grid-bg{
     position:fixed;width:100%;height:100%;
     background-image:
@@ -59,13 +46,16 @@ body {
 
 /* HEADER */
 header{
-    height:100vh;display:flex;flex-direction:column;
-    justify-content:center;align-items:center;text-align:center;
-    background: radial-gradient(circle, rgba(255,204,0,0.08), black);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
 }
 
 .gl-logo{
-    width:120px;
+    width:130px;
     filter:drop-shadow(0 0 20px var(--neon-gold));
     animation:float 4s infinite;
 }
@@ -84,34 +74,63 @@ h1{
 
 /* NAV */
 nav{
-    position:fixed;bottom:25px;left:50%;transform:translateX(-50%);
-    background:rgba(0,0,0,0.7);padding:10px 30px;border-radius:50px;
-    display:flex;gap:25px;z-index:1000;
-}
-nav a{
-    color:white;text-decoration:none;font-size:12px;
-    position:relative;
-}
-nav a::after{
-    content:"";position:absolute;width:0;height:2px;
-    background:var(--neon-gold);bottom:-5px;left:0;
-    transition:0.3s;
-}
-nav a:hover::after{width:100%;}
-
-/* CONTAINER */
-.container{
-    padding:80px 5%;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,0.7);
+    padding:10px 30px;
+    border-radius:50px;
+    display:flex;
     gap:25px;
 }
 
-/* CARD */
+nav a{
+    color:white;
+    text-decoration:none;
+    font-size:0.75rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    position:relative;
+    padding:5px 10px;
+    transition:0.3s;
+}
+
+nav a::before{
+    content:"";
+    position:absolute;
+    width:0%;
+    height:2px;
+    bottom:-5px;
+    left:50%;
+    background:var(--neon-gold);
+    transform:translateX(-50%);
+    transition:0.4s;
+    box-shadow:0 0 10px var(--neon-gold);
+}
+
+nav a:hover{
+    color:var(--neon-gold);
+    transform:translateY(-2px) scale(1.05);
+    text-shadow:0 0 10px var(--neon-gold);
+}
+
+nav a:hover::before{
+    width:100%;
+}
+
+/* SERVICES */
+.container{
+    padding:80px 5%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
 .tilt-card{
     background:var(--glass);
-    border:1px solid var(--glass-border);
-    padding:30px;border-radius:20px;text-align:center;
+    border:1px solid var(--border);
+    padding:30px;
+    border-radius:20px;
     transition:0.4s;
 }
 .tilt-card:hover{
@@ -125,9 +144,13 @@ nav a:hover::after{width:100%;}
     padding:15px 30px;
     background:var(--neon-gold);
     border:none;
-    font-family:'Syncopate';
     cursor:pointer;
+    font-family:'Syncopate';
 }
+
+/* CONTACT */
+#contact{text-align:center;padding:80px;}
+#phone-num{color:var(--neon-gold);cursor:pointer;}
 
 /* REVEAL */
 .reveal{opacity:0;transform:translateY(40px);transition:1s;}
@@ -135,26 +158,78 @@ nav a:hover::after{width:100%;}
 
 /* CHAT */
 #ai-chat-btn{
-    position:fixed;bottom:90px;right:25px;width:60px;height:60px;
-    border:2px solid var(--neon-gold);border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
+    position:fixed;
+    bottom:90px;
+    right:25px;
+    width:60px;height:60px;
+    border:2px solid var(--neon-gold);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
 }
+
 #chat-box{
-    position:fixed;bottom:160px;right:25px;width:320px;height:420px;
-    background:black;border:1px solid var(--neon-gold);
-    display:none;flex-direction:column;
+    position:fixed;
+    bottom:160px;
+    right:25px;
+    width:320px;
+    height:420px;
+    background:black;
+    border:1px solid var(--neon-gold);
+    display:none;
+    flex-direction:column;
 }
-.bot-msg{color:var(--neon-gold);}
-.user-msg{align-self:flex-end;}
+
+/* CHAT UI */
+#chat-display{
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.bot-msg{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+}
+
+.bot-msg img{
+    width:30px;height:30px;border-radius:50%;
+    box-shadow:0 0 10px var(--neon-gold);
+}
+
+.bot-bubble{
+    background:rgba(255,204,0,0.08);
+    border:1px solid var(--neon-gold);
+    padding:10px 15px;
+    border-radius:15px 15px 15px 5px;
+    color:var(--neon-gold);
+    font-size:13px;
+}
+
+.user-msg{
+    align-self:flex-end;
+    background:rgba(255,255,255,0.08);
+    padding:10px 15px;
+    border-radius:15px 15px 5px 15px;
+}
 
 .quick-btns button{
-    margin:3px;padding:5px;
+    margin:3px;
+    padding:5px;
     border:1px solid var(--neon-gold);
-    background:transparent;color:var(--neon-gold);
+    background:transparent;
+    color:var(--neon-gold);
     cursor:pointer;
 }
 .quick-btns button:hover{
-    background:var(--neon-gold);color:black;
+    background:var(--neon-gold);
+    color:black;
 }
 </style>
 </head>
@@ -162,7 +237,6 @@ nav a:hover::after{width:100%;}
 <body>
 
 <canvas id="particles"></canvas>
-<div id="cursor"></div>
 <div class="grid-bg"></div>
 
 <nav>
@@ -175,48 +249,48 @@ nav a:hover::after{width:100%;}
 <img src="GL_Logo.png" class="gl-logo">
 <h1>GL PRINTS</h1>
 <p>EST. 2025 | MUNTINLUPA CITY</p>
-<button class="btn-glitch" onclick="location.href='#services'">ENTER</button>
+<button class="btn-glitch" onclick="location.href='#services'">ENTER SYSTEM</button>
 </header>
 
 <section id="services" class="container reveal">
-<div class="tilt-card"><h3>PRINTS</h3><p>High quality printing</p></div>
-<div class="tilt-card"><h3>DESIGN</h3><p>Creative layouts</p></div>
-<div class="tilt-card"><h3>TECH</h3><p>Repairs & solutions</p></div>
+<div class="tilt-card"><h3>EVENT & MEDIA PRINTS</h3><p>Premium bundles for Birthdays and Christenings.</p></div>
+<div class="tilt-card"><h3>DIGITAL DESIGN</h3><p>Professional layouts.</p></div>
+<div class="tilt-card"><h3>E-GOV & OFFICE ASSIST</h3><p>Applications & encoding.</p></div>
+<div class="tilt-card"><h3>TECH ASSIST</h3><p>Resume & research.</p></div>
+<div class="tilt-card"><h3>TECH SOLUTIONS</h3><p>Diagnostics.</p></div>
+<div class="tilt-card"><h3>SPECIALIZED SERVICES</h3><p>Web + music.</p></div>
 </section>
 
-<section id="contact" class="reveal" style="text-align:center;padding:80px;">
+<section id="contact" class="reveal">
 <h2>CONTACT</h2>
-<p onclick="copyNumber()">0991 636 1742</p>
+<p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
 </section>
 
 <!-- CHAT -->
-<div id="ai-chat-btn" onclick="toggleChat()">💬</div>
+<div id="ai-chat-btn" onclick="toggleChat()">
+<img src="GL_Logo.png" style="width:35px;">
+</div>
 
 <div id="chat-box">
-<div>GL AI</div>
 <div id="chat-display">
-<p class="bot-msg">
-Welcome 🚀
+<div class="bot-msg">
+<img src="GL_Logo.png">
+<div class="bot-bubble">
+Welcome to GL Prints 🚀
 <div class="quick-btns">
 <button onclick="quickAsk('price')">Price</button>
 <button onclick="quickAsk('services')">Services</button>
 <button onclick="quickAsk('location')">Location</button>
 </div>
-</p>
 </div>
-<input id="chat-input">
+</div>
+</div>
+
+<input id="chat-input" placeholder="Type here...">
 <button onclick="askAI()">Send</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
-
 <script>
-// CURSOR
-document.addEventListener("mousemove",e=>{
-cursor.style.left=e.clientX+"px";
-cursor.style.top=e.clientY+"px";
-});
-
 // PARTICLES
 const canvas=document.getElementById("particles");
 const ctx=canvas.getContext("2d");
@@ -227,7 +301,6 @@ let p=[];
 for(let i=0;i<80;i++){
 p.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,dx:1,dy:1});
 }
-
 function anim(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 p.forEach(a=>{
@@ -239,7 +312,7 @@ requestAnimationFrame(anim);
 }
 anim();
 
-// REVEAL
+// SCROLL
 window.addEventListener("scroll",()=>{
 document.querySelectorAll(".reveal").forEach(el=>{
 if(el.getBoundingClientRect().top < window.innerHeight-100){
@@ -264,8 +337,27 @@ let input=document.getElementById("chat-input");
 let msg=input.value;
 let display=document.getElementById("chat-display");
 
+if(!msg) return;
+
 display.innerHTML+=`<div class="user-msg">${msg}</div>`;
-display.innerHTML+=`<div class="bot-msg">Processing...</div>`;
+
+display.innerHTML+=`
+<div class="bot-msg">
+<img src="GL_Logo.png">
+<div class="bot-bubble">GL-AI is thinking...</div>
+</div>
+`;
+
+setTimeout(()=>{
+display.innerHTML+=`
+<div class="bot-msg">
+<img src="GL_Logo.png">
+<div class="bot-bubble">Please message us on Facebook for full details.</div>
+</div>
+`;
+display.scrollTop=display.scrollHeight;
+},800);
+
 input.value="";
 }
 
@@ -274,9 +366,6 @@ function copyNumber(){
 navigator.clipboard.writeText("09916361742");
 alert("Copied!");
 }
-
-// TILT
-VanillaTilt.init(document.querySelectorAll(".tilt-card"));
 </script>
 
 </body>
