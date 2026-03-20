@@ -360,7 +360,7 @@ const glKnowledge = {
         response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Ma'am/Sir? 
         <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b>
         <br>• Prints (Documents/Photos)
-        <br>• Photo Prints (Develop)
+        <br>• Photo Develop
         <br>• Rush ID (1x1, 2x2, Passport)
         <br>• Stickers (Labels/Standards/Transparent)
         <br>• Lamination (ID to Long)
@@ -519,7 +519,7 @@ const glKnowledge = {
         <br>• Locket Size Photos: ₱20.00 - ₱40.00
         <br><br><b>Okay po!</b> Para ma-edit at ma-print na natin, send niyo lang ang photo sa <a href='https://m.me/GLprinting.services/' target='_blank'>Messenger</a>. 📸`
     },
-    
+
     "avail_order": {
         keywords: ["avail", "order", "magpagawa", "pabili", "pa-ayos", "okay po", "noted po"],
         response: "Noted! Para ma-process at magawa na natin ang order mo, Ma'am/Sir, message lang po kayo sa aming Official FB Page: <br><br> <a href='https://m.me/GLprinting.services/' target='_blank'>📩 CLICK HERE TO MESSAGE US</a>"
@@ -553,9 +553,52 @@ function askAI() {
     const input = document.getElementById('chat-input');
     const display = document.getElementById('chat-display');
     const msg = input.value.toLowerCase().trim();
+    
     if (!msg) return;
 
-    display.innerHTML += `<p class="user-msg">${msg}</p>`;
+    // I-display ang message ng user
+    display.innerHTML += `<div class="user-wrapper"><p class="user-msg">${input.value}</p></div>`;
+    input.value = ""; // Clear agad ang input field
+
+    // --- 1. EXIT LOGIC ---
+    const exitCommands = ["exit", "close", "bye", "paalam", "salamat", "thank you"];
+    if (exitCommands.some(word => msg.includes(word))) {
+        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b> Noted! Babay! Chat ka lang ulit kung may kailangan ka. System closing...</p>`;
+        setTimeout(() => {
+            toggleChat(); // Kusa itong magsasara
+        }, 1500);
+        return;
+    }
+
+    // --- 2. TYPING ANIMATION ---
+    // Gagawa tayo ng temporary "typing" element
+    const typingId = "typing-" + Date.now();
+    display.innerHTML += `<p class="bot-msg" id="${typingId}"><i>GL-AI is typing...</i></p>`;
+    display.scrollTop = display.scrollHeight;
+
+    // --- 3. LOGICAL MATCHING ---
+    let response = "";
+    for (let key in glKnowledge) {
+        const entry = glKnowledge[key];
+        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
+            response = entry.response;
+            break;
+        }
+    }
+
+    if (!response) response = glKnowledge["default"];
+
+    // --- 4. RENDER WITH DELAY (Typing Effect) ---
+    setTimeout(() => {
+        // Alisin ang typing indicator at ipalit ang totoong sagot
+        const typingElem = document.getElementById(typingId);
+        if (typingElem) {
+            typingElem.innerHTML = `<b>GL-AI:</b><br>${response}`;
+            typingElem.style.fontStyle = "normal"; // Alisin ang italic
+        }
+        display.scrollTop = display.scrollHeight;
+    }, 1200); // 1.2 seconds na "nag-iisip" ang AI
+}
 
     // TOXIC PROTOCOL CHECK
     if (cursedWords.some(w => msg.includes(w))) {
