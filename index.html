@@ -350,48 +350,71 @@
             document.body.style.overflow = 'auto';
         }
 const glKnowledge = {
-    // PRINTS & DOCUMENTS
-    "prints": {
-        keywords: ["print", "photo", "larawan", "papel", "document", "short", "long", "a4", "colored", "black and white", "b&w", "xerox", "copy"],
-        response: "Nag-ooffer kami ng high-quality prints para sa documents (Short, A4, Long) at premium photo prints. Mapa-school projects o office docs, kayang-kaya! Ano ang ipapa-print natin?"
+    // 1. DELIVERY & SHIPPING LOGIC
+    "delivery": {
+        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "pauwi", "ship"],
+        response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Master!"
     },
-    // PROTECTION / LAMINATION (Logical: safe ba sa tubig? etc.)
-    "protection": {
-        keywords: ["lamination", "laminate", "plastic", "mabasa", "palaminate", "waterproof", "matigas", "cover", "proteksyon", "nasira", "lukot"],
-        answers: [
-            "Highly recommended ang **Lamination** namin para iwas-basa at iwas-lukot ang documents mo. 🛡️",
-            "Yes! We use high-quality plastic para maging waterproof at matibay ang iyong certificates o teaching materials.",
-            "Para protektado ang docs mo, palaminate natin! Clear at bubble-free ang gawa namin dito sa Muntinlupa."
-        ]
+    // 2. MODES OF PAYMENT (MOP)
+    "payment": {
+        keywords: ["gcash", "payment", "bayad", "mop", "maya", "cash", "pabayad", "transfer", "how to pay"],
+        response: "Tumatanggap kami ng **GCash, Maya, at Cash**. Para sa GCash number, i-message kami sa FB para iwas-scam. 💳"
     },
-    // REPAIRS & TECH SOLUTIONS
-    "repair": {
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat", "basag", "ayusin"],
-        response: "Expert kami sa mobile at laptop diagnostics! LCD replacement, battery issues, o software troubleshooting? Dalhin mo lang dito sa operational sector."
+    // 3. RUSH ID & INSTAX (Specifics)
+    "rush_id": {
+        keywords: ["rush id", "1x1", "2x2", "passport size", "id pic", "id picture", "attire", "edit coat"],
+        response: "Available ang Rush ID! Pwede rin kami mag-digital edit ng **formal attire o coat** kung naka-shirt lang kayo sa photo. 10-15 mins lang, kuha agad!"
     },
-    // E-GOV & RESUME (Tech Assist)
-    "admin": {
-        keywords: ["e-gov", "nbi", "philhealth", "pag-ibig", "resume", "cv", "encoding", "format", "application", "data", "id", "digital id"],
-        response: "Assisted kami sa E-Gov applications, Digital IDs, at high-accuracy data encoding. Pati Resume Restructuring para sa job applications, help kami dyan!"
+    "instax": {
+        keywords: ["instax", "polaroid", "locket", "pabaon", "wallet size", "album", "gift", "regalo"],
+        response: "Original Fujifilm Instax gamit namin. Perfect sa lockets, wallets, o pang-gift. Hindi ito fade-out, Master! ✨"
     },
-    // LOCATION & CONTACT
+    // 4. PHOTOCOPY & PRINTING (Logical)
+    "printing": {
+        keywords: ["photocopy", "xerox", "print", "document", "short", "long", "a4", "b&w", "colored", "soft copy", "pdf", "usb"],
+        response: "Nag-o-open kami ng files via **USB, Email, o Messenger**. Photocopy and Printing available in B&W or Full Color (Short, Long, A4, legal)."
+    },
+    // 5. BULK ORDERS & DISCOUNTS
+    "discount": {
+        keywords: ["discount", "mura", "bulk", "marami", "bawas", "tinda", "resell", "wholesale"],
+        response: "May **Bulk Discount** kami para sa 50 units pataas (prints/stickers). Message us para mabigyan kayo ng 'Master Price' ni Master Ry! 💸"
+    },
+    // 6. OPERATING HOURS & STATUS
+    "oras": {
+        keywords: ["oras", "time", "bukas", "open", "close", "anong oras", "schedule", "holiday"],
+        response: "Operational kami **8:00 AM to 12:00 AM daily**. Pero double-check our <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>FB Page</a> for sudden updates or holidays."
+    },
+    // 7. LOCATION & MAPS
     "location": {
-        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "pumunta", "lugar", "city"],
-        response: "Nasa **Muntinlupa City** lang kami! Operational kami para sa local residents at bulk orders. 📍"
+        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "lugar", "mapa", "map"],
+        response: "Nasa Muntinlupa City lang kami! View our **Active Google Maps** here: <br><br> <a href='YOUR_GOOGLE_MAPS_LINK_HERE' target='_blank'>📍 OPEN GOOGLE MAPS</a>"
     },
-    "price": {
-        keywords: ["price", "magkano", "how much", "presyo", "bayad", "cost", "piso", "rate"],
-        response: "Ang pricing ay depende sa dami at type ng service. Para sa best quote, <a href='https://m.me/GLprinting.services/' target='_blank'>i-message kami sa Facebook Messenger</a>."
+    // 8. TECH & REPAIRS (Hardware Logic)
+    "tech": {
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat", "basag", "reprogram", "flashing"],
+        response: "Expert kami sa mobile diagnostics (LCD, Battery, Charging Port) at Laptop reformatting. Dalhin ang unit para sa actual check-up."
     },
-    // ABOUT MASTER RY
-    "owner": {
-        keywords: ["sino", "owner", "master ry", "ry", "Lria", "founder", "gumawa"],
-        response: "Ang GL Prints ay pinapatakbo ni **Master Ry (Lria) 👑"
+    // 9. STICKERS & LABELS
+    "stickers": {
+        keywords: ["sticker", "label", "produkto", "product label", "waterproof sticker", "vinyl", "matte", "glossy", "cut", "pabilog"],
+        response: "We do **Customized Stickers** (Vinyl, Matte, Glossy) with machine cut. Perfect para sa business labels o personal use!"
     },
-    "hello": {
-        keywords: ["hello", "hi", "kamusta", "system", "gising", "uuy", "available"],
-        response: "System Active. I am GL-AI. Handa akong tumulong sa logical questions about prints and tech repairs. Ano ang kailangan mo?"
-    }
+    // 10. RESUME & E-GOV
+    "resume": {
+        keywords: ["resume", "cv", "trabaho", "nbi", "philhealth", "pag-ibig", "e-gov", "application", "encoding", "type"],
+        response: "Help namin kayo sa **Resume Restructuring** (Modern Design) at online applications sa government sites (NBI, PhilHealth, etc.)."
+    },
+    // 11. QUALITY QUESTIONS (Logical)
+    "quality": {
+        keywords: ["maganda ba", "quality", "malinaw", "pumapangit", "fade", "quality check"],
+        response: "High-grade inks and papers ang gamit sa GL Prints. Sinisiguro namin na **HD Quality** at 'classy' ang finish bago i-release."
+    },
+    // 12. LOGICAL CHITCHAT
+    "sino": {
+        keywords: ["sino", "owner", , "ry", "master ry", "founder", "ate"],
+        response: "The system is owned by **Ate Ry (Lria)**, a BSIT graduate and tech specialist. 👑"
+    },
+    "default": "Para sa ibang detalye o custom requests, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
 };
         
 
