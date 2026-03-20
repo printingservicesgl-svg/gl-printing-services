@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>GL PRINTS | Muntinlupa City</title>
 <link rel="icon" type="image/png" href="GL_Logo.png">
-
 <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
 
 <style>
@@ -16,14 +14,15 @@
 }
 
 /* GLOBAL */
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box; scroll-behavior: smooth;}
 body{
     background:var(--deep);
     color:white;
     font-family:'Space Grotesk';
+    overflow-x: hidden;
 }
 
-/* HEADER */
+/* HEADER & ANIMATED LOGO */
 header{
     height:100vh;
     display:flex;
@@ -31,304 +30,262 @@ header{
     align-items:center;
     justify-content:center;
     text-align:center;
+    background: radial-gradient(circle at center, rgba(255,204,0,0.05) 0%, rgba(0,0,0,1) 80%);
 }
 
-/* LOGO */
 .gl-logo{
-    width:130px;
-    filter:drop-shadow(0 0 20px var(--neon-gold));
+    width: clamp(120px, 15vw, 150px);
+    filter: drop-shadow(0 0 20px var(--neon-gold));
+    animation: float 4s ease-in-out infinite; /* Balik ang galaw */
 }
 
-/* TITLE */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+
 h1{
     font-family:'Syncopate';
-    font-size:4rem;
+    font-size: clamp(2.5rem, 8vw, 4rem);
     letter-spacing:8px;
     background:linear-gradient(to right,#fff,var(--neon-gold),#fff);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
+    margin-top: 20px;
 }
 
-/* NAV (IMPROVED HOVER) */
+/* NAV */
 nav{
     position:fixed;
     bottom:25px;
     left:50%;
     transform:translateX(-50%);
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,0.8);
     padding:12px 30px;
     border-radius:50px;
     display:flex;
     gap:25px;
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(15px);
+    z-index: 1000;
+    border: 1px solid rgba(255,204,0,0.1);
 }
 
 nav a{
     color:white;
     text-decoration:none;
-    font-size:0.8rem;
-    position:relative;
+    font-size:0.75rem;
+    font-family: 'Syncopate';
     transition:0.3s;
 }
 
-nav a::after{
-    content:"";
-    position:absolute;
-    left:0;
-    bottom:-5px;
-    width:0%;
-    height:2px;
-    background:var(--neon-gold);
-    transition:0.4s;
-    box-shadow:0 0 10px var(--neon-gold);
-}
+nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
-nav a:hover{
-    color:var(--neon-gold);
-    text-shadow:0 0 10px var(--neon-gold);
-}
-
-nav a:hover::after{
-    width:100%;
-}
-
-/* ENTER BUTTON (FIXED DESIGN) */
-.btn-glitch{
-    margin-top:20px;
-    padding:15px 40px;
-    background:transparent;
-    border:2px solid var(--neon-gold);
-    color:var(--neon-gold);
-    font-family:'Syncopate';
-    cursor:pointer;
-    position:relative;
-    overflow:hidden;
-    transition:0.3s;
-}
-
-.btn-glitch::before{
-    content:"";
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:var(--neon-gold);
-    top:0;
-    left:-100%;
-    transition:0.4s;
-    z-index:-1;
-}
-
-.btn-glitch:hover::before{
-    left:0;
-}
-
-.btn-glitch:hover{
-    color:black;
-    box-shadow:0 0 20px var(--neon-gold);
-}
-
-/* SERVICES */
+/* SERVICES GRID */
 .container{
     padding:80px 5%;
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
     gap:25px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .tilt-card{
     background:rgba(255,255,255,0.03);
-    padding:25px;
-    border-radius:15px;
+    padding:35px 25px;
+    border-radius:20px;
     border:1px solid rgba(255,255,255,0.1);
     transition:0.4s;
+    text-align: center;
 }
 
 .tilt-card:hover{
-    transform:translateY(-8px);
+    transform:translateY(-10px);
     border-color:var(--neon-gold);
-    box-shadow:0 0 25px rgba(255,204,0,0.3);
+    box-shadow:0 0 25px rgba(255,204,0,0.2);
+    background: rgba(255,204,0,0.02);
 }
 
-/* CONTACT */
-#contact{text-align:center;padding:80px;}
-#phone-num{color:var(--neon-gold);cursor:pointer;margin-bottom:15px;}
+.tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1rem; margin-bottom: 10px; }
+.tilt-card p { font-size: 0.9rem; color: #888; line-height: 1.5; }
 
-/* FB BUTTON */
-.fb-btn{
-    padding:12px 25px;
-    background:#1877f2;
-    border:none;
-    border-radius:25px;
-    color:white;
-    cursor:pointer;
-    transition:0.3s;
-}
-.fb-btn:hover{
-    transform:scale(1.1);
-}
-
-/* CHAT BUTTON */
+/* CHAT BUTTON & BOX */
 #ai-chat-btn{
     position:fixed;
     bottom:90px;
     right:25px;
     width:60px;height:60px;
     border:2px solid var(--neon-gold);
+    background: var(--deep);
     border-radius:50%;
     display:flex;
     justify-content:center;
     align-items:center;
     cursor:pointer;
+    z-index: 2000;
+    box-shadow: 0 0 15px rgba(255,204,0,0.3);
 }
 
-/* CHAT BOX */
 #chat-box{
     position:fixed;
-    bottom:160px;
+    bottom:165px;
     right:25px;
-    width:320px;
-    height:420px;
+    width:min(350px, 90vw);
+    height:450px;
     background:#0a0a0a;
     border:1px solid var(--neon-gold);
     display:none;
     flex-direction:column;
     border-radius:15px;
+    z-index: 2000;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
 }
 
-/* CHAT DISPLAY */
-#chat-display{
-    flex:1;
-    padding:15px;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
+#chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; text-align: center; }
+#chat-display{ flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
 
-/* MESSAGES */
-.bot-bubble{
-    background:rgba(255,204,0,0.08);
-    border:1px solid var(--neon-gold);
-    padding:10px;
-    border-radius:10px;
-    color:var(--neon-gold);
-    font-size:13px;
-}
+.bot-bubble{ background:rgba(255,204,0,0.05); border-left:3px solid var(--neon-gold); padding:10px; font-size:13px; color: #ccc; }
+.user-msg{ align-self:flex-end; background:#222; padding:8px 12px; border-radius:12px 12px 0 12px; font-size: 13px; }
 
-.user-msg{
-    align-self:flex-end;
-    background:#222;
-    padding:10px;
-    border-radius:10px;
-}
+.chat-input-area{ display:flex; border-top:1px solid rgba(255,255,255,0.1); }
+#chat-input{ flex:1; padding:15px; background:transparent; border:none; color:white; outline:none; }
+.send-btn{ padding:0 20px; background:var(--neon-gold); border:none; cursor:pointer; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; }
 
-/* INPUT AREA (IMPROVED) */
-.chat-input-area{
-    display:flex;
-    border-top:1px solid rgba(255,255,255,0.1);
-}
+/* UTILS */
+.btn-glitch { margin-top:20px; padding:15px 40px; background:transparent; border:2px solid var(--neon-gold); color:var(--neon-gold); font-family:'Syncopate'; cursor:pointer; transition:0.3s; }
+.btn-glitch:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 20px var(--neon-gold); }
 
-#chat-input{
-    flex:1;
-    padding:12px;
-    background:black;
-    border:none;
-    color:white;
-}
-
-#chat-input:focus{
-    outline:none;
-}
-
-.send-btn{
-    padding:12px;
-    background:var(--neon-gold);
-    border:none;
-    cursor:pointer;
-}
+#contact { text-align:center; padding:100px 5%; border-top: 1px solid rgba(255,255,255,0.05); }
+#phone-num { font-size: 1.5rem; color: var(--neon-gold); cursor: pointer; margin: 20px 0; letter-spacing: 3px; }
 </style>
 </head>
 
 <body>
 
 <nav>
-<a href="#home">Home</a>
-<a href="#services">Services</a>
-<a href="#contact">Contact</a>
+    <a href="#home">Home</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
 </nav>
 
 <header id="home">
-<img src="GL_Logo.png" class="gl-logo">
-<h1>GL PRINTS</h1>
-<p>EST. 2025 | MUNTINLUPA CITY</p>
-<button class="btn-glitch" onclick="location.href='#services'">ENTER SYSTEM</button>
+    <img src="GL_Logo.png" class="gl-logo" alt="GL Logo">
+    <h1>GL PRINTS</h1>
+    <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem;">EST. 2025 | MUNTINLUPA CITY</p>
+    <button class="btn-glitch" onclick="location.href='#services'">ENTER SYSTEM</button>
 </header>
 
 <section id="services" class="container">
-<div class="tilt-card"><h3>EVENT & MEDIA PRINTS</h3></div>
-<div class="tilt-card"><h3>DIGITAL DESIGN</h3></div>
-<div class="tilt-card"><h3>E-GOV</h3></div>
-<div class="tilt-card"><h3>TECH ASSIST</h3></div>
+    <div class="tilt-card">
+        <h3>EVENT & MEDIA</h3>
+        <p>Premium bundles for Birthdays and Christenings. Custom stickers and event stationery.</p>
+    </div>
+    <div class="tilt-card">
+        <h3>DIGITAL DESIGN</h3>
+        <p>Professional layouts for business branding, social media, and personal projects.</p>
+    </div>
+    <div class="tilt-card">
+        <h3>E-GOV & OFFICE</h3>
+        <p>E-Gov applications, Digital IDs, and high-accuracy data encoding services.</p>
+    </div>
+    <div class="tilt-card">
+        <h3>TECH ASSIST</h3>
+        <p>Resume restructuring, technical research, and academic document formatting.</p>
+    </div>
+    <div class="tilt-card">
+        <h3>TECH SOLUTIONS</h3>
+        <p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p>
+    </div>
+    <div class="tilt-card">
+        <h3>SPECIALIZED</h3>
+        <p>Locket size prints, Web Dev, Songwriting, and Musical arrangements.</p>
+    </div>
 </section>
 
 <section id="contact">
-<h2>CONTACT</h2>
-<p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-
-<button class="fb-btn" onclick="window.open('https://facebook.com/YOURPAGE')">
-Visit our Facebook
-</button>
+    <h2 style="font-family: 'Syncopate'; font-size: 1rem; opacity: 0.6;">OPERATIONAL SECTOR</h2>
+    <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
+    <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE US</button>
 </section>
 
-<!-- CHAT -->
 <div id="ai-chat-btn" onclick="toggleChat()">
-<img src="GL_Logo.png" style="width:35px;">
+    <img src="GL_Logo.png" style="width:35px;">
 </div>
 
 <div id="chat-box">
-<div id="chat-display">
-<div class="bot-bubble">Welcome to GL Prints 🚀</div>
-</div>
-
-<div class="chat-input-area">
-<input id="chat-input" placeholder="Type your message...">
-<button class="send-btn" onclick="askAI()">Send</button>
-</div>
+    <div id="chat-header">GL SYSTEM AI</div>
+    <div id="chat-display">
+        <div class="bot-bubble">System Active. I am GL-AI. (Try keywords: Price, Location, Repair, Owner)</div>
+    </div>
+    <div class="chat-input-area">
+        <input id="chat-input" placeholder="Type keyword...">
+        <button class="send-btn" onclick="askAI()">SEND</button>
+    </div>
 </div>
 
 <script>
+// --- AI KNOWLEDGE BASE (FROM OLD CODE) ---
+const glKnowledge = {
+    "generic_price": { keywords: ["magkano", "how much", "presyo", "hm", "price"], response: "Para sa accurate na presyo, ano ang ipapagawa mo? <br><br><b>Categories:</b><br>• Documents (₱4-₱30)<br>• Rush ID (₱35-₱100)<br>• Locket Size (₱20-₱40)<br>• Tech Repair (Checkup is FREE)" },
+    "tech": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone"], response: "Technical Sector:<br>• Software: ₱300 - ₱800<br>• Hardware: Depends on model.<br><b>FREE Check-up sa shop!</b>" },
+    "location": { keywords: ["saan", "location", "address", "muntinlupa"], response: "Nasa Muntinlupa City kami! For exact shop location, message us on Facebook." },
+    "owner": { keywords: ["sino", "owner", "lria", "ry"], response: "This system and GL Printing Services are owned by <b>Ate Ry (Lria)</b>." },
+    "default": "Command not recognized. Para sa ibang detalye, please message us directly on Facebook."
+};
+
+let violationCount = 0;
+const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"];
+
 function toggleChat(){
-let box=document.getElementById("chat-box");
-box.style.display=box.style.display==="flex"?"none":"flex";
+    let box=document.getElementById("chat-box");
+    box.style.display=box.style.display==="flex"?"none":"flex";
 }
 
 function askAI(){
-let input=document.getElementById("chat-input");
-let msg=input.value;
-let display=document.getElementById("chat-display");
+    let input=document.getElementById("chat-input");
+    let rawMsg=input.value.trim();
+    let msg=rawMsg.toLowerCase();
+    let display=document.getElementById("chat-display");
 
-if(!msg) return;
+    if(!msg) return;
 
-display.innerHTML+=`<div class="user-msg">${msg}</div>`;
+    display.innerHTML+=`<div class="user-msg">${rawMsg}</div>`;
+    input.value="";
 
-setTimeout(()=>{
-display.innerHTML+=`<div class="bot-bubble">Please message us on Facebook for full details.</div>`;
-display.scrollTop=display.scrollHeight;
-},500);
+    // Violation Check
+    if (cursedWords.some(w => msg.includes(w))) {
+        violationCount++;
+        if (violationCount === 1) {
+            display.innerHTML += `<div class="bot-bubble" style="color:#ff4444">Warning. System requires professional language.</div>`;
+        } else {
+            document.body.innerHTML = `<div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; font-family:'Syncopate';">PROTOCOL BREACH. ACCESS DENIED.</div>`;
+            setTimeout(() => { location.reload(); }, 3000);
+        }
+        return;
+    }
 
-input.value="";
+    // Matching Logic
+    let response = glKnowledge["default"];
+    for (let key in glKnowledge) {
+        if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
+            response = glKnowledge[key].response;
+            break;
+        }
+    }
+
+    // Typing delay
+    setTimeout(()=>{
+        display.innerHTML+=`<div class="bot-bubble"><b>GL-AI:</b><br>${response}</div>`;
+        display.scrollTop=display.scrollHeight;
+    },600);
 }
 
-// ENTER KEY SEND
-document.getElementById("chat-input").addEventListener("keypress",function(e){
-if(e.key==="Enter"){
-askAI();
-}
-});
+document.getElementById("chat-input").addEventListener("keypress", (e) => { if(e.key==="Enter") askAI(); });
 
 function copyNumber(){
-navigator.clipboard.writeText("09916361742");
-alert("Copied!");
+    navigator.clipboard.writeText("09916361742");
+    alert("Number copied!");
 }
 </script>
 
