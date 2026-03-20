@@ -80,6 +80,7 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Fixed Navigation */
         nav {
             position: fixed;
             bottom: 30px;
@@ -94,6 +95,7 @@
             gap: 35px;
             z-index: 1000;
             transition: 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         nav a {
@@ -106,7 +108,8 @@
             transition: 0.3s;
         }
 
-        nav a:hover { color: var(--neon-gold); }
+        nav a:visited { color: white; }
+        nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
         .container {
             padding: 100px 5%;
@@ -151,25 +154,17 @@
             cursor: pointer;
         }
 
-        .btn-glitch:hover {
-            transform: scale(1.1);
-            box-shadow: -3px 0px 0px #00fff2, 3px 0px 0px #ff00c1;
-            letter-spacing: 2px;
-        }
-
-        /* Status Dot */
         .status-container { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; }
         .pulse-dot { width: 8px; height: 8px; background-color: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
         .status-text { font-size: 0.7rem; letter-spacing: 2px; color: var(--text-gray); }
 
-        /* GALLERY OVERLAY */
+        /* Gallery System Overlay */
         .gallery-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(25px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -181,56 +176,54 @@
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            width: 85%;
+            gap: 25px;
+            width: 80%;
             max-height: 80vh;
             overflow-y: auto;
-            padding: 40px;
+            padding: 20px;
         }
 
+        /* Classy Staggered Fade-In */
         .gallery-grid img {
             width: 100%;
-            border-radius: 15px;
+            border-radius: 12px;
             border: 2px solid var(--neon-gold);
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: zoom-in;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
         }
 
-        .gallery-grid img:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--neon-gold); }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Scaning Line */
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        /* Once-Only Scan Animation */
+        @keyframes scanOnce {
+            0% { top: 0%; opacity: 1; }
+            90% { top: 100%; opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
         .gallery-overlay.active::after {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 2px;
             background: var(--neon-gold);
-            box-shadow: 0 0 15px var(--neon-gold);
-            animation: scan 4s linear infinite;
+            box-shadow: 0 0 20px var(--neon-gold);
+            animation: scanOnce 2s ease-in-out forwards;
             z-index: 2001;
             pointer-events: none;
         }
 
         .specs-box {
             position: absolute;
-            left: 30px; bottom: 30px;
+            left: 5%; bottom: 5%;
             color: var(--neon-gold);
             font-family: monospace;
-            font-size: 12px;
+            font-size: 11px;
             border-left: 2px solid var(--neon-gold);
-            padding-left: 15px;
-            opacity: 0.8;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 30px; right: 40px;
-            color: var(--neon-gold);
-            font-family: 'Syncopate';
-            cursor: pointer;
-            font-size: 1.2rem;
-            z-index: 2100;
+            padding-left: 10px;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -257,43 +250,45 @@
     </header>
 
     <div class="container" id="services">
-        <div class="tilt-card" data-tilt onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg', 'img/sticker1.jpg'])">
+        <div class="tilt-card" data-tilt onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg'])">
             <h3>EVENT & MEDIA PRINTS</h3>
-            <p>Premium bundles for Birthdays, Christening, and Weddings. High-resolution stickers, Instax, and custom event stationery.</p>
+            <p>Premium bundles for Birthdays, Christening, and Weddings. High-resolution stickers and custom event stationery.</p>
         </div>
-        
         <div class="tilt-card" data-tilt>
             <h3>DIGITAL DESIGN</h3>
             <p>Professional layouts for business and personal branding.</p>
         </div>
-
         <div class="tilt-card" data-tilt>
             <h3>E-GOV & OFFICE ASSIST</h3>
-            <p>Assistance with E-Government applications, digital IDs, and high-accuracy data encoding services.</p>
+            <p>Assistance with E-Government applications, digital IDs, and data encoding.</p>
         </div>
-
+        <div class="tilt-card" data-tilt>
+            <h3>TECH ASSIST</h3>
+            <p>Premium resume restructuring, technical research, and digital document formatting.</p>
+        </div>
         <div class="tilt-card" data-tilt>
             <h3>TECH SOLUTIONS</h3>
             <p>Mobile diagnostics and software troubleshooting.</p>
         </div>
+        <div class="tilt-card" data-tilt>
+            <h3>SPECIALIZED SERVICES</h3>
+            <p>Custom Website Development, Original Songwriting, and Musical Instrument tutoring.</p>
+        </div>
     </div>
 
     <section id="contact" style="text-align: center; padding: 100px 0;">
-        <h2 style="font-family: 'Syncopate'; margin-bottom: 20px;">OPERATIONAL SECTOR</h2>
-        <p style="font-size: 1.5rem; letter-spacing: 3px; cursor: pointer;" onclick="copyNumber()" id="phone-num">0991 636 1742</p>
+        <h2 style="font-family: 'Syncopate';">OPERATIONAL SECTOR</h2>
+        <p id="phone-num" onclick="copyNumber()" style="font-size: 1.5rem; letter-spacing: 3px; cursor: pointer;">0991 636 1742</p>
         <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-glitch" style="display:inline-block; text-decoration:none; margin-top:20px;">MESSAGE FACEBOOK</a>
     </section>
 
     <div id="gallery" class="gallery-overlay" onclick="closeGallery()">
-        <div class="close-btn">ESC // CLOSE</div>
         <div class="specs-box">
-            <p style="font-weight: bold; margin-bottom: 5px;">PORTFOLIO DATA</p>
-            <p>TYPE: HIGH-RES PRINT</p>
-            <p>STATUS: VERIFIED</p>
-            <p>LOC: MUNTINLUPA SECTOR</p>
+            <p style="font-weight: bold; margin-bottom: 5px;">SYSTEM DATA: PORTFOLIO</p>
+            <p>ACCESS: GRANTED</p>
+            <p>LOC: MUNTINLUPA_SECTOR_GL</p>
         </div>
-        <div class="gallery-grid" id="gallery-grid-content">
-            </div>
+        <div class="gallery-grid" id="gallery-grid-content"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
@@ -305,30 +300,27 @@
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Initialize Tilt
+        // Initialize 3D Tilt
         VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
-            max: 15,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.3,
+            max: 15, speed: 400, glare: true, "max-glare": 0.3,
         });
 
-        // Gallery Logic
+        // Gallery Functions
         function openGallery(imagesArray) {
             const overlay = document.getElementById('gallery');
             const gridContent = document.getElementById('gallery-grid-content');
+            gridContent.innerHTML = '';
             
-            gridContent.innerHTML = ''; // Clear old content
-            
-            imagesArray.forEach(src => {
+            imagesArray.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
-                img.onclick = (e) => e.stopPropagation(); 
+                img.style.animationDelay = (0.2 * index) + 's'; // Staggered delay per image
+                img.onclick = (e) => e.stopPropagation();
                 gridContent.appendChild(img);
             });
             
             overlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
         }
 
         function closeGallery() {
@@ -336,33 +328,14 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Navbar Scroll
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            const navbar = document.getElementById('navbar');
-            if (currentScroll > lastScroll && currentScroll > 100) {
-                navbar.style.transform = 'translateX(-50%) translateY(100px)';
-                navbar.style.opacity = '0';
-            } else {
-                navbar.style.transform = 'translateX(-50%) translateY(0)';
-                navbar.style.opacity = '1';
-            }
-            lastScroll = currentScroll;
-        });
-
-        // Copy Phone Number
+        // Copy Phone Logic
         function copyNumber() {
             const number = "0991 636 1742";
             navigator.clipboard.writeText(number).then(() => {
-                const phoneLabel = document.getElementById('phone-num');
-                const originalText = phoneLabel.innerText;
-                phoneLabel.innerText = "COPIED!";
-                phoneLabel.style.color = "#00ff00";
-                setTimeout(() => {
-                    phoneLabel.innerText = originalText;
-                    phoneLabel.style.color = "white";
-                }, 2000);
+                const label = document.getElementById('phone-num');
+                label.innerText = "COPIED TO CLIPBOARD!";
+                label.style.color = "#00ff00";
+                setTimeout(() => { label.innerText = number; label.style.color = "white"; }, 2000);
             });
         }
     </script>
