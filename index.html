@@ -432,12 +432,16 @@ const glKnowledge = {
         response: "The system is owned by **Ate Ry (Lria)** 👑"
     },
     "boring": {
-        keywords: ["boring", "antok", "walang magawa"],
+        keywords: ["boring", "antok", "walang magawa", "walang kewenta"],
         response: "Boring? Baka kailangan mo ng **Custom Stickers** para maging aesthetic ang gamit mo! 🎮"
     },
     "what_is_gl": {
-        keywords: ["what is gl", "gl?", "ano ang gl"],
+        keywords: ["what is gl", "gl?", "ano ang gl" ,"ano meaning ng gl", "gl"],
         response: "**GL** stands for the initials of our founder, but for our customers, it means **Great Logic & Guaranteed Layouts**. 👑"
+    },
+    "Scammers": {
+        keywords: ["5k", "scammers", "scam", "pera", "magnanakaw"],
+        response: "Muka ba kaming bangko?"
     },
 
     "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
@@ -452,7 +456,7 @@ let violationCount = 0; // Ilagay ito sa labas ng function (top of script)
 // Listahan ng lahat ng mura (Tagalog & English)
 const cursedWords = [
     "gago", "puta", "tangina", "pakyu", "bobo", "pota", "tarantado", "hayop", "lintek", 
-    "hudas", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "kupal", "t*ngina", "bonak", "pepe", "tite", "giatay"
+    "hudas", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "bwiset", "kupal", "t*ngina", "bonak", "pepe", "tite", "giatay"
 ];
 
 // 1. ENTER KEY LOGIC (Eto yung request mo na gumana ang Enter)
