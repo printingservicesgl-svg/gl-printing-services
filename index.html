@@ -56,7 +56,7 @@ h1{
     margin-top: 20px;
 }
 
-/* NAV */
+/* NAV - Adjusted Z-Index to stay below Chat */
 nav{
     position:fixed;
     bottom:25px;
@@ -114,12 +114,12 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1rem; margin-bottom: 10px; }
 .tilt-card p { font-size: 0.9rem; color: #888; line-height: 1.5; }
 
-/* CHAT BUTTON & BOX */
+/* CHAT BUTTON & BOX - Adjusted positions to avoid overlap */
 #ai-chat-btn {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 65px; height: 65px;
+    bottom: 90px; /* Inangat natin para hindi tapat sa Nav */
+    right: 20px;
+    width: 60px; height: 60px;
     background: #0a0a0a;
     border: 2px solid var(--neon-gold);
     border-radius: 50%;
@@ -127,7 +127,7 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 3000;
+    z-index: 3000; /* Mataas para laging nasa ibabaw */
     box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,204,0,0.2);
     transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -136,14 +136,14 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
 #chat-box {
     position: fixed;
-    bottom: 110px;
-    right: 30px;
+    bottom: 160px; /* Adjusted to sit above the elevated button */
+    right: 20px;
     width: min(380px, 90vw);
-    height: 520px;
+    height: 500px;
     background: var(--glass);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
-    display: none; /* Controlled by JS */
+    display: none;
     flex-direction: column;
     z-index: 3000;
     overflow: hidden;
@@ -154,7 +154,6 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Added active class for animation */
 #chat-box.active { 
     display: flex; 
     opacity: 1; 
@@ -196,11 +195,11 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
 #chat-display { 
     flex: 1; 
-    padding: 20px; 
+    padding: 15px; 
     overflow-y: auto; 
     display: flex; 
     flex-direction: column; 
-    gap: 15px; 
+    gap: 12px; 
     perspective: 1000px;
 }
 
@@ -353,7 +352,6 @@ const glKnowledge = {
 let violationCount = 0;
 const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"];
 
-// Fixed Toggle Logic for 3D Window
 function toggleChat() {
     const chatBox = document.getElementById("chat-box");
     chatBox.classList.toggle("active");
@@ -361,14 +359,12 @@ function toggleChat() {
     if(chatBox.classList.contains("active")) {
         chatBox.style.display = "flex";
     } else {
-        // Delay hiding display until animation finishes
         setTimeout(() => { 
             if(!chatBox.classList.contains("active")) chatBox.style.display = "none"; 
         }, 400);
     }
 }
 
-// Added missing quickAsk function
 function quickAsk(key) {
     document.getElementById("chat-input").value = key;
     askAI();
