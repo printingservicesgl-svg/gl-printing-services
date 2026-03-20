@@ -134,39 +134,39 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
 #ai-chat-btn:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 25px var(--neon-gold); }
 
-/* I-update ang #chat-box style mo */
+/* CHAT BOX - Professional & Static Position */
 #chat-box {
     position: fixed;
-    bottom: 100px; /* Inangat konti para di takpan ang nav */
+    bottom: 160px;
     right: 20px;
     width: min(380px, 90vw);
     height: 500px;
     background: var(--glass);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
-    display: flex; /* Gawing flex default */
-    flex-direction: column;
     z-index: 3000;
     overflow: hidden;
     backdrop-filter: blur(30px);
     box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-    
-    /* MOBILE STABILITY FIX */
-    visibility: hidden; 
+    display: flex;
+    flex-direction: column;
+
+    /* MOBILE VISIBILITY FIX (No Display:None Conflict) */
+    visibility: hidden;
     opacity: 0;
-    transform: translateY(20px) scale(0.9);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
 }
 
-#chat-box.active { 
+#chat-box.active {
     visibility: visible;
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
+    opacity: 1;
+    transform: translateY(0) scale(1);
     pointer-events: auto;
 }
 
-/* ANTI-ZOOM FIX PARA SA MOBILE */
+/* ANTI-ZOOM & CLASSY INPUT */
 #chat-input { 
     flex: 1; 
     padding: 12px 18px; 
@@ -175,7 +175,7 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     border-radius: 12px;
     color: white; 
     outline: none; 
-    font-size: 16px; /* Magic number para iwas auto-zoom sa iPhone */
+    font-size: 16px !important; /* Forces iPhone not to auto-zoom */
 }
 
 #chat-header {
@@ -307,7 +307,6 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1.0); }
 }
-
 </style>
 </head>
 
@@ -397,6 +396,8 @@ const glKnowledge = {
         keywords: ["mura", "sulit", "bilis", "mabilis", "maayos kausap", "bait", "mabait"],
         response: "<b>We appreciate the kind words!</b> Our goal is to provide quality service that’s worth your trust and investment. Stay tuned for more updates and services! 🤙"
     },
+
+
     // --- ORGANIZED PRICING & SERVICES (CLASSY VERSION) ---
     "printing": {
         keywords: ["print", "xerox", "photo", "scan", "lamination", "laminating", "magazine", "wallet", "instax", "polaroid", "id photo"],
@@ -469,18 +470,94 @@ const defaultMsg = "Pasensya na, hindi ko mahanap ang saktong sagot. Kung may fu
 let violationCount = 0;
 const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo", "ulol", "pakyu" , "fuck you", "putangina", "putang ina", "inamo", "yawa", "bilat", "puke", "puki", "tite", "tanga", "pokpok", "tomboy", "chupa", "sex", "kantot", "kantutan", "sexy", "bj", "blowjob", "shet", "shit"];
 
+// --- TOGGLE CHAT (Fix for Mobile Re-opening) ---
 function toggleChat() {
     const chatBox = document.getElementById("chat-box");
     chatBox.classList.toggle("active");
-    
-    if(document.getElementById("chat-display").innerHTML === "") {
-    addBotMsg("<b>SYSTEM ONLINE:</b><br>Magandang araw! Handa kaming tumulong sa inyong <b>Printing</b>, <b>Tech Repair</b>, at <b>Academic needs</b> dito sa Muntinlupa.<br><br>Ano po ang maipaglilingkod namin sa inyo?");
-} else {
-        setTimeout(() => { 
-            if(!chatBox.classList.contains("active")) chatBox.style.display = "none"; 
-        }, 400);
+
+    if (chatBox.classList.contains("active")) {
+        // Anti-zoom focus
+        setTimeout(() => document.getElementById("chat-input").focus(), 300);
+        
+        // Initial Greeting if empty
+        const display = document.getElementById("chat-display");
+        if (display.innerText.trim() === "" || display.innerText.includes("Online.")) {
+            display.innerHTML = ""; 
+            addBotMsg("<b>SYSTEM ONLINE:</b><br>Hello! I am <b>GL-AI</b>. How can I assist you with our <b>Printing</b> or <b>Tech</b> services today?");
+        }
     }
 }
+
+// --- MAIN AI ENGINE ---
+function askAI() {
+    const input = document.getElementById("chat-input");
+    const display = document.getElementById("chat-display");
+    const raw = input.value.trim();
+    
+    if(!raw) return;
+
+    // 1. Show User Message
+    display.innerHTML += `<div class="user-msg">${raw}</div>`;
+    const msg = raw.toLowerCase();
+    input.value = "";
+    
+    // 2. Reset Keyboard/Zoom on Mobile
+    input.blur();
+
+    // 3. Cursed Words Shield
+    if (cursedWords.some(w => msg.includes(w))) {
+        violationCount++;
+        if (violationCount === 1) {
+            addBotMsg("<span style='color:#ff4444'>Warning. Please use professional language.</span>");
+        } else {
+            document.body.innerHTML = `<div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; padding:20px;">PROTOCOL BREACH.<br>ACCESS DENIED.</div>`;
+            setTimeout(() => { location.reload(); }, 3000);
+        }
+        return;
+    }
+
+    // 4. Response Matching
+    let found = false;
+    for (let key in glKnowledge) {
+        if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
+            addBotMsg(glKnowledge[key].response);
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        const randomDefault = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        addBotMsg(randomDefault);
+    }
+}
+
+// --- TYPING EFFECT & DISPLAY ---
+function addBotMsg(text) {
+    const display = document.getElementById("chat-display");
+    
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "bot-bubble";
+    typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    display.appendChild(typingDiv);
+    display.scrollTop = display.scrollHeight;
+
+    setTimeout(() => {
+        typingDiv.innerHTML = `<b>GL-AI:</b><br>${text}`;
+        display.scrollTop = display.scrollHeight;
+    }, 1200); 
+}
+
+// Quick Actions Support
+function quickAsk(key) {
+    document.getElementById("chat-input").value = key;
+    askAI();
+}
+
+// Enter Key Support
+document.getElementById("chat-input").addEventListener("keypress", (e) => { 
+    if(e.key === "Enter") askAI(); 
+});
 
 function quickAsk(key) {
     document.getElementById("chat-input").value = key;
