@@ -350,25 +350,31 @@
             document.body.style.overflow = 'auto';
         }
 
-        const glKnowledge = {
-    "price": "To provide you with the most accurate and best pricing for your needs, please <a href='https://m.me/GLprinting.services/' target='_blank'>message us directly on Facebook</a>.",
-    "how much": "Pricing depends on the specific details of your project. For a personalized quote, please chat with us here: <a href='https://m.me/GLprinting.services/' target='_blank'>GL Messenger</a>.",
-    "location": "We are based in Muntinlupa City. We cater to local residents and offer delivery for bulk print orders.",
-    "services": "We specialize in Event Prints (Stickers/Instax), Digital Layouts, E-Gov assistance, and Tech Repairs.",
-    "repair": "We offer mobile and laptop diagnostics. Visit us for LCD replacements, battery issues, or software flashing.",
-    "hello": "System active. I am GL-AI. Type a keyword like 'Services' or 'Location' to begin.",
-    
-    // BAGONG DAGDAG: Lamination keywords with Random Answers
-    "lamination": {
-        keywords: ["lamination", "laminate", "plastic", "cover", "proteksyon", "palaminate"],
+      const glKnowledge = {
+    "prints": {
+        keywords: ["print", "photo", "instax", "picture", "colored", "black and white", "document", "short", "long", "a4"],
+        response: "We offer high-quality prints for documents (Short, A4, Long) and premium photo prints like Instax-style or 4R. Ano ang ipapa-print natin, Master?"
+    },
+    "protection": {
+        keywords: ["lamination", "laminate", "plastic", "mabasa", "palaminate", "waterproof", "matigas", "cover", "protection"],
         answers: [
-            "Yes! We offer lamination services to protect your important certificates and teaching materials. 🛡️",
-            "Kayang-kaya 'yan! We use high-quality plastic for clear and durable lamination. ✨",
-            "Protect your docs! Bubble-free lamination available here in Muntinlupa. What size do you need?"
+            "Para hindi mabasa at tumagal ang docs, highly recommended ang **Lamination** namin. 🛡️",
+            "Yes! We use thick, high-quality plastic covers para iwas-lukot at iwas-basa ang certificates mo.",
+            "Lamination is the key! Bubble-free and clear. Safe 'yan kahit mabasa ng tubig."
         ]
     },
-    
-    "default": "For pricing and other inquiries, it's best to talk to our human team! Message us here: <a href='https://m.me/GLprinting.services/' target='_blank'>GL Facebook Page</a>."
+    "tech_logic": {
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat"],
+        response: "Expert si Master Ry sa hardware diagnostics! LCD replacement, battery health issues, o software reformat? Dalhin mo lang dito sa shop."
+    },
+    "identity": {
+        keywords: ["sino", "owner", "master ry", "ry", "laika", "founder"],
+        response: "The system is managed by **Master Ry (Laika Ria)**, a BSIT expert specializing in tech and digital prints. 👑"
+    },
+    "location_logic": {
+        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "layo"],
+        response: "Nasa **Muntinlupa City** lang tayo! Operational sector is ready. Visit us for local pick-up or bulk orders. 📍"
+    }
 };
         
 
@@ -428,13 +434,7 @@ function askAI() {
     input.value = "";
 }
 
-// ENTER KEY PROTOCOL - Master Ry Custom
-document.getElementById('chat-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        e.preventDefault(); // Iwasan ang pag-refresh ng page
-        askAI(); // Tatawagin ang function na pang-send
-    }
-});
+
     </script>
 </body>
 </html>
