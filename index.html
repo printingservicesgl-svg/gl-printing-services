@@ -553,6 +553,59 @@ function askAI() {
     const input = document.getElementById('chat-input');
     const display = document.getElementById('chat-display');
     const msg = input.value.toLowerCase().trim();
+    if (!msg) return;
+
+    display.innerHTML += `<p class="user-msg">${msg}</p>`;
+
+    // TOXIC PROTOCOL CHECK
+    if (cursedWords.some(w => msg.includes(w))) {
+        violationCount++;
+        if (violationCount === 1) {
+            display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. Logic error detected in your language.</p>`;
+        } else {
+            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h3>PROTOCOL BREACH</h3><p>BANNED. EXITING...</p></div>`;
+            setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
+            return;
+        }
+        input.value = ""; return;
+    }
+
+    // LOGICAL MATCHING
+    let response = glKnowledge["default"];
+    
+    for (let key in glKnowledge) {
+        const entry = glKnowledge[key];
+        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
+            if (entry.answers) {
+                // Randomize for logical variation (Lamination etc)
+                response = entry.answers[Math.floor(Math.random() * entry.answers.length)];
+            } else {
+                response = entry.response;
+            }
+            break;
+        }
+    }
+
+    setTimeout(() => {
+        display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
+        display.scrollTop = display.scrollHeight;
+    }, 500);
+    input.value = "";
+}
+// Kung walang nahanap na match sa loop, gamitin ang default
+    if (!response || response === glKnowledge["default"]) {
+        response = glKnowledge["default"];
+    }
+
+    setTimeout(() => {
+        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b><br>${response}</p>`;
+        display.scrollTop = display.scrollHeight;
+    }, 500);
+
+    function askAI() {
+    const input = document.getElementById('chat-input');
+    const display = document.getElementById('chat-display');
+    const msg = input.value.toLowerCase().trim();
     
     if (!msg) return;
 
@@ -599,51 +652,6 @@ function askAI() {
         display.scrollTop = display.scrollHeight;
     }, 1200); // 1.2 seconds na "nag-iisip" ang AI
 }
-
-    // TOXIC PROTOCOL CHECK
-    if (cursedWords.some(w => msg.includes(w))) {
-        violationCount++;
-        if (violationCount === 1) {
-            display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. Logic error detected in your language.</p>`;
-        } else {
-            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h3>PROTOCOL BREACH</h3><p>BANNED. EXITING...</p></div>`;
-            setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
-            return;
-        }
-        input.value = ""; return;
-    }
-
-    // LOGICAL MATCHING
-    let response = glKnowledge["default"];
-    
-    for (let key in glKnowledge) {
-        const entry = glKnowledge[key];
-        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
-            if (entry.answers) {
-                // Randomize for logical variation (Lamination etc)
-                response = entry.answers[Math.floor(Math.random() * entry.answers.length)];
-            } else {
-                response = entry.response;
-            }
-            break;
-        }
-    }
-
-    setTimeout(() => {
-        display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
-        display.scrollTop = display.scrollHeight;
-    }, 500);
-    input.value = "";
-}
-// Kung walang nahanap na match sa loop, gamitin ang default
-    if (!response || response === glKnowledge["default"]) {
-        response = glKnowledge["default"];
-    }
-
-    setTimeout(() => {
-        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b><br>${response}</p>`;
-        display.scrollTop = display.scrollHeight;
-    }, 500);
 
     
 
