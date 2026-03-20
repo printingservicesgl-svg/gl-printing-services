@@ -349,31 +349,48 @@
             document.getElementById('gallery').classList.remove('active');
             document.body.style.overflow = 'auto';
         }
-
-      const glKnowledge = {
+const glKnowledge = {
+    // PRINTS & DOCUMENTS
     "prints": {
-        keywords: ["print", "photo", "instax", "picture", "colored", "black and white", "document", "short", "long", "a4"],
-        response: "We offer high-quality prints for documents (Short, A4, Long) and premium photo prints like Instax-style or 4R. Ano ang ipapa-print natin, Master?"
+        keywords: ["print", "photo", "larawan", "papel", "document", "short", "long", "a4", "colored", "black and white", "b&w", "xerox", "copy"],
+        response: "Nag-ooffer kami ng high-quality prints para sa documents (Short, A4, Long) at premium photo prints. Mapa-school projects o office docs, kayang-kaya! Ano ang ipapa-print natin?"
     },
+    // PROTECTION / LAMINATION (Logical: safe ba sa tubig? etc.)
     "protection": {
-        keywords: ["lamination", "laminate", "plastic", "mabasa", "palaminate", "waterproof", "matigas", "cover", "protection"],
+        keywords: ["lamination", "laminate", "plastic", "mabasa", "palaminate", "waterproof", "matigas", "cover", "proteksyon", "nasira", "lukot"],
         answers: [
-            "Para hindi mabasa at tumagal ang docs, highly recommended ang **Lamination** namin. 🛡️",
-            "Yes! We use thick, high-quality plastic covers para iwas-lukot at iwas-basa ang certificates mo.",
-            "Lamination is the key! Bubble-free and clear. Safe 'yan kahit mabasa ng tubig."
+            "Highly recommended ang **Lamination** namin para iwas-basa at iwas-lukot ang documents mo. 🛡️",
+            "Yes! We use high-quality plastic para maging waterproof at matibay ang iyong certificates o teaching materials.",
+            "Para protektado ang docs mo, palaminate natin! Clear at bubble-free ang gawa namin dito sa Muntinlupa."
         ]
     },
-    "tech_logic": {
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat"],
-        response: "Expert si Master Ry sa hardware diagnostics! LCD replacement, battery health issues, o software reformat? Dalhin mo lang dito sa shop."
+    // REPAIRS & TECH SOLUTIONS
+    "repair": {
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat", "basag", "ayusin"],
+        response: "Expert kami sa mobile at laptop diagnostics! LCD replacement, battery issues, o software troubleshooting? Dalhin mo lang dito sa operational sector."
     },
-    "identity": {
-        keywords: ["sino", "owner", "master ry", "ry", "laika", "founder"],
-        response: "The system is managed by **Master Ry (Laika Ria)**, a BSIT expert specializing in tech and digital prints. 👑"
+    // E-GOV & RESUME (Tech Assist)
+    "admin": {
+        keywords: ["e-gov", "nbi", "philhealth", "pag-ibig", "resume", "cv", "encoding", "format", "application", "data", "id", "digital id"],
+        response: "Assisted kami sa E-Gov applications, Digital IDs, at high-accuracy data encoding. Pati Resume Restructuring para sa job applications, help kami dyan!"
     },
-    "location_logic": {
-        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "layo"],
-        response: "Nasa **Muntinlupa City** lang tayo! Operational sector is ready. Visit us for local pick-up or bulk orders. 📍"
+    // LOCATION & CONTACT
+    "location": {
+        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "pumunta", "lugar", "city"],
+        response: "Nasa **Muntinlupa City** lang kami! Operational kami para sa local residents at bulk orders. 📍"
+    },
+    "price": {
+        keywords: ["price", "magkano", "how much", "presyo", "bayad", "cost", "piso", "rate"],
+        response: "Ang pricing ay depende sa dami at type ng service. Para sa best quote, <a href='https://m.me/GLprinting.services/' target='_blank'>i-message kami sa Facebook Messenger</a>."
+    },
+    // ABOUT MASTER RY
+    "owner": {
+        keywords: ["sino", "owner", "master ry", "ry", "laika", "founder", "gumawa"],
+        response: "Ang GL Prints ay pinapatakbo ni **Master Ry (Laika Ria)**, isang BSIT graduate at tech expert. 👑"
+    },
+    "hello": {
+        keywords: ["hello", "hi", "kamusta", "system", "gising", "uuy", "available"],
+        response: "System Active. I am GL-AI. Handa akong tumulong sa logical questions about prints and tech repairs. Ano ang kailangan mo?"
     }
 };
         
@@ -383,8 +400,21 @@
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
 let violationCount = 0; // Ilagay ito sa labas ng function (top of script)
-const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"]; // Listahan ng bawal
+// Listahan ng lahat ng mura (Tagalog & English)
+const cursedWords = [
+    "gago", "puta", "tangina", "pakyu", "bobo", "pota", "tarantado", "hayop", "lintek", 
+    "hudas", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "kupal", "t*ngina"
+];
 
+// 1. ENTER KEY LOGIC (Eto yung request mo na gumana ang Enter)
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault(); // Iwasan ang glitch sa UI
+        askAI();
+    }
+});
+
+// 2. SMART AI LOGIC (Update sa askAI function)
 function askAI() {
     const input = document.getElementById('chat-input');
     const display = document.getElementById('chat-display');
@@ -397,43 +427,37 @@ function askAI() {
     if (cursedWords.some(w => msg.includes(w))) {
         violationCount++;
         if (violationCount === 1) {
-            display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. No cursing allowed in the system.</p>`;
+            display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. Logic error detected in your language.</p>`;
         } else {
-            // KICK/BANNED UI
-            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center;"><h1>PROTOCOL BREACH:<br>YOU ARE BANNED BY MASTER RY.</h1></div>`;
+            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h1>PROTOCOL BREACH</h1><p>BANNED BY MASTER RY. EXITING...</p></div>`;
             setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
             return;
         }
         input.value = ""; return;
     }
 
-    // LOGIC FOR RESPONSE
+    // LOGICAL MATCHING
     let response = glKnowledge["default"];
     
     for (let key in glKnowledge) {
-        if (typeof glKnowledge[key] === 'object' && glKnowledge[key].keywords) {
-            // Check for Lamination/Random Categories
-            if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
-                const ansArray = glKnowledge[key].answers;
-                response = ansArray[Math.floor(Math.random() * ansArray.length)];
-                break;
+        const entry = glKnowledge[key];
+        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
+            if (entry.answers) {
+                // Randomize for logical variation (Lamination etc)
+                response = entry.answers[Math.floor(Math.random() * entry.answers.length)];
+            } else {
+                response = entry.response;
             }
-        } else {
-            // Check for regular keywords (price, location, etc.)
-            if (msg.includes(key)) {
-                response = glKnowledge[key];
-                break;
-            }
+            break;
         }
     }
 
     setTimeout(() => {
         display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
         display.scrollTop = display.scrollHeight;
-    }, 600);
+    }, 500);
     input.value = "";
 }
-
 
     </script>
 </body>
