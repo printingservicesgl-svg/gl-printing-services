@@ -353,6 +353,18 @@ nav a:hover {
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+
+    </section>
+
+    <div id="gallery" class="gallery-overlay" onclick="closeGallery()">
+        <img id="gallery-img" src="" class="gallery-content">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script>
+        // Dito mo ilalagay yung openGallery at closeGallery functions
+    </script>
+</body>
     <script>
         // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
@@ -425,6 +437,25 @@ window.addEventListener('scroll', () => {
     }
     lastScroll = currentScroll;
 });
+
+function openGallery(imageSrc) {
+    const overlay = document.getElementById('gallery');
+    const img = document.getElementById('gallery-img');
+    
+    img.src = imageSrc; // Dito ilalagay yung image ng gawa niyo
+    overlay.classList.add('active');
+    
+    // Disable scroll para focus sa picture
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGallery() {
+    const overlay = document.getElementById('gallery');
+    overlay.classList.remove('active');
+    
+    // Enable scroll ulit
+    document.body.style.overflow = 'auto';
+}
     </script>
 </body>
 </html>
