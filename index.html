@@ -310,113 +310,152 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
         // Cursor Logic
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        // 1. Initialize Utilities
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+});
 
-        // Initialize Tilt
-        VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
+VanillaTilt.init(document.querySelectorAll(".tilt-card"), { 
+    max: 10, 
+    speed: 400, 
+    glare: true, 
+    "max-glare": 0.2 
+});
 
-        function openGallery(imagesArray) {
-            const overlay = document.getElementById('gallery');
-            const gridContent = document.getElementById('gallery-grid-content');
-            gridContent.innerHTML = '';
-            imagesArray.forEach((src, index) => {
-                const img = document.createElement('img');
-                img.src = src;
-                img.style.animationDelay = (0.1 * index) + 's';
-                gridContent.appendChild(img);
-            });
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+function toggleChat() {
+    const box = document.getElementById('chat-box');
+    box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function copyNumber() {
+    const num = document.getElementById('phone-num').innerText;
+    navigator.clipboard.writeText(num);
+    alert("Number copied to clipboard!");
+}
+
+// 2. Complete Knowledge Base
+const glKnowledge = {
+    "generic_price": {
+        keywords: ["magkano", "how much", "presyo", "hm", "piso", "price", "amount"],
+        response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Ma'am/Sir? <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b><br>• Prints<br>• Photo Develop<br>• Rush ID<br>• Stickers<br>• Lamination<br>• Tech Repair`
+    },
+    "printing_prices": {
+        keywords: ["print", "colored", "black and white", "b&w", "piso print", "document", "pa-print"],
+        response: `Eto ang aming standard rates:<br>• Document (B&W): ₱4.00 - ₱6.00<br>• Colored: ₱6.00 - ₱15.00<br>• Full Colored/Photo: ₱15.00 - ₱30.00`
+    },
+    "id_instax_prices": {
+        keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic", "pa-picture", "pa-rush"],
+        response: `Rates:<br>• Rush ID Bundle: ₱35.00 - ₱100.00<br>• Instax/Polaroid: ₱30.00 - ₱45.00 per piece<br>• Locket Size: ₱20.00 - ₱40.00`
+    },
+    "lamination_prices": {
+        keywords: ["lamination", "laminate", "palaminate", "plastic", "cover", "laminating"],
+        response: `Protect your docs starting from:<br>• Small/ID Size: ₱15.00 - ₱25.00<br>• Short/A4/Long: ₱30.00 - ₱60.00`
+    },
+    "tech_prices": {
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "software", "laptop", "iphone", "samsung", "realme", "infinix"],
+        response: `Technical diagnostics:<br>• Software: ₱300.00 - ₱800.00<br>• Hardware (LCD/Battery): ₱800.00 - ₱4,500.00<br><b>FREE Check-up</b> pag dinala ang unit!`
+    },
+    "sticker_prices": {
+        keywords: ["sticker", "label", "produkto", "product label", "glossy", "cut"],
+        response: `Customized labels starting at:<br>• Per A4 Sheet: ₱50.00 - ₱85.00 (Depends on material)`
+    },
+    "location": {
+        keywords: ["saan", "location", "address", "muntinlupa", "mapa", "map"],
+        response: "Nasa Muntinlupa City lang kami! View our <b>Active Google Maps</b> here:<br><br><a href='#' style='color:white'>📍 OPEN GOOGLE MAPS</a>"
+    },
+    "greetings": {
+        keywords: ["hi", "hello", "boss", "maam", "sir", "ate", "kamusta", "magtatano", "help"],
+        response: "System Active. I am GL-AI. Hello! Handa akong tumulong sa iyong concerns. Ano ang kailangan mo? (Price, Location, Services, Repair)"
+    },
+    "sino": {
+        keywords: ["sino", "owner", "ry", "lria"],
+        response: "The system is owned by <b>Ate Ry (Lria)</b> 👑"
+    },
+    "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank' style='color:white'>Chat with us!</a>"
+};
+
+// 3. Optimized AI Function (Single Declaration)
+let violationCount = 0;
+const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"];
+
+function askAI() {
+    const input = document.getElementById('chat-input');
+    const display = document.getElementById('chat-display');
+    const msgRaw = input.value.trim();
+    const msg = msgRaw.toLowerCase();
+    
+    if (!msg) return;
+
+    // Display user message
+    display.innerHTML += `<div class="user-msg">${msgRaw}</div>`;
+    input.value = "";
+    display.scrollTop = display.scrollHeight;
+
+    // 1. Toxic Check
+    if (cursedWords.some(w => msg.includes(w))) {
+        violationCount++;
+        if (violationCount === 1) {
+            display.innerHTML += `<p class="bot-msg" style="color:red">Warning. Be respectful. Logic error detected in your language.</p>`;
+        } else {
+            document.body.innerHTML = `<div style="height:100vh; background:red; color:white; display:flex; align-items:center; justify-content:center; font-family:'Syncopate';">PROTOCOL BREACH. EXITING...</div>`;
+            setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
         }
+        return;
+    }
 
-        function closeGallery() {
-            document.getElementById('gallery').classList.remove('active');
-            document.body.style.overflow = 'auto';
+    // 2. Typing Indicator
+    const tid = "t-" + Date.now();
+    display.innerHTML += `<p class="bot-msg" id="${tid}"><i>GL-AI is typing...</i></p>`;
+    display.scrollTop = display.scrollHeight;
+
+    // 3. Logic Match
+    let response = glKnowledge["default"];
+    
+    // Check keyword matches
+    for (let key in glKnowledge) {
+        if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
+            response = glKnowledge[key].response;
+            break;
         }
+    }
 
-        function copyNumber() {
-            const num = document.getElementById('phone-num').innerText;
-            navigator.clipboard.writeText(num);
-            alert("Number copied to clipboard!");
+    // 4. Render Response
+    setTimeout(() => {
+        const el = document.getElementById(tid);
+        if (el) {
+            el.innerHTML = `<b>GL-AI:</b><br>${response}`;
+            el.style.fontStyle = "normal";
         }
+        display.scrollTop = display.scrollHeight;
+    }, 800);
+}
 
-        // --- AI LOGIC (PINAGSAMA AT INAYOS) ---
-        const glKnowledge = {
-            "generic_price": { keywords: ["magkano", "how much", "presyo", "hm", "piso", "price", "amount"], response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Ma'am/Sir? <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b><br>• Prints<br>• Photo Develop<br>• Rush ID<br>• Stickers<br>• Lamination<br>• Tech Repair` },
-            "printing_prices": { keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"], response: `Rates:<br>• Document (B&W): ₱4.00 - ₱6.00<br>• Colored: ₱6.00 - ₱15.00<br>• Full Colored: ₱15.00 - ₱30.00` },
-            "id_instax_prices": { keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture"], response: `Rates:<br>• Rush ID Bundle: ₱35.00 - ₱100.00<br>• Instax Prints: ₱30.00 - ₱45.00<br>• Locket Size: ₱20.00 - ₱40.00` },
-            "tech_prices": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone"], response: `Technical:<br>• Software: ₱300.00 - ₱800.00<br>• Hardware: ₱800.00+ (Depends on model)<br><b>FREE Check-up!</b>` },
-            "location": { keywords: ["saan", "location", "address", "muntinlupa", "map"], response: "Nasa Muntinlupa City lang kami! <br><a href='#' style='color:white'>📍 OPEN GOOGLE MAPS</a>" },
-            "greetings": { keywords: ["hi", "hello", "boss", "maam", "sir", "ate"], response: "System Active. I am GL-AI. Hello! Ano ang maitutulong ko sa iyo ngayon?" },
-            "sino": { keywords: ["sino", "owner", "ry", "lria"], response: "The system is owned by <b>Ate Ry (Lria)</b> 👑" },
-            "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank' style='color:white'>Chat with us!</a>"
-        };
+// Enter Key Support
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    if (e.key === "Enter") askAI();
+});
 
-        let violationCount = 0;
-        const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo", "ulol"];
+// Gallery Functions
+function openGallery(imagesArray) {
+    const overlay = document.getElementById('gallery');
+    const gridContent = document.getElementById('gallery-grid-content');
+    gridContent.innerHTML = '';
+    imagesArray.forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        gridContent.appendChild(img);
+    });
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
-        function toggleChat() {
-            const box = document.getElementById('chat-box');
-            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === "Enter") askAI(); });
-
-        function askAI() {
-            const input = document.getElementById('chat-input');
-            const display = document.getElementById('chat-display');
-            const rawMsg = input.value.trim();
-            const msg = rawMsg.toLowerCase();
-            
-            if (!msg) return;
-
-            display.innerHTML += `<div class="user-msg">${rawMsg}</div>`;
-            input.value = "";
-
-            // Violation Check
-            if (cursedWords.some(w => msg.includes(w))) {
-                violationCount++;
-                if (violationCount === 1) {
-                    display.innerHTML += `<p class="bot-msg" style="color:#ff4444">Warning. Be respectful.</p>`;
-                } else {
-                    document.body.innerHTML = `<div style="height:100vh; background:red; color:white; display:flex; align-items:center; justify-content:center; font-family:'Syncopate';">PROTOCOL BREACH. BANNED.</div>`;
-                    setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
-                }
-                return;
-            }
-
-            // Exit Logic
-            const exitCmds = ["exit", "close", "bye", "salamat"];
-            if (exitCmds.some(word => msg.includes(word))) {
-                display.innerHTML += `<p class="bot-msg">Noted! System closing...</p>`;
-                setTimeout(toggleChat, 1500);
-                return;
-            }
-
-            // Typing Animation
-            const tid = "t-" + Date.now();
-            display.innerHTML += `<p class="bot-msg" id="${tid}"><i>GL-AI is typing...</i></p>`;
-            display.scrollTop = display.scrollHeight;
-
-            // Matching
-            let response = glKnowledge["default"];
-            for (let key in glKnowledge) {
-                if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
-                    response = glKnowledge[key].response;
-                    break;
-                }
-            }
-
-            setTimeout(() => {
-                const el = document.getElementById(tid);
-                if (el) el.innerHTML = `<b>GL-AI:</b><br>${response}`;
-                display.scrollTop = display.scrollHeight;
-            }, 1000);
-        }
+function closeGallery() {
+    document.getElementById('gallery').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
     </script>
 </body>
 </html>
+
