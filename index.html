@@ -12,128 +12,228 @@
             --neon-gold: #ffcc00;
             --deep-ads: #0a0a0a;
             --text-gray: #888;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        /* --- STABLE CURSOR LOGIC --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
 
         body {
             background-color: var(--deep-ads);
             color: white;
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
-            cursor: none; /* Hidden for desktop */
+            line-height: 1.6;
         }
 
+        /* Custom Cursor - Hidden on Touch Devices */
         #cursor {
-            width: 20px; height: 20px;
+            width: 20px;
+            height: 20px;
             border: 2px solid var(--neon-gold);
             border-radius: 50%;
             position: fixed;
-            top: 0; left: 0;
             pointer-events: none;
             z-index: 9999;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.1s ease;
             display: none;
         }
 
-        @media (min-width: 1024px) { #cursor { display: block; } }
-        @media (max-width: 1023px) { body { cursor: auto; } }
+        @media (min-width: 1024px) {
+            * { cursor: none; }
+            #cursor { display: block; }
+        }
 
         .grid-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255, 204, 0, 0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 204, 0, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px; z-index: -1;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 204, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 204, 0, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
         }
 
         header {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            background: radial-gradient(circle, rgba(255,204,0,0.1) 0%, rgba(0,0,0,1) 70%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(255,204,0,0.08) 0%, rgba(0,0,0,1) 80%);
+            padding: 20px;
         }
 
-        .gl-logo { width: 120px; filter: drop-shadow(0 0 15px var(--neon-gold)); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .gl-logo {
+            width: clamp(100px, 20vw, 150px);
+            filter: drop-shadow(0 0 20px var(--neon-gold));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
 
         h1 {
-            font-family: 'Syncopate', sans-serif; font-size: clamp(2rem, 10vw, 4rem);
-            letter-spacing: 10px; margin-top: 20px;
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            letter-spacing: clamp(5px, 2vw, 15px);
+            margin-top: 20px;
             background: linear-gradient(to right, #fff, var(--neon-gold), #fff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
         }
 
-        /* Fixed Navigation - Mobile Friendly */
         nav {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(15px);
-            padding: 10px 30px; border-radius: 100px;
-            border: 1px solid rgba(255, 204, 0, 0.2);
-            display: flex; gap: 25px; z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); width: max-content;
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(15px);
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            gap: 25px;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: max-content;
+            max-width: 90%;
         }
 
-        nav a { color: white; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
         nav a:hover { color: var(--neon-gold); }
 
         .container {
-            padding: 80px 5%; display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
         }
 
         .tilt-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px; padding: 30px; text-align: center; transition: 0.3s;
-            transform-style: preserve-3d; cursor: pointer;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
         }
 
-        .tilt-card:hover { border-color: var(--neon-gold); background: rgba(255, 204, 0, 0.05); }
-        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 0.9rem; transform: translateZ(30px); }
-        .tilt-card p { font-size: 0.85rem; color: var(--text-gray); transform: translateZ(20px); margin-top: 10px; }
+        .tilt-card:hover {
+            border-color: var(--neon-gold);
+            transform: translateY(-10px);
+            background: rgba(255, 204, 0, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .tilt-card h3 {
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-gold);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
 
         .btn-glitch {
-            padding: 12px 30px; background: var(--neon-gold); color: black;
-            font-family: 'Syncopate', sans-serif; font-size: 0.8rem; font-weight: bold;
+            padding: 16px 32px;
+            border: none;
+            background: var(--neon-gold);
+            color: black;
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 800;
+            font-size: 0.8rem;
             clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-            border: none; margin-top: 20px; cursor: pointer;
+            transition: 0.3s;
+            cursor: pointer;
+            text-transform: uppercase;
         }
 
-        /* --- AI CHAT POSITIONING --- */
+        .btn-glitch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--neon-gold);
+        }
+
+        /* Chat System UI */
         #ai-chat-btn {
-            position: fixed; bottom: 90px; right: 25px;
-            width: 60px; height: 60px; background: var(--deep-ads);
-            border: 2px solid var(--neon-gold); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 3000; cursor: pointer; box-shadow: 0 0 15px var(--neon-gold);
+            position: fixed;
+            bottom: 90px;
+            right: 25px;
+            width: 60px; height: 60px;
+            background: var(--deep-ads);
+            border: 2px solid var(--neon-gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
-
-        #ai-chat-btn img { width: 40px; filter: drop-shadow(0 0 5px var(--neon-gold)); }
 
         #chat-box {
-            position: fixed; bottom: 160px; right: 25px; width: calc(100% - 50px);
-            max-width: 320px; background: rgba(10, 10, 10, 0.98);
-            border: 1px solid var(--neon-gold); border-radius: 15px;
-            display: none; flex-direction: column; z-index: 3000;
-            backdrop-filter: blur(15px); box-shadow: 0 0 30px rgba(0,0,0,1);
+            position: fixed;
+            bottom: 165px;
+            right: 25px;
+            width: min(350px, 90vw);
+            height: 450px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--neon-gold);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        #chat-header { background: var(--neon-gold); color: black; padding: 10px; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; text-align: center; border-radius: 13px 13px 0 0; }
-        #chat-display { height: 280px; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
-        .bot-msg { color: var(--neon-gold); border-left: 2px solid var(--neon-gold); padding-left: 10px; line-height: 1.4; }
-        .user-msg { color: white; text-align: right; opacity: 0.8; font-style: italic; align-self: flex-end; }
-        #chat-input-area { display: flex; border-top: 1px solid rgba(255, 204, 0, 0.2); }
+        #chat-header { background: var(--neon-gold); color: black; padding: 15px; font-family: 'Syncopate'; font-size: 11px; font-weight: bold; text-align: center; }
+        #chat-display { flex: 1; padding: 20px; overflow-y: auto; font-size: 14px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: thin; }
+        .bot-msg { color: var(--neon-gold); border-left: 2px solid var(--neon-gold); padding-left: 12px; animation: fadeIn 0.3s ease; }
+        .user-msg { color: white; align-self: flex-end; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 15px 15px 0 15px; font-style: italic; }
+        #chat-input-area { display: flex; padding: 10px; background: rgba(255,255,255,0.03); }
         #chat-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
-        #send-btn { background: var(--neon-gold); border: none; padding: 0 15px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; }
+        #send-btn { background: var(--neon-gold); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; }
 
-        /* Gallery System Overlay */
+        /* Gallery */
         .gallery-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98);
             display: none; justify-content: center; align-items: center; z-index: 5000;
         }
         .gallery-overlay.active { display: flex; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 85%; max-height: 80vh; overflow-y: auto; padding: 20px; }
-        .gallery-grid img { width: 100%; border-radius: 10px; border: 2px solid var(--neon-gold); }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; width: 85%; max-height: 70vh; overflow-y: auto; }
+        .gallery-grid img { width: 100%; border-radius: 12px; border: 1px solid var(--neon-gold); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Contact Section */
+        #contact { padding: 100px 5%; text-align: center; }
+        #phone-num { font-size: clamp(1.2rem, 5vw, 2rem); letter-spacing: 5px; color: var(--neon-gold); margin: 20px 0; transition: 0.3s; }
+        #phone-num:hover { text-shadow: 0 0 15px var(--neon-gold); }
 
     </style>
 </head>
@@ -151,40 +251,40 @@
     <header id="home">
         <img src="GL_Logo.png" alt="Logo" class="gl-logo">
         <h1>GL PRINTS</h1>
-        <p style="letter-spacing: 5px; color: var(--text-gray); font-size: 0.7rem;">EST. 2025 | MUNTINLUPA CITY</p>
-        <button class="btn-glitch" onclick="window.location.href='#services'">ENTER SYSTEM</button>
+        <p style="letter-spacing: 5px; color: var(--text-gray); font-size: 0.8rem;">EST. 2025 | MUNTINLUPA CITY</p>
+        <button class="btn-glitch" style="margin-top: 30px;" onclick="window.location.href='#services'">ENTER SYSTEM</button>
     </header>
 
-    <div class="container" id="services">
-        <div class="tilt-card" data-tilt onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg'])">
+    <section class="container" id="services">
+        <div class="tilt-card" onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg'])">
             <h3>EVENT & MEDIA PRINTS</h3>
             <p>Premium bundles for Birthdays and Christenings. Custom stickers and event stationery.</p>
         </div>
-        <div class="tilt-card" data-tilt>
+        <div class="tilt-card">
             <h3>DIGITAL DESIGN</h3>
             <p>Professional layouts for business and personal branding.</p>
         </div>
-        <div class="tilt-card" data-tilt>
+        <div class="tilt-card">
             <h3>E-GOV & OFFICE ASSIST</h3>
             <p>E-Gov applications, digital IDs, and high-accuracy data encoding.</p>
         </div>
-        <div class="tilt-card" data-tilt>
+        <div class="tilt-card">
             <h3>TECH ASSIST</h3>
             <p>Resume restructuring, technical research, and document formatting.</p>
         </div>
-        <div class="tilt-card" data-tilt>
+        <div class="tilt-card">
             <h3>TECH SOLUTIONS</h3>
             <p>Mobile diagnostics and software troubleshooting.</p>
         </div>
-        <div class="tilt-card" data-tilt>
+        <div class="tilt-card">
             <h3>SPECIALIZED SERVICES</h3>
             <p>Website Development, Original Songwriting, and Musical arrangements.</p>
         </div>
-    </div>
+    </section>
 
-    <section id="contact" style="text-align: center; padding: 80px 0;">
-        <h2 style="font-family: 'Syncopate'; font-size: 1.2rem;">OPERATIONAL SECTOR</h2>
-        <p id="phone-num" onclick="copyNumber()" style="font-size: 1.2rem; letter-spacing: 3px; cursor: pointer; margin: 15px 0;">0991 636 1742</p>
+    <section id="contact">
+        <h2 style="font-family: 'Syncopate'; font-size: 1rem; letter-spacing: 5px; opacity: 0.6;">OPERATIONAL SECTOR</h2>
+        <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
         <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-glitch" style="display:inline-block; text-decoration:none;">MESSAGE FACEBOOK</a>
     </section>
 
@@ -193,7 +293,7 @@
     </div>
 
     <div id="ai-chat-btn" onclick="toggleChat()">
-        <img src="GL_Logo.png" alt="AI Assistant">
+        <img src="GL_Logo.png" alt="AI Assistant" style="width: 40px;">
     </div>
 
     <div id="chat-box">
@@ -209,24 +309,24 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
-        // --- 1. STABLE CURSOR LOGIC ---
+        // Cursor Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
-            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        // --- 2. 3D TILT ---
-        VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 12, speed: 400, glare: true, "max-glare": 0.2 });
+        // Initialize Tilt
+        VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
 
-        // --- 3. GALLERY SYSTEM ---
         function openGallery(imagesArray) {
             const overlay = document.getElementById('gallery');
             const gridContent = document.getElementById('gallery-grid-content');
             gridContent.innerHTML = '';
-            imagesArray.forEach((src) => {
+            imagesArray.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
-                img.onclick = (e) => e.stopPropagation();
+                img.style.animationDelay = (0.1 * index) + 's';
                 gridContent.appendChild(img);
             });
             overlay.classList.add('active');
@@ -238,18 +338,26 @@
             document.body.style.overflow = 'auto';
         }
 
-        // --- 4. GL KNOWLEDGE BASE ---
+        function copyNumber() {
+            const num = document.getElementById('phone-num').innerText;
+            navigator.clipboard.writeText(num);
+            alert("Number copied to clipboard!");
+        }
+
+        // --- AI LOGIC (PINAGSAMA AT INAYOS) ---
         const glKnowledge = {
-            "greetings": { keywords: ["hi", "hello", "boss", "maam", "sir", "ate", "kuya", "kamusta"], response: "System Active. Hello, Ma'am/Sir! Ano ang maitutulong ko sa iyo ngayon? <br><br>• Price <br>• Location <br>• Services <br>• Repair" },
-            "generic_price": { keywords: ["magkano", "how much", "presyo", "price"], response: "Para sa accurate na presyo, ano ang category? <br>• Prints <br>• Rush ID <br>• Stickers <br>• Tech Repair" },
-            "tech_prices": { keywords: ["repair", "ayos", "lcd", "battery", "laptop", "iphone", "samsung", "realme"], response: "Software: ₱300-₱800 <br>Hardware: ₱800-₱4,500 <br><b>FREE Check-up</b> sa aming shop!" },
-            "location": { keywords: ["saan", "location", "address", "muntinlupa"], response: "Nasa Muntinlupa City lang kami! <a href='#' style='color:white'>📍 OPEN GOOGLE MAPS</a>" },
-            "default": "Para sa ibang detalye, chat po tayo sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank' style='color:white'>Chat here!</a>"
+            "generic_price": { keywords: ["magkano", "how much", "presyo", "hm", "piso", "price", "amount"], response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Ma'am/Sir? <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b><br>• Prints<br>• Photo Develop<br>• Rush ID<br>• Stickers<br>• Lamination<br>• Tech Repair` },
+            "printing_prices": { keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"], response: `Rates:<br>• Document (B&W): ₱4.00 - ₱6.00<br>• Colored: ₱6.00 - ₱15.00<br>• Full Colored: ₱15.00 - ₱30.00` },
+            "id_instax_prices": { keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture"], response: `Rates:<br>• Rush ID Bundle: ₱35.00 - ₱100.00<br>• Instax Prints: ₱30.00 - ₱45.00<br>• Locket Size: ₱20.00 - ₱40.00` },
+            "tech_prices": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone"], response: `Technical:<br>• Software: ₱300.00 - ₱800.00<br>• Hardware: ₱800.00+ (Depends on model)<br><b>FREE Check-up!</b>` },
+            "location": { keywords: ["saan", "location", "address", "muntinlupa", "map"], response: "Nasa Muntinlupa City lang kami! <br><a href='#' style='color:white'>📍 OPEN GOOGLE MAPS</a>" },
+            "greetings": { keywords: ["hi", "hello", "boss", "maam", "sir", "ate"], response: "System Active. I am GL-AI. Hello! Ano ang maitutulong ko sa iyo ngayon?" },
+            "sino": { keywords: ["sino", "owner", "ry", "lria"], response: "The system is owned by <b>Ate Ry (Lria)</b> 👑" },
+            "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank' style='color:white'>Chat with us!</a>"
         };
 
-        // --- 5. AI CHAT LOGIC ---
         let violationCount = 0;
-        const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"];
+        const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo", "ulol"];
 
         function toggleChat() {
             const box = document.getElementById('chat-box');
@@ -261,41 +369,53 @@
         function askAI() {
             const input = document.getElementById('chat-input');
             const display = document.getElementById('chat-display');
-            const msg = input.value.toLowerCase().trim();
+            const rawMsg = input.value.trim();
+            const msg = rawMsg.toLowerCase();
+            
             if (!msg) return;
 
-            display.innerHTML += `<p class="user-msg">${input.value}</p>`;
-            
-            // Toxic Check
+            display.innerHTML += `<div class="user-msg">${rawMsg}</div>`;
+            input.value = "";
+
+            // Violation Check
             if (cursedWords.some(w => msg.includes(w))) {
                 violationCount++;
                 if (violationCount === 1) {
-                    display.innerHTML += `<p class="bot-msg" style="color:red">Warning: Be respectful.</p>`;
+                    display.innerHTML += `<p class="bot-msg" style="color:#ff4444">Warning. Be respectful.</p>`;
                 } else {
-                    document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20vh;'>SYSTEM BANNED</h1>";
-                    setTimeout(() => window.location.href = "https://google.com", 2000);
+                    document.body.innerHTML = `<div style="height:100vh; background:red; color:white; display:flex; align-items:center; justify-content:center; font-family:'Syncopate';">PROTOCOL BREACH. BANNED.</div>`;
+                    setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
                 }
-                input.value = ""; return;
+                return;
             }
 
-            // Response Logic
+            // Exit Logic
+            const exitCmds = ["exit", "close", "bye", "salamat"];
+            if (exitCmds.some(word => msg.includes(word))) {
+                display.innerHTML += `<p class="bot-msg">Noted! System closing...</p>`;
+                setTimeout(toggleChat, 1500);
+                return;
+            }
+
+            // Typing Animation
+            const tid = "t-" + Date.now();
+            display.innerHTML += `<p class="bot-msg" id="${tid}"><i>GL-AI is typing...</i></p>`;
+            display.scrollTop = display.scrollHeight;
+
+            // Matching
             let response = glKnowledge["default"];
             for (let key in glKnowledge) {
-                if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
+                if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
                     response = glKnowledge[key].response;
                     break;
                 }
             }
 
-            const typingId = "typing-" + Date.now();
-            display.innerHTML += `<p class="bot-msg" id="${typingId}"><i>Typing...</i></p>`;
-            display.scrollTop = display.scrollHeight;
-
             setTimeout(() => {
-                document.getElementById(typingId).innerHTML = `<b>GL-AI:</b><br>${response}`;
+                const el = document.getElementById(tid);
+                if (el) el.innerHTML = `<b>GL-AI:</b><br>${response}`;
                 display.scrollTop = display.scrollHeight;
-            }, 800);
-            input.value = "";
+            }, 1000);
         }
     </script>
 </body>
