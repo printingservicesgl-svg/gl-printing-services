@@ -500,6 +500,31 @@ const glKnowledge = {
         <br><br><i>Tip: Pwede rin kami mag-custom size para sa Lockets (15mm-20mm)!</i>`
     },
 
+    // --- SERVICES & PRICES ---
+    "printing_prices": {
+        keywords: ["print", "colored", "black and white", "b&w", "piso print", "document", "pa-print", "isa lang", "isang page"],
+        response: `Eto ang aming standard rates para sa prints:
+        <br>• Document (B&W): ₱4.00 - ₱6.00 (Short/A4/Long)
+        <br>• Document (Colored): ₱6.00 - ₱15.00 (Depende sa ink coverage)
+        <br>• Full Colored/Photo: ₱15.00 - ₱30.00 (High-quality glossy)
+        <br><br><b>Individual order?</b> Noted! Para magawa agad, message ka lang sa aming <a href='https://m.me/GLprinting.services/' target='_blank'>Messenger</a>.
+        <br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
+    },
+    
+    "id_instax_prices": {
+        keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic", "pa-picture", "pa-rush"],
+        response: `Para sa iyong mga memories at documents:
+        <br>• Rush ID Bundle: ₱35.00 - ₱100.00
+        <br>• Instax/Polaroid Prints: ₱30.00 - ₱45.00 per piece
+        <br>• Locket Size Photos: ₱20.00 - ₱40.00
+        <br><br><b>Okay po!</b> Para ma-edit at ma-print na natin, send niyo lang ang photo sa <a href='https://m.me/GLprinting.services/' target='_blank'>Messenger</a>. 📸`
+    },
+    
+    "avail_order": {
+        keywords: ["avail", "order", "magpagawa", "pabili", "pa-ayos", "okay po", "noted po"],
+        response: "Noted! Para ma-process at magawa na natin ang order mo, Ma'am/Sir, message lang po kayo sa aming Official FB Page: <br><br> <a href='https://m.me/GLprinting.services/' target='_blank'>📩 CLICK HERE TO MESSAGE US</a>"
+    },
+
     "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
 };
         
@@ -576,6 +601,8 @@ function askAI() {
         display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b><br>${response}</p>`;
         display.scrollTop = display.scrollHeight;
     }, 500);
+
+    
 
     </script>
 </body>
