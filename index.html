@@ -11,6 +11,8 @@
 :root {
     --neon-gold:#ffcc00;
     --deep:#0a0a0a;
+    --glass: rgba(255, 255, 255, 0.07);
+    --glass-border: rgba(255, 204, 0, 0.3);
 }
 
 /* GLOBAL */
@@ -36,7 +38,7 @@ header{
 .gl-logo{
     width: clamp(120px, 15vw, 150px);
     filter: drop-shadow(0 0 20px var(--neon-gold));
-    animation: float 4s ease-in-out infinite; /* Balik ang galaw */
+    animation: float 4s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -73,11 +75,11 @@ nav{
 nav a {
     color: white;
     text-decoration: none;
-    font-family: 'Syncopate', sans-serif; /* Applied font */
-    font-weight: 300; /* Bold weight for that 'Nexus' look */
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 300;
     font-size: 0.6rem; 
-    letter-spacing: 3px; /* Increased spacing to match the image */
-    text-transform: uppercase; /* Ensures All-Caps */
+    letter-spacing: 3px;
+    text-transform: uppercase;
     transition: 0.3s;
 }
 
@@ -113,82 +115,151 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 .tilt-card p { font-size: 0.9rem; color: #888; line-height: 1.5; }
 
 /* CHAT BUTTON & BOX */
-#ai-chat-btn{
-    position:fixed;
-    bottom:90px;
-    right:25px;
-    width:60px;height:60px;
-    border:2px solid var(--neon-gold);
-    background: var(--deep);
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    cursor:pointer;
-    z-index: 2000;
-    box-shadow: 0 0 15px rgba(255,204,0,0.3);
+#ai-chat-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px; height: 65px;
+    background: #0a0a0a;
+    border: 2px solid var(--neon-gold);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 3000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,204,0,0.2);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#chat-box{
-    position:fixed;
-    bottom:165px;
-    right:25px;
-    width:min(350px, 90vw);
-    height:450px;
-    background:#0a0a0a;
-    border:1px solid var(--neon-gold);
-    display:none;
-    flex-direction:column;
-    border-radius:15px;
-    z-index: 2000;
+#ai-chat-btn:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 25px var(--neon-gold); }
+
+#chat-box {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    width: min(380px, 90vw);
+    height: 520px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    display: none; /* Controlled by JS */
+    flex-direction: column;
+    z-index: 3000;
     overflow: hidden;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    transform: translateY(20px) scale(0.9);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Chat Header */
+/* Added active class for animation */
+#chat-box.active { 
+    display: flex; 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+}
+
 #chat-header {
-    background: var(--neon-gold);
+    background: linear-gradient(90deg, var(--neon-gold), #ffaa00);
     color: black;
-    padding: 15px;
-    font-family: 'Syncopate', sans-serif; /* Match the header font */
-    font-weight: 600;
+    padding: 18px;
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 700;
     font-size: 11px;
     letter-spacing: 2px;
     text-align: center;
-    text-transform: uppercase;
 }
 
-/* AI Welcome Message/Bot Bubbles */
-.bot-bubble {
-    background: rgba(255, 204, 0, 0.05);
-    border-left: 3px solid var(--neon-gold);
+.quick-actions {
+    display: flex;
+    gap: 10px;
     padding: 12px;
-    color: white;
-    font-family: 'Space Grotesk', sans-serif; /* Keep Grotesk for readability */
-    line-height: 1.5;
+    background: rgba(255,255,255,0.03);
 }
 
-/* Send Button */
-.send-btn {
-    padding: 10px 20px;
-    background: var(--neon-gold);
-    border: none;
-    cursor: pointer;
-    font-family: 'Syncopate', sans-serif; /* Match the button font */
+.action-btn {
+    flex: 1;
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,204,0,0.2);
+    color: #fff;
+    font-family: 'Space Grotesk';
     font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    border-radius: 8px;
-    text-transform: uppercase;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
 }
-#chat-display{ flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
 
-.bot-bubble{ background:rgba(255,204,0,0.05); border-left:3px solid var(--neon-gold); padding:10px; font-size:13px; color: #ccc; }
-.user-msg{ align-self:flex-end; background:#222; padding:8px 12px; border-radius:12px 12px 0 12px; font-size: 13px; }
+.action-btn:hover { background: var(--neon-gold); color: black; transform: translateY(-3px); }
 
-.chat-input-area{ display:flex; border-top:1px solid rgba(255,255,255,0.1); }
-#chat-input{ flex:1; padding:15px; background:transparent; border:none; color:white; outline:none; }
-.send-btn{ padding:0 20px; background:var(--neon-gold); border:none; cursor:pointer; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; }
+#chat-display { 
+    flex: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    perspective: 1000px;
+}
+
+.bot-bubble { 
+    align-self: flex-start;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 16px; 
+    font-size: 13px; 
+    color: #eee; 
+    border-radius: 18px 18px 18px 4px;
+    animation: slideInLeft 0.4s ease forwards;
+}
+
+.user-msg { 
+    align-self: flex-end; 
+    background: linear-gradient(135deg, var(--neon-gold), #ffaa00);
+    color: black;
+    padding: 10px 16px; 
+    border-radius: 18px 18px 4px 18px; 
+    font-size: 13px; 
+    animation: slideInRight 0.4s ease forwards;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px) rotateY(20deg); }
+    to { opacity: 1; transform: translateX(0) rotateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px) rotateY(-20deg); }
+    to { opacity: 1; transform: translateX(0) rotateY(0); }
+}
+
+.chat-input-area { 
+    padding: 15px;
+    display: flex; 
+    gap: 10px;
+    background: rgba(0,0,0,0.3);
+}
+
+#chat-input { 
+    flex: 1; 
+    padding: 12px 18px; 
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid rgba(255,255,255,0.1); 
+    border-radius: 12px;
+    color: white; 
+    outline: none; 
+}
+
+.send-btn { 
+    width: 45px; height: 45px;
+    background: var(--neon-gold); 
+    border: none; 
+    border-radius: 12px;
+    cursor: pointer; 
+    font-weight: bold;
+}
 
 /* UTILS */
 .btn-glitch { margin-top:20px; padding:15px 40px; background:transparent; border:2px solid var(--neon-gold); color:var(--neon-gold); font-family:'Syncopate'; cursor:pointer; transition:0.3s; }
@@ -248,22 +319,29 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 </section>
 
 <div id="ai-chat-btn" onclick="toggleChat()">
-    <img src="GL_Logo.png" style="width:35px;">
+    <img src="GL_Logo.png" style="width:35px;" alt="AI">
 </div>
 
 <div id="chat-box">
     <div id="chat-header">GL SYSTEM AI</div>
-    <div id="chat-display">
-        <div class="bot-bubble">System Active. I am GL-AI. (Try keywords: Price, Location, Repair, Owner)</div>
+    
+    <div class="quick-actions">
+        <button class="action-btn" onclick="quickAsk('price')">PRICING</button>
+        <button class="action-btn" onclick="quickAsk('repair')">REPAIR</button>
+        <button class="action-btn" onclick="quickAsk('location')">LOCATION</button>
     </div>
+
+    <div id="chat-display">
+        <div class="bot-bubble"><b>SYSTEM:</b> Online. Ready for commands.</div>
+    </div>
+    
     <div class="chat-input-area">
-        <input id="chat-input" placeholder="Type keyword...">
-        <button class="send-btn" onclick="askAI()">SEND</button>
+        <input id="chat-input" placeholder="Enter keyword..." autocomplete="off">
+        <button class="send-btn" onclick="askAI()">></button>
     </div>
 </div>
 
 <script>
-// --- AI KNOWLEDGE BASE (FROM OLD CODE) ---
 const glKnowledge = {
     "generic_price": { keywords: ["magkano", "how much", "presyo", "hm", "price"], response: "Para sa accurate na presyo, ano ang ipapagawa mo? <br><br><b>Categories:</b><br>• Documents (₱4-₱30)<br>• Rush ID (₱35-₱100)<br>• Locket Size (₱20-₱40)<br>• Tech Repair (Checkup is FREE)" },
     "tech": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone"], response: "Technical Sector:<br>• Software: ₱300 - ₱800<br>• Hardware: Depends on model.<br><b>FREE Check-up sa shop!</b>" },
@@ -275,9 +353,25 @@ const glKnowledge = {
 let violationCount = 0;
 const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo"];
 
-function toggleChat(){
-    let box=document.getElementById("chat-box");
-    box.style.display=box.style.display==="flex"?"none":"flex";
+// Fixed Toggle Logic for 3D Window
+function toggleChat() {
+    const chatBox = document.getElementById("chat-box");
+    chatBox.classList.toggle("active");
+    
+    if(chatBox.classList.contains("active")) {
+        chatBox.style.display = "flex";
+    } else {
+        // Delay hiding display until animation finishes
+        setTimeout(() => { 
+            if(!chatBox.classList.contains("active")) chatBox.style.display = "none"; 
+        }, 400);
+    }
+}
+
+// Added missing quickAsk function
+function quickAsk(key) {
+    document.getElementById("chat-input").value = key;
+    askAI();
 }
 
 function askAI(){
@@ -291,7 +385,6 @@ function askAI(){
     display.innerHTML+=`<div class="user-msg">${rawMsg}</div>`;
     input.value="";
 
-    // Violation Check
     if (cursedWords.some(w => msg.includes(w))) {
         violationCount++;
         if (violationCount === 1) {
@@ -303,7 +396,6 @@ function askAI(){
         return;
     }
 
-    // Matching Logic
     let response = glKnowledge["default"];
     for (let key in glKnowledge) {
         if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
@@ -312,7 +404,6 @@ function askAI(){
         }
     }
 
-    // Typing delay
     setTimeout(()=>{
         display.innerHTML+=`<div class="bot-bubble"><b>GL-AI:</b><br>${response}</div>`;
         display.scrollTop=display.scrollHeight;
