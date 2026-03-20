@@ -1,210 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLP NEXUS | Muntinlupa</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@0.9.431/build/spline-viewer.js"></script>
-    
-    <style>
-        :root {
-            --neon-gold: #ffcc00;
-            --bg-black: #050505;
-            --glass: rgba(10, 10, 10, 0.8);
-            --border: rgba(255, 204, 0, 0.2);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg-black); color: white; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+<title>GL PRINTS | Muntinlupa City</title>
+<link rel="icon" type="image/png" href="GL_Logo.png">
 
-        /* LAYER 1: 3D BACKGROUND (Fixed & Bottom) */
-        #bg-3d {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            pointer-events: none; /* Para ma-click mo pa rin yung text sa harap */
-        }
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/scrollreveal"></script>
 
-        /* LAYER 2: SCROLLABLE CONTENT (Middle) */
-        #main-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            min-height: 100vh;
-        }
+<style>
+:root {
+    --neon-gold: #ffcc00;
+    --deep-ads: #0a0a0a;
+    --text-gray: #888;
+    --glass: rgba(255,255,255,0.03);
+    --glass-border: rgba(255,255,255,0.1);
+}
 
-        header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            pointer-events: none; /* Allow click through to 3D if needed */
-        }
+* { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
 
-        .hero-text { pointer-events: auto; }
+body {
+    background: var(--deep-ads);
+    color:white;
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+}
 
-        h1 { font-family: 'Syncopate'; font-size: clamp(2.5rem, 8vw, 5rem); color: var(--neon-gold); letter-spacing: 10px; }
+/* PARTICLES */
+#particles {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+}
 
-        /* LAYER 3: UI OVERLAYS (Navigation & Chat - Top) */
-        nav {
-            position: fixed;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%);
-            background: var(--glass);
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            display: flex; gap: 20px;
-            z-index: 100; /* Pinaka-ibabaw */
-            backdrop-filter: blur(10px);
-        }
+/* CURSOR */
+#cursor {
+    width:20px;height:20px;border:2px solid var(--neon-gold);
+    border-radius:50%;position:fixed;pointer-events:none;z-index:9999;
+    display:none;
+}
+@media(min-width:1024px){
+    *{cursor:none;}
+    #cursor{display:block;}
+}
 
-        nav a { color: white; text-decoration: none; font-size: 10px; font-family: 'Syncopate'; }
+/* GRID BG */
+.grid-bg{
+    position:fixed;width:100%;height:100%;
+    background-image:
+    linear-gradient(rgba(255,204,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,204,0,0.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    z-index:-1;
+}
 
-        /* AI CHAT UI FIX */
-        #chat-trigger {
-            position: fixed;
-            bottom: 85px; right: 25px;
-            width: 55px; height: 55px;
-            background: var(--neon-gold);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 101;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-        }
+/* HEADER */
+header{
+    height:100vh;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;
+    background: radial-gradient(circle, rgba(255,204,0,0.08), black);
+}
 
-        #chat-window {
-            position: fixed;
-            bottom: 150px; right: 25px;
-            width: min(350px, 85vw);
-            height: 450px;
-            background: var(--glass);
-            border: 1px solid var(--neon-gold);
-            border-radius: 20px;
-            display: none; flex-direction: column;
-            z-index: 102;
-            backdrop-filter: blur(20px);
-            overflow: hidden;
-        }
+.gl-logo{
+    width:120px;
+    filter:drop-shadow(0 0 20px var(--neon-gold));
+    animation:float 4s infinite;
+}
+@keyframes float{
+    50%{transform:translateY(-15px);}
+}
 
-        .chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; }
-        #chat-logs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bot { color: var(--neon-gold); font-size: 14px; border-left: 2px solid var(--neon-gold); padding-left: 10px; }
-        .user { align-self: flex-end; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; font-size: 14px; }
+h1{
+    font-family:'Syncopate';
+    font-size:4rem;
+    letter-spacing:10px;
+    background:linear-gradient(to right,#fff,var(--neon-gold),#fff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
 
-        .input-box { display: flex; border-top: 1px solid var(--border); }
-        input { flex: 1; background: transparent; border: none; color: white; padding: 15px; outline: none; }
-        #send-btn { background: var(--neon-gold); border: none; padding: 0 20px; cursor: pointer; font-family: 'Syncopate'; font-size: 10px; }
+/* NAV */
+nav{
+    position:fixed;bottom:25px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,0.7);padding:10px 30px;border-radius:50px;
+    display:flex;gap:25px;z-index:1000;
+}
+nav a{
+    color:white;text-decoration:none;font-size:12px;
+    position:relative;
+}
+nav a::after{
+    content:"";position:absolute;width:0;height:2px;
+    background:var(--neon-gold);bottom:-5px;left:0;
+    transition:0.3s;
+}
+nav a:hover::after{width:100%;}
 
-        /* Shards Grid */
-        .grid {
-            max-width: 1100px;
-            margin: 50px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
+/* CONTAINER */
+.container{
+    padding:80px 5%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
 
-        .shard {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 40px 20px;
-            border-radius: 20px;
-            transition: 0.3s;
-            text-align: center;
-        }
+/* CARD */
+.tilt-card{
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    padding:30px;border-radius:20px;text-align:center;
+    transition:0.4s;
+}
+.tilt-card:hover{
+    transform:translateY(-10px);
+    border-color:var(--neon-gold);
+    box-shadow:0 0 40px rgba(255,204,0,0.3);
+}
 
-        .shard:hover { border-color: var(--neon-gold); transform: translateY(-5px); }
-        .shard h3 { color: var(--neon-gold); font-family: 'Syncopate'; font-size: 1rem; margin-bottom: 10px; }
+/* BUTTON */
+.btn-glitch{
+    padding:15px 30px;
+    background:var(--neon-gold);
+    border:none;
+    font-family:'Syncopate';
+    cursor:pointer;
+}
 
-    </style>
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:1s;}
+.reveal.active{opacity:1;transform:translateY(0);}
+
+/* CHAT */
+#ai-chat-btn{
+    position:fixed;bottom:90px;right:25px;width:60px;height:60px;
+    border:2px solid var(--neon-gold);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+}
+#chat-box{
+    position:fixed;bottom:160px;right:25px;width:320px;height:420px;
+    background:black;border:1px solid var(--neon-gold);
+    display:none;flex-direction:column;
+}
+.bot-msg{color:var(--neon-gold);}
+.user-msg{align-self:flex-end;}
+
+.quick-btns button{
+    margin:3px;padding:5px;
+    border:1px solid var(--neon-gold);
+    background:transparent;color:var(--neon-gold);
+    cursor:pointer;
+}
+.quick-btns button:hover{
+    background:var(--neon-gold);color:black;
+}
+</style>
 </head>
+
 <body>
 
-    <spline-viewer id="bg-3d" url="https://prod.spline.design/bWwXl30L-9U6M6fM/scene.splinecode"></spline-viewer>
+<canvas id="particles"></canvas>
+<div id="cursor"></div>
+<div class="grid-bg"></div>
 
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#services">Services</a>
-        <a href="https://m.me/GLprinting.services/" target="_blank">Contact</a>
-    </nav>
+<nav>
+<a href="#home">Home</a>
+<a href="#services">Services</a>
+<a href="#contact">Contact</a>
+</nav>
 
-    <div id="chat-trigger" onclick="toggleChat()">🤖</div>
-    
-    <div id="chat-window">
-        <div class="chat-header">GL SYSTEM AI</div>
-        <div id="chat-logs">
-            <p class="bot">System online. What is your request?</p>
-        </div>
-        <div class="input-box">
-            <input type="text" id="chat-in" placeholder="Type keyword...">
-            <button id="send-btn" onclick="talkToAI()">GO</button>
-        </div>
-    </div>
+<header id="home">
+<img src="GL_Logo.png" class="gl-logo">
+<h1>GL PRINTS</h1>
+<p>EST. 2025 | MUNTINLUPA CITY</p>
+<button class="btn-glitch" onclick="location.href='#services'">ENTER</button>
+</header>
 
-    <main id="main-content">
-        <header id="home">
-            <div class="hero-text">
-                <h1>GL PRINTS</h1>
-                <p style="letter-spacing: 5px; opacity: 0.6;">3D TECH & PRINT SOLUTIONS</p>
-            </div>
-        </header>
+<section id="services" class="container reveal">
+<div class="tilt-card"><h3>PRINTS</h3><p>High quality printing</p></div>
+<div class="tilt-card"><h3>DESIGN</h3><p>Creative layouts</p></div>
+<div class="tilt-card"><h3>TECH</h3><p>Repairs & solutions</p></div>
+</section>
 
-        <section class="grid" id="services">
-            <div class="shard">
-                <h3>PRINTS & MEDIA</h3>
-                <p>Events, Stickers, Photo Develop.</p>
-            </div>
-            <div class="shard">
-                <h3>TECH SOLUTIONS</h3>
-                <p>Laptop/Phone Repair & Reformat.</p>
-            </div>
-            <div class="shard">
-                <h3>DIGITAL OFFICE</h3>
-                <p>E-Gov, Encoding, Resume Assist.</p>
-            </div>
-        </section>
-    </main>
+<section id="contact" class="reveal" style="text-align:center;padding:80px;">
+<h2>CONTACT</h2>
+<p onclick="copyNumber()">0991 636 1742</p>
+</section>
 
-    <script>
-        function toggleChat() {
-            const win = document.getElementById('chat-window');
-            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
-        }
+<!-- CHAT -->
+<div id="ai-chat-btn" onclick="toggleChat()">💬</div>
 
-        const brain = {
-            "price": "Check our price list: <br>• B&W: ₱4-₱6<br>• Colored: ₱6-₱30<br>• Stickers: ₱50/sheet",
-            "repair": "Tech Check: ₱300-₱800 software, Hardware varies. FREE Checkup!",
-            "location": "Muntinlupa City Sector. Open for walk-ins!",
-            "default": "Command not recognized. Chat us on Messenger for human support."
-        };
+<div id="chat-box">
+<div>GL AI</div>
+<div id="chat-display">
+<p class="bot-msg">
+Welcome 🚀
+<div class="quick-btns">
+<button onclick="quickAsk('price')">Price</button>
+<button onclick="quickAsk('services')">Services</button>
+<button onclick="quickAsk('location')">Location</button>
+</div>
+</p>
+</div>
+<input id="chat-input">
+<button onclick="askAI()">Send</button>
+</div>
 
-        function talkToAI() {
-            const input = document.getElementById('chat-in');
-            const logs = document.getElementById('chat-logs');
-            const val = input.value.toLowerCase();
-            if(!val) return;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
-            logs.innerHTML += `<div class="user">${input.value}</div>`;
-            input.value = "";
+<script>
+// CURSOR
+document.addEventListener("mousemove",e=>{
+cursor.style.left=e.clientX+"px";
+cursor.style.top=e.clientY+"px";
+});
 
-            let reply = brain["default"];
-            if(val.includes("magkano") || val.includes("price")) reply = brain["price"];
-            if(val.includes("sira") || val.includes("repair")) reply = brain["repair"];
-            if(val.includes("saan") || val.includes("location")) reply = brain["location"];
+// PARTICLES
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-            setTimeout(() => {
-                logs.innerHTML += `<div class="bot"><b>AI:</b><br>${reply}</div>`;
-                logs.scrollTop = logs.scrollHeight;
-            }, 600);
-        }
+let p=[];
+for(let i=0;i<80;i++){
+p.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,dx:1,dy:1});
+}
 
-        document.getElementById('chat-in').addEventListener('keydown', (e) => { if (e.key === "Enter") talkToAI(); });
-    </script>
+function anim(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+p.forEach(a=>{
+a.x+=a.dx;a.y+=a.dy;
+ctx.fillStyle="#ffcc00";
+ctx.fillRect(a.x,a.y,2,2);
+});
+requestAnimationFrame(anim);
+}
+anim();
+
+// REVEAL
+window.addEventListener("scroll",()=>{
+document.querySelectorAll(".reveal").forEach(el=>{
+if(el.getBoundingClientRect().top < window.innerHeight-100){
+el.classList.add("active");
+}
+});
+});
+
+// CHAT
+function toggleChat(){
+let box=document.getElementById("chat-box");
+box.style.display=box.style.display==="flex"?"none":"flex";
+}
+
+function quickAsk(t){
+document.getElementById("chat-input").value=t;
+askAI();
+}
+
+function askAI(){
+let input=document.getElementById("chat-input");
+let msg=input.value;
+let display=document.getElementById("chat-display");
+
+display.innerHTML+=`<div class="user-msg">${msg}</div>`;
+display.innerHTML+=`<div class="bot-msg">Processing...</div>`;
+input.value="";
+}
+
+// COPY
+function copyNumber(){
+navigator.clipboard.writeText("09916361742");
+alert("Copied!");
+}
+
+// TILT
+VanillaTilt.init(document.querySelectorAll(".tilt-card"));
+</script>
+
 </body>
 </html>
