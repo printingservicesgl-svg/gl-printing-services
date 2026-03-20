@@ -204,6 +204,23 @@
     box-shadow: -3px 0px 0px #00fff2, 3px 0px 0px #ff00c1;
     letter-spacing: 4px; /* Dahan-dahang lalawak yung letters */
 }
+.phone-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    transition: 0.3s ease;
+    opacity: 0.8;
+    color: white;
+    display: inline-block;
+    margin-top: 20px;
+    letter-spacing: 3px;
+}
+
+.phone-link:hover {
+    opacity: 1;
+    color: var(--neon-gold);
+    text-shadow: 0 0 15px var(--neon-gold);
+    transform: translateY(-2px);
+}
         
 
     </style>
@@ -285,6 +302,43 @@
             glare: true,
             "max-glare": 0.5,
         });
+        function copyNumber() {
+    const number = "0991 636 1742";
+    navigator.clipboard.writeText(number).then(() => {
+
+        function copyNumber() {
+    const number = "0991 636 1742";
+    
+    // Ginagamit ang modern Clipboard API
+    navigator.clipboard.writeText(number).then(() => {
+        const phoneLink = document.querySelector('.phone-link');
+        const originalText = phoneLink.innerText;
+        
+        // Visual feedback para sa customer
+        phoneLink.innerText = "COPIED TO CLIPBOARD!";
+        phoneLink.style.color = "#00ff00"; // Panandaliang magiging green
+        
+        // Babalik sa dating text pagkatapos ng 2 seconds
+        setTimeout(() => {
+            phoneLink.innerText = originalText;
+            phoneLink.style.color = ""; 
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+        // Papalitan natin ang text saglit para malaman nilang copied na
+        const phoneLink = document.querySelector('.phone-link');
+        const originalText = phoneLink.innerText;
+        phoneLink.innerText = "COPIED TO CLIPBOARD!";
+        phoneLink.style.color = "#00ff00"; // Gagawing green saglit
+
+        setTimeout(() => {
+            phoneLink.innerText = originalText;
+            phoneLink.style.color = "white"; // Babalik sa dati
+        }, 2000);
+    });
+}
     </script>
 </body>
 </html>
