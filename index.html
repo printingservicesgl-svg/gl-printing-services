@@ -158,6 +158,19 @@
             transform: scale(1.1);
             box-shadow: -5px 0px 0px #00fff2, 5px 0px 0px #ff00c1;
         }
+
+        .phone-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    transition: 0.3s;
+    opacity: 0.8;
+}
+
+.phone-link:hover {
+    opacity: 1;
+    color: var(--neon-gold);
+    text-shadow: 0 0 10px var(--neon-gold);
+}
         .status-container {
     display: flex;
     align-items: center;
@@ -187,11 +200,16 @@
     box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
     background: rgba(255, 204, 0, 0.05); /* Bahagyang iilaw ang background */
 }
+.btn-glitch:hover {
+    box-shadow: -3px 0px 0px #00fff2, 3px 0px 0px #ff00c1;
+    letter-spacing: 4px; /* Dahan-dahang lalawak yung letters */
+}
         
 
     </style>
 </head>
 <body>
+    
 
     <div id="cursor"></div>
     <div class="grid-bg"></div>
