@@ -257,7 +257,39 @@ nav a:hover {
     text-shadow: 0 0 15px var(--neon-gold);
     transform: translateY(-2px);
 }
-        
+       
+/* Full-screen Overlay */
+.gallery-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    cursor: zoom-out;
+}
+
+.gallery-content {
+    max-width: 80%;
+    max-height: 80%;
+    transform: scale(0.5);
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid var(--neon-gold);
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.5);
+}
+
+.gallery-overlay.active {
+    display: flex;
+}
+
+.gallery-overlay.active .gallery-content {
+    transform: scale(1);
+}
 
     </style>
 </head>
@@ -287,10 +319,11 @@ nav a:hover {
     </header>
 
     <div class="container" id="services">
-        <div class="tilt-card" data-tilt>
-            <h3>EVENT & MEDIA PRINTS</h3>
-            <p>Premium bundles for Birthdays, Christening, and Weddings. High-resolution stickers, Instax, and custom event stationery.</p>
-        </div>
+        <div class="tilt-card" data-tilt onclick="openGallery('img/locket-samples.jpg')">
+        <h3>EVENT & MEDIA PRINTS</h3>
+        <p>Click to view our sample locket prints and stickers.</p>
+         <p>Premium bundles for Birthdays, Christening, and Weddings. High-resolution stickers, Instax, and custom event stationery.</p>
+    </div>
         <div class="tilt-card" data-tilt>
             <h3>DIGITAL DESIGN</h3>
             <p>Professional layouts for business and personal branding.</p>
