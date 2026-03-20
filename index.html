@@ -15,30 +15,15 @@
     --deep:#0a0a0a;
 }
 
+/* GLOBAL */
 *{margin:0;padding:0;box-sizing:border-box;}
-
 body{
-    background: radial-gradient(circle at top, #111 0%, #0a0a0a 70%);
+    background:var(--deep);
     color:white;
     font-family:'Space Grotesk';
 }
 
-/* FLOATING PARTICLES */
-body::before{
-    content:"";
-    position:fixed;
-    width:100%;height:100%;
-    background: radial-gradient(circle, rgba(255,204,0,0.15) 1px, transparent 1px);
-    background-size:40px 40px;
-    opacity:0.15;
-    animation:moveBg 20s linear infinite;
-}
-
-@keyframes moveBg{
-    from{transform:translateY(0);} 
-    to{transform:translateY(40px);} 
-}
-
+/* HEADER */
 header{
     height:100vh;
     display:flex;
@@ -48,39 +33,13 @@ header{
     text-align:center;
 }
 
-/* LOGO COOL HOVER */
+/* LOGO */
 .gl-logo{
     width:130px;
-    transition:0.5s;
+    filter:drop-shadow(0 0 20px var(--neon-gold));
 }
 
-.gl-logo:hover{
-    transform:scale(1.1) rotate(3deg);
-    filter:drop-shadow(0 0 30px var(--neon-gold));
-}
-
-.gl-logo::after{}
-
-.logo-wrap{
-    position:relative;
-}
-
-.logo-wrap::before{
-    content:"";
-    position:absolute;
-    width:200px;height:200px;
-    background:radial-gradient(circle, rgba(255,204,0,0.4), transparent 70%);
-    top:50%;left:50%;
-    transform:translate(-50%,-50%) scale(0);
-    transition:0.5s;
-    border-radius:50%;
-    z-index:-1;
-}
-
-.logo-wrap:hover::before{
-    transform:translate(-50%,-50%) scale(1);
-}
-
+/* TITLE */
 h1{
     font-family:'Syncopate';
     font-size:4rem;
@@ -90,6 +49,7 @@ h1{
     -webkit-text-fill-color:transparent;
 }
 
+/* NAV (IMPROVED HOVER) */
 nav{
     position:fixed;
     bottom:25px;
@@ -108,12 +68,31 @@ nav a{
     text-decoration:none;
     font-size:0.8rem;
     position:relative;
+    transition:0.3s;
+}
+
+nav a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-5px;
+    width:0%;
+    height:2px;
+    background:var(--neon-gold);
+    transition:0.4s;
+    box-shadow:0 0 10px var(--neon-gold);
 }
 
 nav a:hover{
     color:var(--neon-gold);
+    text-shadow:0 0 10px var(--neon-gold);
 }
 
+nav a:hover::after{
+    width:100%;
+}
+
+/* ENTER BUTTON (FIXED DESIGN) */
 .btn-glitch{
     margin-top:20px;
     padding:15px 40px;
@@ -122,13 +101,33 @@ nav a:hover{
     color:var(--neon-gold);
     font-family:'Syncopate';
     cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition:0.3s;
+}
+
+.btn-glitch::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:var(--neon-gold);
+    top:0;
+    left:-100%;
+    transition:0.4s;
+    z-index:-1;
+}
+
+.btn-glitch:hover::before{
+    left:0;
 }
 
 .btn-glitch:hover{
-    background:var(--neon-gold);
     color:black;
+    box-shadow:0 0 20px var(--neon-gold);
 }
 
+/* SERVICES */
 .container{
     padding:80px 5%;
     display:grid;
@@ -136,13 +135,11 @@ nav a:hover{
     gap:25px;
 }
 
-/* CARDS */
 .tilt-card{
     background:rgba(255,255,255,0.03);
     padding:25px;
     border-radius:15px;
     border:1px solid rgba(255,255,255,0.1);
-    cursor:pointer;
     transition:0.4s;
 }
 
@@ -152,40 +149,25 @@ nav a:hover{
     box-shadow:0 0 25px rgba(255,204,0,0.3);
 }
 
-.tilt-card p{
-    font-size:13px;
-    opacity:0.7;
-    margin-top:10px;
-}
-
-/* MODAL */
-.modal{
-    position:fixed;
-    top:0;left:0;
-    width:100%;height:100%;
-    background:rgba(0,0,0,0.9);
-    display:none;
-    justify-content:center;
-    align-items:center;
-}
-
-.modal img{
-    width:80%;
-    max-width:600px;
-    border-radius:10px;
-}
-
+/* CONTACT */
 #contact{text-align:center;padding:80px;}
 #phone-num{color:var(--neon-gold);cursor:pointer;margin-bottom:15px;}
 
+/* FB BUTTON */
 .fb-btn{
     padding:12px 25px;
     background:#1877f2;
     border:none;
     border-radius:25px;
     color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+.fb-btn:hover{
+    transform:scale(1.1);
 }
 
+/* CHAT BUTTON */
 #ai-chat-btn{
     position:fixed;
     bottom:90px;
@@ -199,6 +181,7 @@ nav a:hover{
     cursor:pointer;
 }
 
+/* CHAT BOX */
 #chat-box{
     position:fixed;
     bottom:160px;
@@ -212,12 +195,17 @@ nav a:hover{
     border-radius:15px;
 }
 
+/* CHAT DISPLAY */
 #chat-display{
     flex:1;
     padding:15px;
     overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
+/* MESSAGES */
 .bot-bubble{
     background:rgba(255,204,0,0.08);
     border:1px solid var(--neon-gold);
@@ -234,8 +222,10 @@ nav a:hover{
     border-radius:10px;
 }
 
+/* INPUT AREA (IMPROVED) */
 .chat-input-area{
     display:flex;
+    border-top:1px solid rgba(255,255,255,0.1);
 }
 
 #chat-input{
@@ -246,10 +236,15 @@ nav a:hover{
     color:white;
 }
 
+#chat-input:focus{
+    outline:none;
+}
+
 .send-btn{
     padding:12px;
     background:var(--neon-gold);
     border:none;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -263,40 +258,18 @@ nav a:hover{
 </nav>
 
 <header id="home">
-<div class="logo-wrap">
 <img src="GL_Logo.png" class="gl-logo">
-</div>
 <h1>GL PRINTS</h1>
 <p>EST. 2025 | MUNTINLUPA CITY</p>
 <button class="btn-glitch" onclick="location.href='#services'">ENTER SYSTEM</button>
 </header>
 
 <section id="services" class="container">
-<div class="tilt-card" onclick="openModal('img1.jpg')">
-<h3>EVENT & MEDIA PRINTS</h3>
-<p>Tarpaulin, invitations, and event materials.</p>
-</div>
-
-<div class="tilt-card" onclick="openModal('img2.jpg')">
-<h3>DIGITAL DESIGN</h3>
-<p>Logos, layouts, and creative branding.</p>
-</div>
-
-<div class="tilt-card" onclick="openModal('img3.jpg')">
-<h3>E-GOV</h3>
-<p>Online assistance for government services.</p>
-</div>
-
-<div class="tilt-card" onclick="openModal('img4.jpg')">
-<h3>TECH ASSIST</h3>
-<p>Software, printing setup, and troubleshooting.</p>
-</div>
+<div class="tilt-card"><h3>EVENT & MEDIA PRINTS</h3></div>
+<div class="tilt-card"><h3>DIGITAL DESIGN</h3></div>
+<div class="tilt-card"><h3>E-GOV</h3></div>
+<div class="tilt-card"><h3>TECH ASSIST</h3></div>
 </section>
-
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal()">
-<img id="modal-img">
-</div>
 
 <section id="contact">
 <h2>CONTACT</h2>
@@ -307,6 +280,7 @@ Visit our Facebook
 </button>
 </section>
 
+<!-- CHAT -->
 <div id="ai-chat-btn" onclick="toggleChat()">
 <img src="GL_Logo.png" style="width:35px;">
 </div>
@@ -332,31 +306,29 @@ function askAI(){
 let input=document.getElementById("chat-input");
 let msg=input.value;
 let display=document.getElementById("chat-display");
+
 if(!msg) return;
+
 display.innerHTML+=`<div class="user-msg">${msg}</div>`;
+
 setTimeout(()=>{
-display.innerHTML+=`<div class="bot-bubble">Message us on Facebook for full details.</div>`;
+display.innerHTML+=`<div class="bot-bubble">Please message us on Facebook for full details.</div>`;
 display.scrollTop=display.scrollHeight;
 },500);
+
 input.value="";
 }
 
+// ENTER KEY SEND
 document.getElementById("chat-input").addEventListener("keypress",function(e){
-if(e.key==="Enter"){askAI();}
+if(e.key==="Enter"){
+askAI();
+}
 });
 
 function copyNumber(){
 navigator.clipboard.writeText("09916361742");
 alert("Copied!");
-}
-
-function openModal(img){
-document.getElementById("modal").style.display="flex";
-document.getElementById("modal-img").src=img;
-}
-
-function closeModal(){
-document.getElementById("modal").style.display="none";
 }
 </script>
 
