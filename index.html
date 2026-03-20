@@ -427,6 +427,14 @@ function askAI() {
     }, 600);
     input.value = "";
 }
+
+// ENTER KEY PROTOCOL - Master Ry Custom
+document.getElementById('chat-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault(); // Iwasan ang pag-refresh ng page
+        askAI(); // Tatawagin ang function na pang-send
+    }
+});
     </script>
 </body>
 </html>
