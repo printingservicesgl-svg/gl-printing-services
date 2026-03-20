@@ -5,251 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GL PRINTS | Muntinlupa City</title> 
     <link rel="icon" type="image/png" href="GL_Logo.png">
-    
-    </head>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --neon-gold: #ffcc00;
-            --deep-ads: #0a0a0a;
-            --text-gray: #888;
+            --deep-ads: #050505;
+            --glass: rgba(15, 15, 15, 0.8);
+            --card-shadow: 20px 20px 60px #000, -5px -5px 30px rgba(255,204,0,0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
 
         body {
             background-color: var(--deep-ads);
             color: white;
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
         }
 
+        /* --- REALISTIC CURSOR --- */
         #cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--neon-gold);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s ease;
+            width: 12px; height: 12px; background: var(--neon-gold);
+            border-radius: 50%; position: fixed; pointer-events: none;
+            z-index: 9999; mix-blend-mode: difference;
+            box-shadow: 0 0 15px var(--neon-gold); transition: transform 0.1s ease;
         }
 
+        /* --- 3D GRID FLOOR --- */
         .grid-bg {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 204, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 204, 0, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,204,0,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,204,0,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px);
+            opacity: 0.5;
         }
 
-        header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: radial-gradient(circle, rgba(255,204,0,0.1) 0%, rgba(0,0,0,1) 70%);
-        }
-
-        .gl-logo {
-            width: 150px;
-            filter: drop-shadow(0 0 15px var(--neon-gold));
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        h1 {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 4rem;
-            letter-spacing: 15px;
-            margin-top: 20px;
-            background: linear-gradient(to right, #fff, var(--neon-gold), #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Fixed Navigation */
+        /* --- NAVIGATION (GLASS PILL) --- */
         nav {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(20px) saturate(180%);
-            padding: 12px 40px;
-            border-radius: 100px;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--glass); backdrop-filter: blur(25px);
+            padding: 15px 45px; border-radius: 50px;
             border: 1px solid rgba(255, 204, 0, 0.2);
-            display: flex;
-            gap: 35px;
-            z-index: 1000; /* Lower than AI button */
-            transition: 0.4s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex; gap: 40px; z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
         nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            position: relative;
+            color: #888; text-decoration: none; font-size: 0.8rem;
+            letter-spacing: 3px; text-transform: uppercase; transition: 0.3s;
         }
 
         nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
+        /* --- HERO SECTION (3D FLOAT) --- */
+        header {
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+        }
+
+        .gl-logo {
+            width: 200px; filter: drop-shadow(0 0 30px var(--neon-gold));
+            animation: float3D 5s ease-in-out infinite;
+        }
+
+        @keyframes float3D {
+            0%, 100% { transform: translateZ(20px) translateY(0) rotateY(0deg); }
+            50% { transform: translateZ(100px) translateY(-30px) rotateY(10deg); }
+        }
+
+        h1 {
+            font-family: 'Syncopate', sans-serif; font-size: 5rem;
+            letter-spacing: 20px; margin-top: 25px;
+            background: linear-gradient(135deg, #fff 0%, var(--neon-gold) 50%, #fff 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255,204,0,0.4));
+        }
+
+        /* --- 3D TILT CARDS --- */
         .container {
-            padding: 100px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            padding: 100px 10%; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 50px;
         }
 
         .tilt-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            transition: 0.3s;
-            transform-style: preserve-3d;
+            background: linear-gradient(145deg, #0f0f0f, #050505);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px; padding: 60px 40px;
+            text-align: center; box-shadow: var(--card-shadow);
+            transition: 0.5s ease; transform-style: preserve-3d;
         }
 
-        .tilt-card:hover {
-            border-color: var(--neon-gold);
-            box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
-            background: rgba(255, 204, 0, 0.05);
-        }
+        .tilt-card:hover { border-color: var(--neon-gold); transform: translateY(-10px) scale(1.02); }
 
         .tilt-card h3 {
-            font-family: 'Syncopate', sans-serif;
-            color: var(--neon-gold);
-            margin-bottom: 15px;
-            transform: translateZ(50px);
+            font-family: 'Syncopate', sans-serif; color: white;
+            letter-spacing: 3px; transform: translateZ(60px); margin-bottom: 20px;
         }
 
+        .tilt-card p { color: #888; transform: translateZ(30px); line-height: 1.6; }
+
+        /* --- GLITCH BUTTON --- */
         .btn-glitch {
-            padding: 15px 40px;
-            border: none;
-            background: var(--neon-gold);
-            color: black;
-            font-family: 'Syncopate', sans-serif;
-            font-weight: bold;
-            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-            transition: 0.3s;
-            margin-top: 20px;
-            cursor: pointer;
+            padding: 20px 50px; border: 2px solid var(--neon-gold);
+            background: transparent; color: var(--neon-gold);
+            font-family: 'Syncopate', sans-serif; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 4px;
+            clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+            transition: 0.4s; cursor: pointer; margin-top: 40px;
         }
 
-        /* Gallery System Overlay */
-        .gallery-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 5000;
+        .btn-glitch:hover {
+            background: var(--neon-gold); color: black;
+            box-shadow: 0 0 30px var(--neon-gold); transform: scale(1.1);
         }
 
-        .gallery-overlay.active { display: flex; }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            width: 80%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .gallery-grid img {
-            width: 100%;
-            border-radius: 10px;
-            border: 2px solid var(--neon-gold);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-        @keyframes scanOnce {
-            0% { top: 0%; opacity: 1; }
-            90% { top: 100%; opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-
-        .gallery-overlay.active::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--neon-gold);
-            box-shadow: 0 0 15px var(--neon-gold);
-            animation: scanOnce 2s ease-in-out forwards;
-            z-index: 5001;
-            pointer-events: none;
-        }
-
-        /* --- FIXED AI POSITIONING --- */
+        /* --- CHAT SYSTEM (ULTRA REALISTIC) --- */
         #ai-chat-btn {
-            position: fixed;
-            bottom: 100px; /* Shifted up to avoid menu bar */
-            right: 30px;
-            width: 65px; height: 65px;
-            background: var(--deep-ads);
-            border: 2px solid var(--neon-gold);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000; /* Higher than Nav */
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--neon-gold);
-            transition: 0.3s;
+            position: fixed; bottom: 120px; right: 40px;
+            width: 80px; height: 80px; background: #000;
+            border: 2px solid var(--neon-gold); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 3000; cursor: pointer; box-shadow: 0 0 20px var(--neon-gold);
+            transition: 0.4s;
         }
 
-        #ai-chat-btn img { width: 45px; filter: drop-shadow(0 0 5px var(--neon-gold)); }
+        #ai-chat-btn:hover { transform: rotate(15deg) scale(1.1); }
 
         #chat-box {
-            position: fixed;
-            bottom: 180px; /* Shifted up to sit above the button */
-            right: 30px;
-            width: 320px;
-            background: rgba(10, 10, 10, 0.98);
-            border: 1px solid var(--neon-gold);
-            border-radius: 15px;
-            display: none;
-            flex-direction: column;
-            z-index: 3000;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 0 30px rgba(0,0,0,1);
+            position: fixed; bottom: 220px; right: 40px; width: 380px;
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 204, 0, 0.3); border-radius: 25px;
+            display: none; flex-direction: column; z-index: 3000;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.9); overflow: hidden;
         }
 
-        #chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; text-align: center; border-radius: 13px 13px 0 0; }
-        #chat-display { height: 300px; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
-        .bot-msg { color: var(--neon-gold); border-left: 2px solid var(--neon-gold); padding-left: 10px; line-height: 1.4; }
-        .bot-msg a { color: white; text-decoration: underline; font-weight: bold; }
-        .user-msg { color: white; text-align: right; opacity: 0.8; font-style: italic; }
-        #chat-input-area { display: flex; border-top: 1px solid rgba(255, 204, 0, 0.2); }
-        #chat-input { flex: 1; background: transparent; border: none; color: white; padding: 15px; outline: none; font-family: 'Space Grotesk'; }
-        #send-btn { background: var(--neon-gold); border: none; padding: 15px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; }
+        #chat-header {
+            background: var(--neon-gold); color: black; padding: 18px;
+            font-family: 'Syncopate'; font-size: 11px; font-weight: bold;
+            text-align: center; letter-spacing: 2px;
+        }
+
+        #chat-display { height: 400px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+        .bot-msg { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,204,0,0.2);
+            padding: 15px; border-radius: 0 20px 20px 20px; color: #fff; max-width: 85%;
+        }
+
+        .user-msg { 
+            background: var(--neon-gold); color: black; font-weight: 600;
+            padding: 12px 18px; border-radius: 20px 20px 0 20px; align-self: flex-end;
+        }
 
     </style>
 </head>
@@ -258,8 +167,8 @@
     <div id="cursor"></div>
     <div class="grid-bg"></div>
 
-    <nav id="navbar">
-        <a href="#home">Home</a>
+    <nav>
+        <a href="#home">Core</a>
         <a href="#services">Services</a>
         <a href="#contact">Contact</a>
     </nav>
@@ -267,394 +176,60 @@
     <header id="home">
         <img src="GL_Logo.png" alt="Logo" class="gl-logo">
         <h1>GL PRINTS</h1>
-        <p style="letter-spacing: 5px; color: var(--text-gray);">EST. 2025 | MUNTINLUPA CITY</p>
-        <button class="btn-glitch" onclick="window.location.href='#services'">ENTER SYSTEM</button>
+        <p style="letter-spacing: 8px; color: var(--neon-gold); font-weight: 300; margin-top: 10px;">PREMIUM DIGITAL SOLUTIONS</p>
+        <button class="btn-glitch" onclick="window.location.href='#services'">INITIALIZE</button>
     </header>
 
     <div class="container" id="services">
-        <div class="tilt-card" data-tilt onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg'])">
-            <h3>EVENT & MEDIA PRINTS</h3>
-            <p>Premium bundles for Birthdays and Christenings. Custom stickers and event stationery.</p>
+        <div class="tilt-card" data-tilt>
+            <h3>TECH REPAIR</h3>
+            <p>Mobile diagnostics, LCD replacement, and software troubleshooting for all major brands.</p>
         </div>
         <div class="tilt-card" data-tilt>
-            <h3>DIGITAL DESIGN</h3>
-            <p>Professional layouts for business and personal branding.</p>
+            <h3>PREMIUM PRINTS</h3>
+            <p>High-saturation document and photo development using industry-grade equipment.</p>
         </div>
         <div class="tilt-card" data-tilt>
-            <h3>E-GOV & OFFICE ASSIST</h3>
-            <p>E-Gov applications, digital IDs, and high-accuracy data encoding.</p>
+            <h3>WEB DEV</h3>
+            <p>Modern, responsive, and aesthetic website deployment for small businesses.</p>
         </div>
-        <div class="tilt-card" data-tilt>
-            <h3>TECH ASSIST</h3>
-            <p>Resume restructuring, technical research, and document formatting.</p>
-        </div>
-        <div class="tilt-card" data-tilt>
-            <h3>TECH SOLUTIONS</h3>
-            <p>Mobile diagnostics and software troubleshooting.</p>
-        </div>
-        <div class="tilt-card" data-tilt>
-            <h3>SPECIALIZED SERVICES</h3>
-            <p>Website Development, Original Songwriting, and Musical arrangements.</p>
-        </div>
-    </div>
-
-    <section id="contact" style="text-align: center; padding: 100px 0;">
-        <h2 style="font-family: 'Syncopate';">OPERATIONAL SECTOR</h2>
-        <p id="phone-num" onclick="copyNumber()" style="font-size: 1.5rem; letter-spacing: 3px; cursor: pointer;">0991 636 1742</p>
-        <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-glitch" style="display:inline-block; text-decoration:none; margin-top:20px;">MESSAGE FACEBOOK</a>
-    </section>
-
-    <div id="gallery" class="gallery-overlay" onclick="closeGallery()">
-        <div class="gallery-grid" id="gallery-grid-content"></div>
     </div>
 
     <div id="ai-chat-btn" onclick="toggleChat()">
-        <img src="GL_Logo.png" alt="AI Assistant">
+        <img src="GL_Logo.png" alt="AI" style="width: 50px;">
     </div>
 
     <div id="chat-box">
-        <div id="chat-header">GL SYSTEM AI</div>
+        <div id="chat-header">GL-AI SYSTEM v3.0</div>
         <div id="chat-display">
-            <p class="bot-msg">Welcome to GL Prints. How can I assist you today? (Keywords: Price, Location, Services, Repair)</p>
+            <p class="bot-msg">System Online. Handa na si Ate Ry tumulong. Ano ang ipapagawa natin?</p>
         </div>
-        <div id="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Type a keyword...">
-            <button id="send-btn" onclick="askAI()">SEND</button>
+        <div style="display: flex; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,204,0,0.1);">
+            <input type="text" id="chat-input" placeholder="Type command..." style="flex:1; background:transparent; border:none; color:white; padding:20px; outline:none;">
+            <button onclick="askAI()" style="background:var(--neon-gold); border:none; padding:0 30px; cursor:pointer; font-family:'Syncopate'; font-size:10px; font-weight:bold;">SEND</button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
+        // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 15, speed: 400, glare: true, "max-glare": 0.3 });
-
-        function openGallery(imagesArray) {
-            const overlay = document.getElementById('gallery');
-            const gridContent = document.getElementById('gallery-grid-content');
-            gridContent.innerHTML = '';
-            imagesArray.forEach((src, index) => {
-                const img = document.createElement('img');
-                img.src = src;
-                img.style.animationDelay = (0.2 * index) + 's';
-                img.onclick = (e) => e.stopPropagation();
-                gridContent.appendChild(img);
-            });
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeGallery() {
-            document.getElementById('gallery').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-const glKnowledge = {
-    // --- SPECIAL CLARIFICATION LOGIC ---
-    "generic_price": {
-        keywords: ["magkano", "how much", "presyo", "hm", "piso", "price", "amount"],
-        response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Ma'am/Sir? 
-        <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b>
-        <br>• Prints (Documents/Photos)
-        <br>• Photo Develop
-        <br>• Rush ID (1x1, 2x2, Passport)
-        <br>• Stickers (Labels/Standards/Transparent)
-        <br>• Lamination (ID to Long)
-        <br>• Tech Repair (Mobile/Laptop/Computer)
-        <br><br><i>Type mo lang yung keyword para sa presyo!</i>`
-    },
-
-    // --- SERVICES & PRICES ---
-    "printing_prices": {
-        keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"],
-        response: `Eto ang aming standard rates para sa prints:
-        <br>• Document (B&W): ₱4.00 - ₱6.00 (Short/A4/Long)
-        <br>• Document (Colored): ₱6.00 - ₱15.00 (Depende sa ink coverage)
-        <br>• Full Colored/Photo: ₱15.00 - ₱30.00 (High-quality glossy)
-        <br><br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
-    },
-    "id_instax_prices": {
-        keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic"],
-        response: `Para sa iyong mga memories at documents:
-        <br>• Rush ID Bundle: ₱35.00 - ₱100.00 (Kasama na ang basic retouch at formal attire edit)
-        <br>• Instax/Polaroid Prints: ₱30.00 - ₱45.00 per piece (Original Fujifilm)
-        <br>• Locket Size Photos: ₱20.00 - ₱40.00 (Customized size for jewelry)`
-    },
-    "lamination_prices": {
-        keywords: ["lamination", "laminate", "palaminate", "plastic", "cover"],
-        response: `Protect your docs starting from:
-        <br>• Small/ID Size: ₱15.00 - ₱25.00
-        <br>• Short/A4/Long: ₱30.00 - ₱60.00 (Premium thick plastic)`
-    },
-    "tech_prices": {
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "software", "laptop", "iphone", "samsung", "realme", "infinix"],
-        response: `Technical diagnostics for Mobile and Laptops:
-        <br>• Software (Reformat/Reprogram): ₱300.00 - ₱800.00
-        <br>• Hardware (LCD/Battery): ₱800.00 - ₱4,500.00 (Depende sa unit at model)
-        <br><br><b>FREE Check-up</b> pag dinala ang unit sa amin!`
-    },
-    "sticker_prices": {
-        keywords: ["sticker", "label", "produkto", "product label", "glossy", "cut", "pabilog"],
-        response: `Customized labels for business or personal:
-        <br>• Per A4 Sheet: ₱50.00 - ₱85.00 (Depende kung Standard, Glossy, or Inkjet)`
-    },
-    "photocopy_prices": {
-        keywords: ["xerox", "photocopy", "pa copy", "pa xerox"],
-        response: `Clear and accurate copies:
-        <br>• Standard Copy: ₱2.00 - ₱6.00 per page (Short/A4/Long)`
-    },
-
-    // --- LOGISTICS & INFO ---
-    "delivery": {
-        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "ship", "rider"],
-        response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Ma'am/Sir!"
-    },
-    "payment": {
-        keywords: ["gcash", "payment", "bayad", "mop", "maya", "cash", "transfer"],
-        response: "Tumatanggap kami ng **GCash, Maya, at Cash**. Para sa GCash number, i-message kami sa FB para iwas-scam. 💳"
-    },
-    "oras": {
-        keywords: ["oras", "time", "bukas", "open", "close", "schedule"],
-        response: "Operational kami **8:00 AM to 12:00 AM daily**. Pero check our <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>FB Page</a> for updates."
-    },
-    "location": {
-        keywords: ["saan", "location", "address", "muntinlupa", "mapa", "map"],
-        response: "Nasa Muntinlupa City lang kami! View our **Active Google Maps** here: <br><br> <a href='YOUR_GOOGLE_MAPS_LINK_HERE' target='_blank'>📍 OPEN GOOGLE MAPS</a>"
-    },
-    "resume": {
-        keywords: ["resume", "cv", "trabaho", "nbi", "e-gov", "encoding"],
-        response: "Help namin kayo sa **Resume Restructuring** (Modern Design) at online applications sa government sites (NBI, PhilHealth, etc.)."
-    },
-
-    // --- WITTY / PERSONAL ---
-    "sino": {
-        keywords: ["sino", "owner", "ry", "Boss ry", "founder", "ate"],
-        response: "The system is owned by **Ate Ry (Lria)** 👑"
-    },
-    "boring": {
-        keywords: ["boring", "antok", "walang magawa", "walang kwenta"],
-        response: "Boring? Baka kailangan mo ng **Custom Stickers** para maging aesthetic ang gamit mo! 🎮"
-    },
-    "what_is_gl": {
-        keywords: ["what is gl", "gl?", "ano ang gl", "ano meaning ng gl", "gl"],
-        response: "GL - stands for the initials of our founder, but for our customers, it means **Great Logic & Guaranteed Layouts**. 👑"
-    },
-    "Scammers": {
-        keywords: ["5k", "scammers", "scam", "pera", "magnanakaw", "cashout", "cash-in"],
-        response: "Muka ba kaming bangko? Tanong usto, punta ayaw? LAMO ARAYMO!"
-    },
-    "Appearance": {
-        keywords: ["mama mo", "baboy", "taba", "baho", "sino ka", "papa mo", "tae"],
-        response: "KWENTO MO SA BALIW!"
-    },
-
-    // --- GREETINGS & APPELLATIONS LOGIC ---
-    "greetings": {
-        keywords: ["hi", "hello", "boss", "maam", "ma'am", "sir", "ate", "kuya", "hi po", "hello po", "question po", "tanong po", "uuy", "kamusta"],
-        response: `System Active. I am GL-AI. 
-        <br><br>Hello, Ma'am/Sir! Handa akong tumulong sa iyong concerns. Ano ang maitutulong ko sa iyo ngayon?
-        <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b>
-        <br>• Price (Magkano ang services)
-        <br>• Location (Saan ang shop)
-        <br>• Services (Ano ang offers namin)
-        <br>• Repair (Tech solutions)
-        <br><br><i>Type a keyword to begin!</i>`
-    },
-
-    // --- ACADEMIC & CREATIVE PRINTING ---
-    "academic_printing": {
-        keywords: ["research", "research paper", "thesis", "paper school", "school paper", "manuscript", "capstone", "documentation"],
-        response: `Expert kami sa Thesis and Research Paper printing! 🎓
-        <br><br><b style="color:var(--neon-gold)">Available Formats:</b>
-        <br>• Standard Thesis: Short/A4/Long (70gsm - 80gsm)
-        <br>• Quality: Crystal clear text, perfect para sa panels.
-        <br>• Encoding: We also help with document formatting!
-        <br><br><i>Message us your PDF for a quotation, Ma'am/Sir!</i>`
-    },
-    "creative_printing": {
-        keywords: ["magazine", "brochure", "portfolio", "booklet", "zine", "catalog"],
-        response: `Looking for Magazine or Brochure printing? 📖
-        <br><br><b style="color:var(--neon-gold)">Finish Options:</b>
-        <br>• Glossy/Inkjet: Premium feel para sa layouts mo.
-        <br>• Full Color: High-saturation prints (Hindi faded).
-        <br>• Layouting: Pwede rin kami tumulong sa design!
-        <br><br><i>Classy look for a classy client. PM for custom size!</i>`
-    },
-
-    // --- PHOTO DEVELOPMENT & SIZING ---
-    "photo_dvelop": {
-        keywords: ["develop", "pa-picture", "print picture", "Photo print", "pa-print ng picture", "size ng picture", "sizing", "wallet size"],
-        response: `Gusto mo ba ng aesthetic photos? Eto ang aming Photo Development Sizing Guide:
-        <br><br><b style="color:var(--neon-gold)">📸 Instax / Polaroid Style:</b>
-        <br>• Mini: (Wallet size - parang ATM card)
-        <br>• Square: (1:1 Ratio - perfect for displays)
-        <br>• Wide: (Landscape - para sa group photos)
-        <br><br><b style="color:var(--neon-gold)">🖼️ Standard Document Sizes:</b>
-        <br>• A7 to A6: (Small/Pocket size)
-        <br>• A5: (Half of A4)
-        <br>• A4: (Standard Full Page)
-        <br><br><i>Tip: Pwede rin kami mag-custom size para sa Lockets (15mm-20mm)!</i>`
-    },
-
-    // --- SERVICES & PRICES ---
-    "printing_prices": {
-        keywords: ["print", "colored", "black and white", "b&w", "piso print", "document", "pa-print", "isa lang", "isang page"],
-        response: `Eto ang aming standard rates para sa prints:
-        <br>• Document (B&W): ₱4.00 - ₱6.00 (Short/A4/Long)
-        <br>• Document (Colored): ₱6.00 - ₱15.00 (Depende sa ink coverage)
-        <br>• Full Colored/Photo: ₱15.00 - ₱30.00 (High-quality glossy)
-        <br><br><b>Individual order?</b> Noted! Para magawa agad, message ka lang sa aming <a href='https://m.me/GLprinting.services/' target='_blank'>Messenger</a>.
-        <br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
-    },
-    
-    "id_instax_prices": {
-        keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic", "pa-picture", "pa-rush"],
-        response: `Para sa iyong mga memories at documents:
-        <br>• Rush ID Bundle: ₱35.00 - ₱100.00
-        <br>• Instax/Polaroid Prints: ₱30.00 - ₱45.00 per piece
-        <br>• Locket Size Photos: ₱20.00 - ₱40.00
-        <br><br><b>Okay po!</b> Para ma-edit at ma-print na natin, send niyo lang ang photo sa <a href='https://m.me/GLprinting.services/' target='_blank'>Messenger</a>. 📸`
-    },
-
-    "avail_order": {
-        keywords: ["avail", "order", "magpagawa", "pabili", "pa-ayos", "okay po", "noted po"],
-        response: "Noted! Para ma-process at magawa na natin ang order mo, Ma'am/Sir, message lang po kayo sa aming Official FB Page: <br><br> <a href='https://m.me/GLprinting.services/' target='_blank'>📩 CLICK HERE TO MESSAGE US</a>"
-    },
-
-    "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
-};
-        
+        // 3D Tilt Initialization
+        VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
+            max: 20, speed: 1000, glare: true, "max-glare": 0.2, perspective: 1000
+        });
 
         function toggleChat() {
             const box = document.getElementById('chat-box');
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
-let violationCount = 0; // Ilagay ito sa labas ng function (top of script)
-// Listahan ng lahat ng mura (Tagalog & English)
-const cursedWords = [
-    "gago", "puta", "tangina", "pakyu", "bobo", "pota", "tarantado", "hayop", "lintek", 
-    "hudas", "pukingina", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "bwiset", "kupal", "t*ngina", "bonak", "pepe", "tite", "giatay"
-];
 
-// 1. ENTER KEY LOGIC (Eto yung request mo na gumana ang Enter)
-document.getElementById('chat-input').addEventListener('keydown', function(e) {
-    if (e.key === "Enter") {
-        e.preventDefault(); // Iwasan ang glitch sa UI
-        askAI();
-    }
-});
-
-// 2. SMART AI LOGIC (Update sa askAI function)
-function askAI() {
-    const input = document.getElementById('chat-input');
-    const display = document.getElementById('chat-display');
-    const msg = input.value.toLowerCase().trim();
-    if (!msg) return;
-
-    display.innerHTML += `<p class="user-msg">${msg}</p>`;
-
-    // TOXIC PROTOCOL CHECK
-    if (cursedWords.some(w => msg.includes(w))) {
-        violationCount++;
-        if (violationCount === 1) {
-            display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. Logic error detected in your language.</p>`;
-        } else {
-            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h3>PROTOCOL BREACH</h3><p>BANNED. EXITING...</p></div>`;
-            setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
-            return;
-        }
-        input.value = ""; return;
-    }
-
-    // LOGICAL MATCHING
-    let response = glKnowledge["default"];
-    
-    for (let key in glKnowledge) {
-        const entry = glKnowledge[key];
-        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
-            if (entry.answers) {
-                // Randomize for logical variation (Lamination etc)
-                response = entry.answers[Math.floor(Math.random() * entry.answers.length)];
-            } else {
-                response = entry.response;
-            }
-            break;
-        }
-    }
-
-    setTimeout(() => {
-        display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
-        display.scrollTop = display.scrollHeight;
-    }, 500);
-    input.value = "";
-}
-// Kung walang nahanap na match sa loop, gamitin ang default
-    if (!response || response === glKnowledge["default"]) {
-        response = glKnowledge["default"];
-    }
-
-    setTimeout(() => {
-        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b><br>${response}</p>`;
-        display.scrollTop = display.scrollHeight;
-    }, 500);
-
-    function askAI() {
-    const input = document.getElementById('chat-input');
-    const display = document.getElementById('chat-display');
-    const msg = input.value.toLowerCase().trim();
-    
-    if (!msg) return;
-
-    // I-display ang message ng user
-    display.innerHTML += `<div class="user-wrapper"><p class="user-msg">${input.value}</p></div>`;
-    input.value = ""; // Clear agad ang input field
-
-    // --- 1. EXIT LOGIC ---
-    const exitCommands = ["exit", "close", "bye", "paalam", "salamat", "thank you"];
-    if (exitCommands.some(word => msg.includes(word))) {
-        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b> Noted! Babay! Chat ka lang ulit kung may kailangan ka. System closing...</p>`;
-        setTimeout(() => {
-            toggleChat(); // Kusa itong magsasara
-        }, 1500);
-        return;
-    }
-
-    // --- 2. TYPING ANIMATION ---
-    // Gagawa tayo ng temporary "typing" element
-    const typingId = "typing-" + Date.now();
-    display.innerHTML += `<p class="bot-msg" id="${typingId}"><i>GL-AI is typing...</i></p>`;
-    display.scrollTop = display.scrollHeight;
-
-    // --- 3. LOGICAL MATCHING ---
-    let response = "";
-    for (let key in glKnowledge) {
-        const entry = glKnowledge[key];
-        if (entry.keywords && entry.keywords.some(k => msg.includes(k))) {
-            response = entry.response;
-            break;
-        }
-    }
-
-    if (!response) response = glKnowledge["default"];
-
-    // --- 4. RENDER WITH DELAY (Typing Effect) ---
-    setTimeout(() => {
-        // Alisin ang typing indicator at ipalit ang totoong sagot
-        const typingElem = document.getElementById(typingId);
-        if (typingElem) {
-            typingElem.innerHTML = `<b>GL-AI:</b><br>${response}`;
-            typingElem.style.fontStyle = "normal"; // Alisin ang italic
-        }
-        display.scrollTop = display.scrollHeight;
-    }, 1200); // 1.2 seconds na "nag-iisip" ang AI
-}
-
-    
-
+        // Paste here your fixed askAI function from previous message...
     </script>
 </body>
 </html>
