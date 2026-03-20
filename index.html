@@ -82,35 +82,51 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Floating Nav */
-        nav {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 204, 0, 0.3);
-            display: flex;
-            gap: 25px;
-            z-index: 1000;
-        }
+     nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.6); /* Darker base for contrast */
+    backdrop-filter: blur(20px) saturate(180%); /* Stronger glass effect */
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: 12px 40px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    display: flex;
+    gap: 35px;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: 0.4s ease;
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
+nav:hover {
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+}
 
-        nav a:hover {
-            color: var(--neon-gold);
-            text-shadow: 0 0 10px var(--neon-gold);
-        }
+nav a {
+    position: relative;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    width: 0%;
+    height: 2px;
+    background: var(--neon-gold);
+    transition: 0.3s;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px var(--neon-gold);
+}
+
+nav a:hover::after {
+    width: 80%; /* Lalabas yung underline glow pag nag-hover */
+}
 
         /* Glass Cards with Tilt */
         .container {
@@ -339,6 +355,23 @@
         }, 2000);
     });
 }
+let lastScroll = 0;
+const navbar = document.querySelector('nav');
+
+window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll > lastScroll && currentScroll > 100) {
+        // Scrolling down - Itago ang menu
+        navbar.style.transform = 'translateX(-50%) translateY(100px)';
+        navbar.style.opacity = '0';
+    } else {
+        // Scrolling up - Ipakita ang menu
+        navbar.style.transform = 'translateX(-50%) translateY(0)';
+        navbar.style.opacity = '1';
+    }
+    lastScroll = currentScroll;
+});
     </script>
 </body>
 </html>
