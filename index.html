@@ -11,154 +11,194 @@
         :root {
             --neon-gold: #ffcc00;
             --deep-ads: #050505;
-            --glass: rgba(15, 15, 15, 0.8);
+            --glass: rgba(10, 10, 10, 0.8);
+            --text-gray: #888;
+            /* Neumorphic 3D Shadow */
             --card-shadow: 20px 20px 60px #000, -5px -5px 30px rgba(255,204,0,0.05);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            cursor: none;
+        }
 
         body {
             background-color: var(--deep-ads);
             color: white;
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
+            perspective: 1200px; /* Essential for 3D */
             background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
         }
 
-        /* --- REALISTIC CURSOR --- */
+        /* --- MAANGAS CURSOR --- */
         #cursor {
-            width: 12px; height: 12px; background: var(--neon-gold);
-            border-radius: 50%; position: fixed; pointer-events: none;
-            z-index: 9999; mix-blend-mode: difference;
-            box-shadow: 0 0 15px var(--neon-gold); transition: transform 0.1s ease;
+            width: 15px; height: 15px;
+            background: var(--neon-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 15px var(--neon-gold);
         }
 
         /* --- 3D GRID FLOOR --- */
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255,204,0,0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,204,0,0.03) 1px, transparent 1px);
+            background-image: 
+                linear-gradient(rgba(255, 204, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 204, 0, 0.03) 1px, transparent 1px);
             background-size: 60px 60px; z-index: -1;
-            transform: perspective(500px) rotateX(60deg) translateY(-100px);
+            transform: rotateX(60deg) translateY(-100px);
             opacity: 0.5;
         }
 
-        /* --- NAVIGATION (GLASS PILL) --- */
+        /* --- 3D FLOATING HEADER --- */
+        header {
+            height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            transform-style: preserve-3d;
+        }
+
+        .gl-logo {
+            width: 180px;
+            filter: drop-shadow(0 0 25px var(--neon-gold));
+            animation: float3D 4s ease-in-out infinite;
+        }
+
+        @keyframes float3D {
+            0%, 100% { transform: translateZ(20px) translateY(0); }
+            50% { transform: translateZ(100px) translateY(-20px); }
+        }
+
+        h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 4.5rem;
+            letter-spacing: 15px;
+            margin-top: 20px;
+            background: linear-gradient(to right, #fff, var(--neon-gold), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateZ(50px);
+        }
+
+        /* --- GLASS NAVIGATION --- */
         nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--glass); backdrop-filter: blur(25px);
-            padding: 15px 45px; border-radius: 50px;
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 12px 45px;
+            border-radius: 100px;
             border: 1px solid rgba(255, 204, 0, 0.2);
-            display: flex; gap: 40px; z-index: 1000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            display: flex; gap: 35px;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
 
         nav a {
-            color: #888; text-decoration: none; font-size: 0.8rem;
-            letter-spacing: 3px; text-transform: uppercase; transition: 0.3s;
+            color: white; text-decoration: none;
+            font-size: 0.8rem; letter-spacing: 2px;
+            text-transform: uppercase; transition: 0.3s;
         }
 
         nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
-        /* --- HERO SECTION (3D FLOAT) --- */
-        header {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-        }
-
-        .gl-logo {
-            width: 200px; filter: drop-shadow(0 0 30px var(--neon-gold));
-            animation: float3D 5s ease-in-out infinite;
-        }
-
-        @keyframes float3D {
-            0%, 100% { transform: translateZ(20px) translateY(0) rotateY(0deg); }
-            50% { transform: translateZ(100px) translateY(-30px) rotateY(10deg); }
-        }
-
-        h1 {
-            font-family: 'Syncopate', sans-serif; font-size: 5rem;
-            letter-spacing: 20px; margin-top: 25px;
-            background: linear-gradient(135deg, #fff 0%, var(--neon-gold) 50%, #fff 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(255,204,0,0.4));
-        }
-
-        /* --- 3D TILT CARDS --- */
+        /* --- REALISTIC 3D CARDS --- */
         .container {
-            padding: 100px 10%; display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 50px;
+            padding: 100px 8%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            transform-style: preserve-3d;
         }
 
         .tilt-card {
-            background: linear-gradient(145deg, #0f0f0f, #050505);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px; padding: 60px 40px;
-            text-align: center; box-shadow: var(--card-shadow);
-            transition: 0.5s ease; transform-style: preserve-3d;
+            border-radius: 25px;
+            padding: 50px 40px;
+            text-align: center;
+            transition: 0.5s ease;
+            transform-style: preserve-3d;
+            box-shadow: var(--card-shadow);
         }
 
-        .tilt-card:hover { border-color: var(--neon-gold); transform: translateY(-10px) scale(1.02); }
+        .tilt-card:hover {
+            border-color: var(--neon-gold);
+            transform: translateZ(30px) translateY(-10px);
+            background: rgba(255, 204, 0, 0.03);
+        }
 
         .tilt-card h3 {
-            font-family: 'Syncopate', sans-serif; color: white;
-            letter-spacing: 3px; transform: translateZ(60px); margin-bottom: 20px;
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-gold);
+            margin-bottom: 15px;
+            transform: translateZ(60px);
         }
 
-        .tilt-card p { color: #888; transform: translateZ(30px); line-height: 1.6; }
+        .tilt-card p { transform: translateZ(40px); line-height: 1.6; color: #ccc; }
 
-        /* --- GLITCH BUTTON --- */
         .btn-glitch {
-            padding: 20px 50px; border: 2px solid var(--neon-gold);
-            background: transparent; color: var(--neon-gold);
-            font-family: 'Syncopate', sans-serif; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 4px;
-            clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
-            transition: 0.4s; cursor: pointer; margin-top: 40px;
+            padding: 15px 40px;
+            border: 2px solid var(--neon-gold);
+            background: transparent;
+            color: var(--neon-gold);
+            font-family: 'Syncopate', sans-serif;
+            font-weight: bold;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+            transition: 0.3s;
+            cursor: pointer;
+            margin-top: 25px;
         }
 
         .btn-glitch:hover {
-            background: var(--neon-gold); color: black;
-            box-shadow: 0 0 30px var(--neon-gold); transform: scale(1.1);
+            background: var(--neon-gold);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-gold);
         }
 
-        /* --- CHAT SYSTEM (ULTRA REALISTIC) --- */
+        /* --- AI CHAT GLASS UI --- */
         #ai-chat-btn {
-            position: fixed; bottom: 120px; right: 40px;
-            width: 80px; height: 80px; background: #000;
-            border: 2px solid var(--neon-gold); border-radius: 50%;
+            position: fixed; bottom: 110px; right: 35px;
+            width: 70px; height: 70px;
+            background: var(--deep-ads);
+            border: 2px solid var(--neon-gold);
+            border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            z-index: 3000; cursor: pointer; box-shadow: 0 0 20px var(--neon-gold);
+            z-index: 3000; cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,204,0,0.3);
             transition: 0.4s;
         }
 
-        #ai-chat-btn:hover { transform: rotate(15deg) scale(1.1); }
+        #ai-chat-btn img { width: 45px; filter: drop-shadow(0 0 5px var(--neon-gold)); }
 
         #chat-box {
-            position: fixed; bottom: 220px; right: 40px; width: 380px;
-            background: var(--glass); backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 204, 0, 0.3); border-radius: 25px;
-            display: none; flex-direction: column; z-index: 3000;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.9); overflow: hidden;
+            position: fixed; bottom: 200px; right: 35px;
+            width: 340px;
+            background: var(--glass);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 20px;
+            display: none; flex-direction: column;
+            z-index: 3000;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 20px 60px rgba(0,0,0,1);
+            overflow: hidden;
         }
 
-        #chat-header {
-            background: var(--neon-gold); color: black; padding: 18px;
-            font-family: 'Syncopate'; font-size: 11px; font-weight: bold;
-            text-align: center; letter-spacing: 2px;
-        }
+        #chat-header { background: var(--neon-gold); color: black; padding: 15px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; text-align: center; letter-spacing: 2px; }
+        #chat-display { height: 320px; padding: 20px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .bot-msg { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,204,0,0.1); padding: 12px; border-radius: 0 15px 15px 15px; color: white; align-self: flex-start; max-width: 85%; }
+        .user-msg { background: var(--neon-gold); color: black; padding: 12px; border-radius: 15px 15px 0 15px; align-self: flex-end; max-width: 85%; font-weight: 500; }
 
-        #chat-display { height: 400px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-
-        .bot-msg { 
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,204,0,0.2);
-            padding: 15px; border-radius: 0 20px 20px 20px; color: #fff; max-width: 85%;
-        }
-
-        .user-msg { 
-            background: var(--neon-gold); color: black; font-weight: 600;
-            padding: 12px 18px; border-radius: 20px 20px 0 20px; align-self: flex-end;
-        }
+        #chat-input-area { display: flex; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255, 204, 0, 0.1); }
+        #chat-input { flex: 1; background: transparent; border: none; color: white; padding: 15px; outline: none; }
+        #send-btn { background: var(--neon-gold); border: none; padding: 15px 25px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; }
 
     </style>
 </head>
@@ -167,8 +207,8 @@
     <div id="cursor"></div>
     <div class="grid-bg"></div>
 
-    <nav>
-        <a href="#home">Core</a>
+    <nav id="navbar">
+        <a href="#home">Home</a>
         <a href="#services">Services</a>
         <a href="#contact">Contact</a>
     </nav>
@@ -176,52 +216,70 @@
     <header id="home">
         <img src="GL_Logo.png" alt="Logo" class="gl-logo">
         <h1>GL PRINTS</h1>
-        <p style="letter-spacing: 8px; color: var(--neon-gold); font-weight: 300; margin-top: 10px;">PREMIUM DIGITAL SOLUTIONS</p>
-        <button class="btn-glitch" onclick="window.location.href='#services'">INITIALIZE</button>
+        <p style="letter-spacing: 5px; color: var(--text-gray);">EST. 2025 | MUNTINLUPA CITY</p>
+        <button class="btn-glitch" onclick="window.location.href='#services'">INITIALIZE SYSTEM</button>
     </header>
 
     <div class="container" id="services">
         <div class="tilt-card" data-tilt>
-            <h3>TECH REPAIR</h3>
-            <p>Mobile diagnostics, LCD replacement, and software troubleshooting for all major brands.</p>
+            <h3>EVENT & MEDIA PRINTS</h3>
+            <p>Premium bundles for Birthdays and Christenings. Custom stickers and event stationery.</p>
         </div>
         <div class="tilt-card" data-tilt>
-            <h3>PREMIUM PRINTS</h3>
-            <p>High-saturation document and photo development using industry-grade equipment.</p>
+            <h3>DIGITAL DESIGN</h3>
+            <p>Professional layouts for business and personal branding.</p>
         </div>
         <div class="tilt-card" data-tilt>
-            <h3>WEB DEV</h3>
-            <p>Modern, responsive, and aesthetic website deployment for small businesses.</p>
+            <h3>E-GOV & OFFICE ASSIST</h3>
+            <p>E-Gov applications, digital IDs, and high-accuracy data encoding.</p>
+        </div>
+        <div class="tilt-card" data-tilt>
+            <h3>TECH ASSIST</h3>
+            <p>Resume restructuring, technical research, and document formatting.</p>
+        </div>
+        <div class="tilt-card" data-tilt>
+            <h3>TECH SOLUTIONS</h3>
+            <p>Mobile diagnostics and software troubleshooting.</p>
+        </div>
+        <div class="tilt-card" data-tilt>
+            <h3>SPECIALIZED SERVICES</h3>
+            <p>Website Development, Original Songwriting, and Musical arrangements.</p>
         </div>
     </div>
 
+    <section id="contact" style="text-align: center; padding: 100px 0;">
+        <h2 style="font-family: 'Syncopate'; letter-spacing: 8px;">OPERATIONAL SECTOR</h2>
+        <p id="phone-num" style="font-size: 2rem; color: var(--neon-gold); margin: 20px 0; letter-spacing: 5px;">0991 636 1742</p>
+        <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-glitch" style="display:inline-block; text-decoration:none;">MESSAGE FACEBOOK</a>
+    </section>
+
     <div id="ai-chat-btn" onclick="toggleChat()">
-        <img src="GL_Logo.png" alt="AI" style="width: 50px;">
+        <img src="GL_Logo.png" alt="AI Assistant">
     </div>
 
     <div id="chat-box">
-        <div id="chat-header">GL-AI SYSTEM v3.0</div>
+        <div id="chat-header">GL SYSTEM AI</div>
         <div id="chat-display">
-            <p class="bot-msg">System Online. Handa na si Ate Ry tumulong. Ano ang ipapagawa natin?</p>
+            <p class="bot-msg">Welcome back! GL-AI System Online. Type 'Price' or 'Services' to start.</p>
         </div>
-        <div style="display: flex; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,204,0,0.1);">
-            <input type="text" id="chat-input" placeholder="Type command..." style="flex:1; background:transparent; border:none; color:white; padding:20px; outline:none;">
-            <button onclick="askAI()" style="background:var(--neon-gold); border:none; padding:0 30px; cursor:pointer; font-family:'Syncopate'; font-size:10px; font-weight:bold;">SEND</button>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="send-btn" onclick="askAI()">SEND</button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
-        // Custom Cursor Logic
+        // Cursor Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // 3D Tilt Initialization
+        // 3D Tilt Init
         VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
-            max: 20, speed: 1000, glare: true, "max-glare": 0.2, perspective: 1000
+            max: 15, speed: 400, glare: true, "max-glare": 0.2, perspective: 1000
         });
 
         function toggleChat() {
@@ -229,7 +287,61 @@
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // Paste here your fixed askAI function from previous message...
+        // Enter Key Listener
+        document.getElementById('chat-input').addEventListener('keydown', function(e) {
+            if (e.key === "Enter") askAI();
+        });
+
+        const glKnowledge = {
+            "greetings": { keywords: ["hi", "hello", "boss", "ate"], response: "System Active. Hello! Handa akong tumulong sa iyong concerns. Ano ang maitutulong ko?" },
+            "printing_prices": { keywords: ["print", "magkano", "presyo"], response: "B&W: ₱4-₱6 | Colored: ₱6-₱15 | Photo: ₱15-₱30. Bulk discounts available!" },
+            "tech_prices": { keywords: ["repair", "ayos", "sira", "lcd"], response: "Software: ₱300-₱800 | Hardware: ₱800-₱4500+. Free check-up sa shop!" },
+            "location": { keywords: ["saan", "location", "address"], response: "Nasa Muntinlupa City lang kami! Check our FB page for the exact map link." },
+            "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat here!</a>"
+        };
+
+        function askAI() {
+            const input = document.getElementById('chat-input');
+            const display = document.getElementById('chat-display');
+            const msg = input.value.toLowerCase().trim();
+            if (!msg) return;
+
+            display.innerHTML += `<p class="user-msg">${input.value}</p>`;
+            input.value = "";
+
+            // --- EXIT LOGIC ---
+            const exitCmds = ["exit", "close", "bye", "salamat", "thank you"];
+            if (exitCmds.some(word => msg.includes(word))) {
+                display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b> Noted! System closing in 1.5s...</p>`;
+                setTimeout(toggleChat, 1500);
+                return;
+            }
+
+            // --- TYPING ANIMATION ---
+            const typingId = "typing-" + Date.now();
+            display.innerHTML += `<p class="bot-msg" id="${typingId}"><i>GL-AI is typing...</i></p>`;
+            display.scrollTop = display.scrollHeight;
+
+            // --- MATCHING ---
+            let response = "";
+            for (let key in glKnowledge) {
+                if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
+                    response = glKnowledge[key].response;
+                    break;
+                }
+            }
+            if (!response) response = glKnowledge["default"];
+
+            // --- RENDER ---
+            setTimeout(() => {
+                const typingElem = document.getElementById(typingId);
+                if (typingElem) {
+                    typingElem.innerHTML = `<b>GL-AI:</b><br>${response}`;
+                    typingElem.style.fontStyle = "normal";
+                }
+                display.scrollTop = display.scrollHeight;
+            }, 1200);
+        }
     </script>
 </body>
 </html>
