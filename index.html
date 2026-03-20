@@ -80,6 +80,7 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Fixed Navigation */
         nav {
             position: fixed;
             bottom: 30px;
@@ -92,7 +93,7 @@
             border: 1px solid rgba(255, 204, 0, 0.2);
             display: flex;
             gap: 35px;
-            z-index: 1000;
+            z-index: 1000; /* Lower than AI button */
             transition: 0.4s ease;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
@@ -160,7 +161,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 5000;
         }
 
         .gallery-overlay.active { display: flex; }
@@ -199,14 +200,15 @@
             background: var(--neon-gold);
             box-shadow: 0 0 15px var(--neon-gold);
             animation: scanOnce 2s ease-in-out forwards;
-            z-index: 2001;
+            z-index: 5001;
             pointer-events: none;
         }
 
-        /* Floating AI Button & Chat */
+        /* --- FIXED AI POSITIONING --- */
         #ai-chat-btn {
             position: fixed;
-            bottom: 30px; right: 30px;
+            bottom: 100px; /* Shifted up to avoid menu bar */
+            right: 30px;
             width: 65px; height: 65px;
             background: var(--deep-ads);
             border: 2px solid var(--neon-gold);
@@ -214,7 +216,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 3000;
+            z-index: 3000; /* Higher than Nav */
             cursor: pointer;
             box-shadow: 0 0 15px var(--neon-gold);
             transition: 0.3s;
@@ -224,7 +226,8 @@
 
         #chat-box {
             position: fixed;
-            bottom: 110px; right: 30px;
+            bottom: 180px; /* Shifted up to sit above the button */
+            right: 30px;
             width: 320px;
             background: rgba(10, 10, 10, 0.98);
             border: 1px solid var(--neon-gold);
@@ -319,17 +322,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
-        // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // 3D Tilt Init
         VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 15, speed: 400, glare: true, "max-glare": 0.3 });
 
-        // Gallery Logic
         function openGallery(imagesArray) {
             const overlay = document.getElementById('gallery');
             const gridContent = document.getElementById('gallery-grid-content');
@@ -350,15 +350,14 @@
             document.body.style.overflow = 'auto';
         }
 
-        // AI Assistant Logic (Updated for Price Privacy)
         const glKnowledge = {
-            "price": "To provide you with the most accurate and best pricing for your needs, please <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>message us directly on Facebook</a>. Our team will assist you shortly!",
-            "how much": "Pricing depends on the specific details of your project. For a personalized quote, please chat with us here: <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>GL Messenger</a>.",
+            "price": "To provide you with the most accurate and best pricing for your needs, please <a href='https://m.me/GLprinting.services/' target='_blank'>message us directly on Facebook</a>. Our team will assist you shortly!",
+            "how much": "Pricing depends on the specific details of your project. For a personalized quote, please chat with us here: <a href='https://m.me/GLprinting.services/' target='_blank'>GL Messenger</a>.",
             "location": "We are based in Muntinlupa City. We cater to local residents and offer delivery for bulk print orders.",
             "services": "We specialize in Event Prints (Stickers/Instax), Digital Layouts, E-Gov assistance, and Tech Repairs.",
             "repair": "We offer mobile and laptop diagnostics. Visit us for LCD replacements, battery issues, or software flashing.",
             "hello": "System active. I am GL-AI. Type a keyword like 'Services' or 'Location' to begin.",
-            "default": "For pricing and other inquiries, it's best to talk to our human team! Message us here: <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>GL Facebook Page</a>."
+            "default": "For pricing and other inquiries, it's best to talk to our human team! Message us here: <a href='https://m.me/GLprinting.services/' target='_blank'>GL Facebook Page</a>."
         };
 
         function toggleChat() {
@@ -373,14 +372,8 @@
             if (!msg) return;
 
             display.innerHTML += `<p class="user-msg">${msg}</p>`;
-            
             let response = glKnowledge["default"];
-            for (let key in glKnowledge) { 
-                if (msg.includes(key)) { 
-                    response = glKnowledge[key]; 
-                    break; 
-                } 
-            }
+            for (let key in glKnowledge) { if (msg.includes(key)) { response = glKnowledge[key]; break; } }
 
             setTimeout(() => {
                 display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
@@ -391,7 +384,6 @@
 
         document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') askAI(); });
 
-        // Copy Number
         function copyNumber() {
             navigator.clipboard.writeText("0991 636 1742").then(() => {
                 const label = document.getElementById('phone-num');
