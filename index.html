@@ -349,193 +349,91 @@
             document.getElementById('gallery').classList.remove('active');
             document.body.style.overflow = 'auto';
         }
+        
 const glKnowledge = {
-    // 1. DELIVERY & SHIPPING LOGIC
+    // --- SPECIAL CLARIFICATION LOGIC ---
+    "generic_price": {
+        keywords: ["magkano", "how much", "presyo", "hm", "piso"],
+        response: "Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Master? <br><br> Is it for **Prints**, **Rush ID**, **Stickers**, **Lamination**, or **Tech Repair**?"
+    },
+
+    // --- SERVICES & PRICES ---
+    "printing_prices": {
+        keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"],
+        response: `Eto ang aming standard rates para sa prints:
+        <br>• **Document (B&W):** ₱3.00 - ₱5.00 (Short/A4/Long)
+        <br>• **Document (Colored):** ₱5.00 - ₱20.00 (Depende sa ink coverage)
+        <br>• **Full Colored/Photo:** ₱15.00 - ₱50.00 (High-quality glossy)
+        <br><br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
+    },
+    "id_instax_prices": {
+        keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic"],
+        response: `Para sa iyong mga memories at documents:
+        <br>• **Rush ID Bundle:** ₱50.00 - ₱120.00 (Kasama na ang basic retouch at formal attire edit)
+        <br>• **Instax/Polaroid Prints:** ₱30.00 - ₱45.00 per piece (Original Fujifilm)
+        <br>• **Locket Size Photos:** ₱20.00 - ₱40.00 (Customized size for jewelry)`
+    },
+    "lamination_prices": {
+        keywords: ["lamination", "laminate", "palaminate", "plastic", "cover"],
+        response: `Protect your docs starting from:
+        <br>• **Small/ID Size:** ₱15.00 - ₱25.00
+        <br>• **Short/A4/Long:** ₱30.00 - ₱60.00 (Premium thick plastic)`
+    },
+    "tech_prices": {
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "software", "laptop", "iphone", "samsung", "realme", "infinix"],
+        response: `Technical diagnostics for Mobile and Laptops:
+        <br>• **Software (Reformat/Reprogram):** ₱300.00 - ₱800.00
+        <br>• **Hardware (LCD/Battery):** ₱800.00 - ₱4,500.00 (Depende sa unit at model)
+        <br><br><b>FREE Check-up</b> pag dinala ang unit sa amin!`
+    },
+    "sticker_prices": {
+        keywords: ["sticker", "label", "produkto", "product label", "glossy", "cut", "pabilog"],
+        response: `Customized labels for business or personal:
+        <br>• **Per A4 Sheet:** ₱40.00 - ₱85.00 (Depende kung Matte, Glossy, or Vinyl Waterproof)`
+    },
+    "photocopy_prices": {
+        keywords: ["xerox", "photocopy", "pa-copy"],
+        response: `Clear and accurate copies:
+        <br>• **Standard Copy:** ₱2.00 - ₱4.00 per page (Short/A4/Long)`
+    },
+
+    // --- LOGISTICS & INFO ---
     "delivery": {
-        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "pauwi", "ship"],
+        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "ship"],
         response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Master!"
     },
-    
-    // 6. PHOTOCOPY (XEROX)
-    "photocopy_prices": {
-        keywords: ["magkano xerox", "magkano photocopy", "magkano pa-copy", "xerox price"],
-        response: `Clear and accurate copies:
-        <br>• **Standard Copy:** ₱2.00 - ₱4.00 per page (Short/A4/Long)`
-    },
-    // 2. MODES OF PAYMENT (MOP)
     "payment": {
-        keywords: ["gcash", "payment", "bayad", "mop", "maya", "cash", "pabayad", "transfer", "how to pay"],
+        keywords: ["gcash", "payment", "bayad", "mop", "maya", "cash", "transfer"],
         response: "Tumatanggap kami ng **GCash, Maya, at Cash**. Para sa GCash number, i-message kami sa FB para iwas-scam. 💳"
     },
-    // 3. RUSH ID & INSTAX (Specifics)
-    "rush_id": {
-        keywords: ["rush id", "1x1", "2x2", "passport size", "id pic", "id picture", "attire", "edit coat"],
-        response: "Available ang Rush ID! Pwede rin kami mag-digital edit ng **formal attire o coat** kung naka-shirt lang kayo sa photo. 10-15 mins lang, kuha agad!"
-    },
-    "instax": {
-        keywords: ["instax", "polaroid", "locket", "pabaon", "wallet size", "album", "gift", "regalo"],
-        response: "Original Fujifilm Instax gamit namin. Perfect sa lockets, wallets, o pang-gift. Hindi ito fade-out, Master! ✨"
-    },
-    // 4. PHOTOCOPY & PRINTING (Logical)
-    "printing": {
-        keywords: ["photocopy", "xerox", "print", "document", "short", "long", "a4", "b&w", "colored", "soft copy", "pdf", "usb"],
-        response: "Nag-o-open kami ng files via **USB, Email, o Messenger**. Photocopy and Printing available in B&W or Full Color (Short, Long, A4, legal)."
-    },
-    // 5. BULK ORDERS & DISCOUNTS
-    "discount": {
-        keywords: ["discount", "mura", "bulk", "marami", "bawas", "tinda", "resell", "wholesale"],
-        response: "May **Bulk Discount** kami para sa 50 units pataas (prints/stickers). Message us para mabigyan kayo ng 'Master Price' ni Master Ry! 💸"
-    },
-    // 6. OPERATING HOURS & STATUS
     "oras": {
-        keywords: ["oras", "time", "bukas", "open", "close", "anong oras", "schedule", "holiday"],
-        response: "Operational kami **8:00 AM to 12:00 AM daily**. Pero double-check our <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>FB Page</a> for sudden updates or holidays."
+        keywords: ["oras", "time", "bukas", "open", "close", "schedule"],
+        response: "Operational kami **8:00 AM to 12:00 AM daily**. Pero check our <a href='https://www.facebook.com/GLprinting.services/' target='_blank'>FB Page</a> for updates."
     },
-    // 7. LOCATION & MAPS
     "location": {
-        keywords: ["saan", "location", "address", "muntinlupa", "malapit", "punta", "lugar", "mapa", "map"],
+        keywords: ["saan", "location", "address", "muntinlupa", "mapa", "map"],
         response: "Nasa Muntinlupa City lang kami! View our **Active Google Maps** here: <br><br> <a href='YOUR_GOOGLE_MAPS_LINK_HERE' target='_blank'>📍 OPEN GOOGLE MAPS</a>"
     },
-    // 8. TECH & REPAIRS (Hardware Logic)
-    "tech": {
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "iphone", "samsung", "realme", "infinix", "laptop", "hang", "reformat", "basag", "reprogram", "flashing"],
-        response: "Expert kami sa mobile diagnostics (LCD, Battery, Charging Port) at Laptop reformatting. Dalhin ang unit para sa actual check-up."
-    },
-    // 9. STICKERS & LABELS
-    "stickers": {
-        keywords: ["sticker", "label", "produkto", "product label", "inkjet", "standard", "glossy", "cut", "pabilog", "square"],
-        response: "We do **Customized Stickers** (Inkjet, Standard, Glossy) with machine cut. Perfect para sa business labels o personal use!"
-    },
-    // 10. RESUME & E-GOV
     "resume": {
-        keywords: ["resume", "cv", "trabaho", "nbi", "philhealth", "pag-ibig", "e-gov", "application", "encoding", "type"],
+        keywords: ["resume", "cv", "trabaho", "nbi", "e-gov", "encoding"],
         response: "Help namin kayo sa **Resume Restructuring** (Modern Design) at online applications sa government sites (NBI, PhilHealth, etc.)."
     },
-    // 11. QUALITY QUESTIONS (Logical)
-    "quality": {
-        keywords: ["maganda ba", "quality", "malinaw", "pumapangit", "fade", "quality check"],
-        response: "High-grade inks and papers ang gamit sa GL Prints. Sinisiguro namin na **HD Quality** at 'classy' ang finish bago i-release."
-    },
-    // 12. LOGICAL CHITCHAT
+
+    // --- WITTY / PERSONAL ---
     "sino": {
-        keywords: ["sino", "owner", , "ry", "master ry", "founder", "ate"],
+        keywords: ["sino", "owner", "ry", "master ry", "founder", "ate"],
         response: "The system is owned by **Ate Ry (Lria)** 👑"
     },
-
-    // WITTY & LOGICAL RESPONSES FOR "KULIT" USERS
     "boring": {
-        keywords: ["boring", "antok", "walang magawa", "corny", "boring naman"],
-        response: "Boring? Baka kailangan mo ng **Custom Stickers** para maging aesthetic ang gamit mo! O kaya, pa-ayos mo na yung sirang LCD mo kay Master Ry para makapag-ML ka na ulit. 🎮"
-    },
-    "walang_kwenta": {
-        keywords: ["walang kwenta", "pangit", "bulok", "sayang", "walang silbi"],
-        response: "System Note: Ang value ng GL-AI ay nakadepende sa logic ng nagtatanong. 😉 Try asking about our **Tech Repairs** or **Rush ID** para makita mo ang real value!"
-    },
-    "ngani": {
-        keywords: ["ngani", "nga ni", "ganun talaga", "totoo", "sinabi mo e"],
-        response: "Korek! Kaya wag na mag-alinlangan. Dito ka na sa subok na ng Muntinlupa—sa **GL Prints**."
-    },
-    "reklamo": {
-        keywords: ["kaya nga nagtatanong", "nagtanong lang", "ba't ba", "ano ba", "bakit"],
-        response: "Chill lang, Master! Standard protocol lang ang pagsagot ko. Ano pa ang gusto mong malaman tungkol sa services namin? Ready ako 24/7 (hanggang 12 AM)!"
+        keywords: ["boring", "antok", "walang magawa"],
+        response: "Boring? Baka kailangan mo ng **Custom Stickers** para maging aesthetic ang gamit mo! 🎮"
     },
     "what_is_gl": {
-        keywords: ["what is gl", "gl?", "anong gl", "ano ang gl", "gl meaning"],
-        response: "**GL** stands for the initials of our founder, **G. Lamigas**, but for our customers, it means **Great Logic & Guaranteed Layouts**. Kami ang go-to tech and printing hub mo sa Muntinlupa! 👑"
-    },
-    // 1. PRINTING SERVICES (Min to Max Logic)
-    "printing_prices": {
-        keywords: ["magkano print", "presyo ng print", "how much print", "magkano colored", "magkano black and white", "piso print"],
-        response: `Eto ang aming standard rates para sa prints:
-        <br>• **Document (B&W):** ₱3.00 - ₱5.00 (Short/A4/Long)
-        <br>• **Document (Colored):** ₱5.00 - ₱20.00 (Depende sa ink coverage)
-        <br>• **Full Colored/Photo:** ₱15.00 - ₱50.00 (High-quality glossy)
-        <br><br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
+        keywords: ["what is gl", "gl?", "ano ang gl"],
+        response: "**GL** stands for the initials of our founder, **G. Lamigas**, but for our customers, it means **Great Logic & Guaranteed Layouts**. 👑"
     },
 
-    // 2. RUSH ID & INSTAX PRINTS
-    "id_instax_prices": {
-        keywords: ["magkano id", "magkano 1x1", "magkano 2x2", "magkano instax", "presyo ng id", "rush id price"],
-        response: `Para sa iyong mga memories at documents:
-        <br>• **Rush ID Bundle:** ₱50.00 - ₱120.00 (Kasama na ang basic retouch at formal attire edit)
-        <br>• **Instax/Polaroid Prints:** ₱30.00 - ₱45.00 per piece (Original Fujifilm)
-        <br>• **Locket Size Photos:** ₱20.00 - ₱40.00 (Customized size for jewelry)`
-    },
-
-    // 3. LAMINATION & PROTECTION
-    "lamination_prices": {
-        keywords: ["magkano lamination", "presyo palaminate", "how much laminate", "magkano plastic", "plastic cover price"],
-        response: `Protect your docs starting from:
-        <br>• **Small/ID Size:** ₱15.00 - ₱25.00
-        <br>• **Short/A4/Long:** ₱30.00 - ₱60.00 (Premium thick plastic)`
-    },
-
-    // 4. TECH SOLUTIONS & REPAIRS (Technical Logic)
-    "tech_prices": {
-        keywords: ["magkano ayos", "magkano lcd", "magkano battery", "repair price", "magkano reformat", "magkano software"],
-        response: `Technical diagnostics for Mobile and Laptops:
-        <br>• **Software (Reformat/Reprogram):** ₱300.00 - ₱800.00
-        <br>• **Hardware (LCD/Battery):** ₱800.00 - ₱4,500.00 (Depende sa unit at model)
-        <br><br><b>FREE Check-up</b> pag dinala ang unit sa operational sector namin!`
-    },
-
-    // 5. STICKERS & LABELS
-    "sticker_prices": {
-        keywords: ["magkano sticker", "sticker price", "label price", "magkano gupit", "custom sticker price"],
-        response: `Customized labels for business or personal:
-        <br>• **Per A4 Sheet:** ₱40.00 - ₱85.00 (Depende kung Matte, Glossy, or Vinyl Waterproof)`
-    },
-
-    // 6. PHOTOCOPY (XEROX)
-    "photocopy_prices": {
-        keywords: ["magkano xerox", "magkano photocopy", "magkano pa-copy", "xerox price"],
-        response: `Clear and accurate copies:
-        <br>• **Standard Copy:** ₱2.00 - ₱4.00 per page (Short/A4/Long)`
-    },
-    // 1. PRINTING SERVICES (Min to Max Logic)
-    "printing_prices": {
-        keywords: ["magkano print", "presyo ng print", "how much print", "magkano colored", "magkano black and white", "piso print"],
-        response: `Eto ang aming standard rates para sa prints:
-        <br>• **Document (B&W):** ₱3.00 - ₱5.00 (Short/A4/Long)
-        <br>• **Document (Colored):** ₱5.00 - ₱20.00 (Depende sa ink coverage)
-        <br>• **Full Colored/Photo:** ₱15.00 - ₱50.00 (High-quality glossy)
-        <br><br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
-    },
-
-    // 2. RUSH ID & INSTAX PRINTS
-    "id_instax_prices": {
-        keywords: ["magkano id", "magkano 1x1", "magkano 2x2", "magkano instax", "presyo ng id", "rush id price"],
-        response: `Para sa iyong mga memories at documents:
-        <br>• **Rush ID Bundle:** ₱50.00 - ₱120.00 (Kasama na ang basic retouch at formal attire edit)
-        <br>• **Instax/Polaroid Prints:** ₱30.00 - ₱45.00 per piece (Original Fujifilm)
-        <br>• **Locket Size Photos:** ₱20.00 - ₱40.00 (Customized size for jewelry)`
-    },
-
-    // 3. LAMINATION & PROTECTION
-    "lamination_prices": {
-        keywords: ["magkano lamination", "presyo palaminate", "how much laminate", "magkano plastic", "plastic cover price"],
-        response: `Protect your docs starting from:
-        <br>• **Small/ID Size:** ₱15.00 - ₱25.00
-        <br>• **Short/A4/Long:** ₱30.00 - ₱60.00 (Premium thick plastic)`
-    },
-
-    // 4. TECH SOLUTIONS & REPAIRS (Technical Logic)
-    "tech_prices": {
-        keywords: ["magkano ayos", "magkano lcd", "magkano battery", "repair price", "magkano reformat", "magkano software"],
-        response: `Technical diagnostics for Mobile and Laptops:
-        <br>• **Software (Reformat/Reprogram):** ₱300.00 - ₱800.00
-        <br>• **Hardware (LCD/Battery):** ₱800.00 - ₱4,500.00 (Depende sa unit at model)
-        <br><br><b>FREE Check-up</b> pag dinala ang unit sa operational sector namin!`
-    },
-
-    // 5. STICKERS & LABELS
-    "sticker_prices": {
-        keywords: ["magkano sticker", "sticker price", "label price", "magkano gupit", "custom sticker price"],
-        response: `Customized labels for business or personal:
-        <br>• **Per A4 Sheet:** ₱40.00 - ₱85.00 (Depende kung Matte, Glossy, or Vinyl Waterproof)`
-    },
-
-    "default": "Para sa ibang detalye o custom requests, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
+    "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
 };
         
 
