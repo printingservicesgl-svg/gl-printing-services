@@ -3,375 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GL PRINTS | Interdimensional Printing & Tech Solutions | Muntinlupa</title>
-    <link rel="icon" type="image/png" href="GL_Logo.png">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
-    
+    <title>GLP NEXUS | Muntinlupa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@splinetool/viewer@0.9.431/build/spline-viewer.js"></script>
     
     <style>
         :root {
-            /* Your gold, but with more UMPH */
-            --neon-gold: #FFD700;
-            --gold-pulse: #FFF3A3;
-            --deep-ads: #020202; /* Total void black */
-            --electric-blue: #00E5FF; /* New accent color for balance */
-            --glass: rgba(255, 215, 0, 0.05); /* Gold-tinted glass */
-            --glass-border: rgba(255, 215, 0, 0.2);
-            --transition-primary: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            --neon-gold: #ffcc00;
+            --bg-black: #050505;
+            --glass: rgba(10, 10, 10, 0.8);
+            --border: rgba(255, 204, 0, 0.2);
         }
 
-        /* Essential Reset and Body */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--deep-ads);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+        body { background: var(--bg-black); color: white; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
 
-        /* --- THE 3D WORLD CONTAINER --- */
-        #spline-scene {
+        /* LAYER 1: 3D BACKGROUND (Fixed & Bottom) */
+        #bg-3d {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 10; /* Everything else must go on top of this */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none; /* Para ma-click mo pa rin yung text sa harap */
         }
 
-        /* --- CONTENT OVERLAY --- */
-        #content-layer {
+        /* LAYER 2: SCROLLABLE CONTENT (Middle) */
+        #main-content {
             position: relative;
-            z-index: 20; /* Keep the HTML on top */
-            pointer-events: none; /* Make click-through possible */
+            z-index: 2;
+            width: 100%;
+            min-height: 100vh;
         }
 
-        #content-layer * {
-            pointer-events: auto; /* Re-enable for text/buttons */
-        }
-
-        /* Title Design */
-        h1 {
-            font-family: 'Syncopate', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 6rem);
-            letter-spacing: clamp(10px, 3vw, 25px);
-            text-transform: uppercase;
-            font-weight: 700;
-            text-align: center;
-            background: linear-gradient(135deg, white, var(--neon-gold), white);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
-        }
-
-        /* --- STYLIZED AI CHAT TERMINAL --- */
-        #chat-terminal {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            width: min(350px, 90vw);
-            height: 80vh;
-            background: rgba(10, 10, 10, 0.7);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            backdrop-filter: blur(25px);
+        header {
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 0 100px rgba(0,0,0,1);
-            transition: var(--transition-primary);
-        }
-
-        /* Sleek header */
-        #chat-header {
-            background: var(--neon-gold);
-            color: black;
-            padding: 10px 15px;
-            font-family: 'Syncopate';
-            font-size: 11px;
-            text-align: center;
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-        }
-
-        #chat-status-dot {
-            height: 10px; width: 10px;
-            background: black;
-            border-radius: 50%;
-            animation: pulse-active 1.5s infinite;
-        }
-
-        @keyframes pulse-active {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.5; }
-        }
-
-        /* AI Interface and Input */
-        #chat-display {
-            flex: 1; padding: 20px;
-            overflow-y: auto; font-size: 14px;
-            display: flex; flex-direction: column; gap: 15px;
-            scroll-behavior: smooth;
-        }
-
-        .bot-msg { color: var(--electric-blue); font-weight: 600; font-family: 'Inter'; font-style: italic; }
-        .user-msg { color: var(--neon-gold); font-weight: 600; align-self: flex-end; font-family: 'Syncopate'; font-size: 12px; }
-
-        #chat-input-area { display: flex; padding: 10px; background: rgba(255,255,255,0.02); }
-        #chat-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
-        #send-btn { background: var(--electric-blue); border: none; padding: 0 18px; border-radius: 6px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; }
-
-        /* --- THE ORBITAL DATA SHARDS (SERVICES) --- */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 100px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 40px;
-        }
-
-        .data-shard {
-            position: relative;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 50px 30px;
             text-align: center;
-            transition: var(--transition-primary);
-            overflow: hidden;
-            cursor: pointer;
+            pointer-events: none; /* Allow click through to 3D if needed */
         }
 
-        /* Shard Inner Content */
-        .shard-body {
-            position: relative;
-            z-index: 50;
-            transition: var(--transition-primary);
-        }
+        .hero-text { pointer-events: auto; }
 
-        .data-shard h3 {
-            font-family: 'Syncopate', sans-serif;
-            color: var(--neon-gold);
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
+        h1 { font-family: 'Syncopate'; font-size: clamp(2.5rem, 8vw, 5rem); color: var(--neon-gold); letter-spacing: 10px; }
 
-        .data-shard p { font-size: 0.95rem; color: #ddd; }
-
-        /* SHARD ACTIVE EFFECT: The "Breakaway Orbit" and "Shatter" open */
-        .data-shard:hover {
-            transform: translateY(-15px) rotateX(5deg) scale(1.03);
-            border-color: var(--electric-blue);
-            box-shadow: 0 30px 60px rgba(0, 229, 255, 0.2);
-        }
-
-        .data-shard:hover .shard-body {
-            transform: translateZ(50px); /* Move towards camera in 3D perspective */
-        }
-
-        /* The Shard Pulse Effect */
-        .data-shard::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0) 70%);
-            opacity: 0;
-            transition: var(--transition-primary);
-            z-index: 10;
-        }
-
-        .data-shard:hover::after { opacity: 1; }
-
-        /* Contact Section Hologram */
-        #contact { padding: 150px 5%; text-align: center; }
-        #phone-num { font-size: clamp(1.5rem, 6vw, 3rem); letter-spacing: 10px; color: var(--electric-blue); margin: 30px 0; transition: 0.3s; cursor: pointer;}
-        #phone-num:hover { text-shadow: 0 0 30px var(--electric-blue); color: #fff; }
-
-        /* Glitch Button Styling */
-        .btn-interdimensional {
-            padding: 18px 36px;
-            border: 2px solid var(--neon-gold);
-            background: transparent;
-            color: var(--neon-gold);
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: var(--transition-primary);
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .btn-interdimensional:hover {
-            background: var(--neon-gold);
-            color: black;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
-        }
-
-        /* Minimalistic Mobile Navigation */
+        /* LAYER 3: UI OVERLAYS (Navigation & Chat - Top) */
         nav {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
+            bottom: 20px; left: 50%;
             transform: translateX(-50%);
-            background: rgba(10, 10, 10, 0.5);
-            backdrop-filter: blur(20px);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid var(--glass-border);
-            display: flex;
-            gap: 20px;
-            z-index: 2000;
+            background: var(--glass);
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            display: flex; gap: 20px;
+            z-index: 100; /* Pinaka-ibabaw */
+            backdrop-filter: blur(10px);
         }
 
-        nav a {
-            color: white; text-decoration: none;
-            font-size: 11px; font-family: 'Syncopate';
-            transition: 0.3s;
+        nav a { color: white; text-decoration: none; font-size: 10px; font-family: 'Syncopate'; }
+
+        /* AI CHAT UI FIX */
+        #chat-trigger {
+            position: fixed;
+            bottom: 85px; right: 25px;
+            width: 55px; height: 55px;
+            background: var(--neon-gold);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 101;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
-        nav a:hover { color: var(--electric-blue); }
+
+        #chat-window {
+            position: fixed;
+            bottom: 150px; right: 25px;
+            width: min(350px, 85vw);
+            height: 450px;
+            background: var(--glass);
+            border: 1px solid var(--neon-gold);
+            border-radius: 20px;
+            display: none; flex-direction: column;
+            z-index: 102;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; }
+        #chat-logs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bot { color: var(--neon-gold); font-size: 14px; border-left: 2px solid var(--neon-gold); padding-left: 10px; }
+        .user { align-self: flex-end; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; font-size: 14px; }
+
+        .input-box { display: flex; border-top: 1px solid var(--border); }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 15px; outline: none; }
+        #send-btn { background: var(--neon-gold); border: none; padding: 0 20px; cursor: pointer; font-family: 'Syncopate'; font-size: 10px; }
+
+        /* Shards Grid */
+        .grid {
+            max-width: 1100px;
+            margin: 50px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .shard {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 40px 20px;
+            border-radius: 20px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .shard:hover { border-color: var(--neon-gold); transform: translateY(-5px); }
+        .shard h3 { color: var(--neon-gold); font-family: 'Syncopate'; font-size: 1rem; margin-bottom: 10px; }
 
     </style>
 </head>
 <body>
 
+    <spline-viewer id="bg-3d" url="https://prod.spline.design/bWwXl30L-9U6M6fM/scene.splinecode"></spline-viewer>
+
     <nav>
         <a href="#home">Home</a>
-        <a href="#services">Shards</a>
-        <a href="#contact">NEXUS</a>
+        <a href="#services">Services</a>
+        <a href="https://m.me/GLprinting.services/" target="_blank">Contact</a>
     </nav>
 
-    <spline-viewer id="spline-scene" url="https://prod.spline.design/bWwXl30L-9U6M6fM/scene.splinecode"></spline-viewer>
-
-    <main id="content-layer">
-
-        <h1 style="position:fixed; top:40%; left:50%; transform:translateX(-50%); width:90%; font-size:3rem; letter-spacing:10px;">GL PRINTS</h1>
-
-        <div id="chat-terminal">
-            <div id="chat-header">
-                <div>SYSTEM_AI // ACTV_MODE</div>
-                <div id="chat-status-dot"></div>
-            </div>
-            <div id="chat-display">
-                <p class="bot-msg">Welcome to GL Prints Interdimensional Hub. Initiate query sequence... (Keyphrases: Shards, Price, Nexus, Repair)</p>
-            </div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Awaiting input data...">
-                <button id="send-btn" onclick="askAI()">SEND</button>
-            </div>
+    <div id="chat-trigger" onclick="toggleChat()">🤖</div>
+    
+    <div id="chat-window">
+        <div class="chat-header">GL SYSTEM AI</div>
+        <div id="chat-logs">
+            <p class="bot">System online. What is your request?</p>
         </div>
+        <div class="input-box">
+            <input type="text" id="chat-in" placeholder="Type keyword...">
+            <button id="send-btn" onclick="talkToAI()">GO</button>
+        </div>
+    </div>
 
-        <div style="height: 100vh;" id="home"></div>
+    <main id="main-content">
+        <header id="home">
+            <div class="hero-text">
+                <h1>GL PRINTS</h1>
+                <p style="letter-spacing: 5px; opacity: 0.6;">3D TECH & PRINT SOLUTIONS</p>
+            </div>
+        </header>
 
-        <section class="container" id="services">
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>EVENT & MEDIA PRINTS</h3>
-                    <p>Premium bundles for Birthdays & Christenings. Custom stickers and event stationery. 3D projection mapping available.</p>
-                </div>
+        <section class="grid" id="services">
+            <div class="shard">
+                <h3>PRINTS & MEDIA</h3>
+                <p>Events, Stickers, Photo Develop.</p>
             </div>
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>DIGITAL LAYOUTS</h3>
-                    <p>Professional layouts for business, branding, and augmented reality (AR) markers.</p>
-                </div>
+            <div class="shard">
+                <h3>TECH SOLUTIONS</h3>
+                <p>Laptop/Phone Repair & Reformat.</p>
             </div>
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>E-GOV / OFFICE ASSIST</h3>
-                    <p>E-Gov applications, data encoding, and high-accuracy holographic data prep.</p>
-                </div>
-            </div>
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>TECH ASSIST</h3>
-                    <p>Resume restructuring, specialized technical research, and neural document formatting.</p>
-                </div>
-            </div>
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>TECH SOLUTIONS</h3>
-                    <p>Mobile diagnostics and specialized software troubleshooting, reformatting.</p>
-                </div>
-            </div>
-            <div class="data-shard">
-                <div class="shard-body">
-                    <h3>HOLOGRAPHIC & MUSICAL SERVICES</h3>
-                    <p>Holographic experience dev, Original Songwriting, and Musical arrangements.</p>
-                </div>
+            <div class="shard">
+                <h3>DIGITAL OFFICE</h3>
+                <p>E-Gov, Encoding, Resume Assist.</p>
             </div>
         </section>
-
-        <section id="contact">
-            <h2 style="font-family: 'Syncopate'; font-size: 1.2rem; letter-spacing: 15px; text-shadow: 0 0 10px var(--neon-gold);">NEXUS NODE</h2>
-            <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-            <a href="https://www.facebook.com/GLprinting.services/" target="_blank" class="btn-interdimensional">ACCESS FACEBOOK NETWORK</a>
-        </section>
-
     </main>
 
     <script>
-        // Copy functionality
-        function copyNumber() {
-            const num = document.getElementById('phone-num').innerText;
-            navigator.clipboard.writeText(num);
-            alert("Contact data copied to personal clipboard nexus.");
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // --- STYLIZED AI LOGIC ---
-        // Your existing data, with slightly more futuristic responses
-        const glKnowledge = {
-            "generic_price": { keywords: ["magkano", "how much", "presyo", "hm", "piso", "price", "amount"], response: "To calculate specific currency required, clarify service required, Ma'am/Sir:<br><b style='color:var(--neon-gold)'>Select data shard:</b><br>• Media Prints<br>• Rush ID bundle<br>• Custom Shards/Stickers<br>• Lamination<br>• Tech Solutions" },
-            "printing_prices": { keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"], response: "Standard Data Rates:<br>• Document (B&W): ₱4.00 - ₱6.00<br>• Colored/Mixed: ₱6.00 - ₱15.00<br>• High-Density Color: ₱15.00 - ₱30.00" },
-            "tech_prices": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone"], response: "Technical Intervention Protocol:<br>• System Reformat: ₱300.00 - ₱800.00<br>• Neural/Hardware fix: ₱800.00+ (Depends on entity model)<br><b>Check-up sequence initiated: NO COST.</b>" },
-            "location": { keywords: ["saan", "location", "address", "muntinlupa", "map"], response: "Nexus Node located within Muntinlupa City sector. Link for coordinates:<br><a href='#' style='color:white; font-weight:bold'>📍 ACCESS LOCATION DATA</a>" },
-            "default": "Data stream incomplete. For full details, transmit data to our Messenger nexus: <a href='https://m.me/GLprinting.services/' target='_blank' style='color:white'>ESTABLISH SECURE LINK</a>"
+        const brain = {
+            "price": "Check our price list: <br>• B&W: ₱4-₱6<br>• Colored: ₱6-₱30<br>• Stickers: ₱50/sheet",
+            "repair": "Tech Check: ₱300-₱800 software, Hardware varies. FREE Checkup!",
+            "location": "Muntinlupa City Sector. Open for walk-ins!",
+            "default": "Command not recognized. Chat us on Messenger for human support."
         };
 
-        // Keypress for chat
-        document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === "Enter") askAI(); });
+        function talkToAI() {
+            const input = document.getElementById('chat-in');
+            const logs = document.getElementById('chat-logs');
+            const val = input.value.toLowerCase();
+            if(!val) return;
 
-        function askAI() {
-            const input = document.getElementById('chat-input');
-            const display = document.getElementById('chat-display');
-            const rawMsg = input.value.trim();
-            const msg = rawMsg.toLowerCase();
-            
-            if (!msg) return;
-
-            display.innerHTML += `<div class="user-msg">${rawMsg}</div>`;
+            logs.innerHTML += `<div class="user">${input.value}</div>`;
             input.value = "";
 
-            // Simple Exit/Reset Cmds
-            const exitCmds = ["reset", "close", "clear", "clear screen"];
-            if (exitCmds.some(word => msg.includes(word))) { display.innerHTML = ""; return;}
+            let reply = brain["default"];
+            if(val.includes("magkano") || val.includes("price")) reply = brain["price"];
+            if(val.includes("sira") || val.includes("repair")) reply = brain["repair"];
+            if(val.includes("saan") || val.includes("location")) reply = brain["location"];
 
-            // Processing Indicator
-            const tid = "t-" + Date.now();
-            display.innerHTML += `<p class="bot-msg" id="${tid}"><i>SYSTEM AI // PROCESSING_IN_REAL_TIME...</i></p>`;
-            display.scrollTop = display.scrollHeight;
-
-            // Simple Keyword Matching
-            let response = glKnowledge["default"];
-            for (let key in glKnowledge) {
-                if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
-                    response = glKnowledge[key].response;
-                    break;
-                }
-            }
-
-            // Fake processing delay
             setTimeout(() => {
-                const el = document.getElementById(tid);
-                if (el) el.innerHTML = `<b>SYSTEM // GL-AI:</b><br>${response}`;
-                display.scrollTop = display.scrollHeight;
-            }, 800 + Math.random() * 800); // Randomize to feel more organic
+                logs.innerHTML += `<div class="bot"><b>AI:</b><br>${reply}</div>`;
+                logs.scrollTop = logs.scrollHeight;
+            }, 600);
         }
+
+        document.getElementById('chat-in').addEventListener('keydown', (e) => { if (e.key === "Enter") talkToAI(); });
     </script>
 </body>
 </html>
