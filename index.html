@@ -320,9 +320,41 @@ nav a:hover {
 .gallery-grid::-webkit-scrollbar-thumb {
     background: var(--neon-gold);
     border-radius: 10px;
-}
+  
 }
 
+@keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+
+.gallery-overlay.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* Match width of image */
+    height: 2px;
+    background: var(--neon-gold);
+    box-shadow: 0 0 15px var(--neon-gold);
+    animation: scan 3s linear infinite;
+    z-index: 2001;
+    pointer-events: none;
+}
+}
+.specs-box {
+    position: absolute;
+    left: 5%;
+    bottom: 10%;
+    color: var(--neon-gold);
+    font-family: 'Space Grotesk', monospace;
+    font-size: 10px;
+    border-left: 1px solid var(--neon-gold);
+    padding-left: 10px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+.specs-title { font-weight: bold; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -388,8 +420,14 @@ nav a:hover {
     </section>
 
     <div id="gallery" class="gallery-overlay" onclick="closeGallery()">
-        <div class="gallery-grid" id="gallery-grid-content">
-             </div>
+        <div class="specs-box">
+        <p class="specs-title">PORTFOLIO DATA</p>
+        <p>TYPE: HIGH-RES PRINT</p>
+        <p>STATUS: VERIFIED</p>
+        <p>LOC: MUNTINLUPA SECTOR</p>
+    </div>
+       <img id="gallery-img" src="" class="gallery-content">
+</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
