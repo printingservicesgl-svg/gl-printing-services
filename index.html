@@ -80,7 +80,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Fixed Navigation */
         nav {
             position: fixed;
             bottom: 30px;
@@ -105,10 +104,8 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             position: relative;
-            transition: 0.3s;
         }
 
-        nav a:visited { color: white; }
         nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
         .container {
@@ -154,17 +151,12 @@
             cursor: pointer;
         }
 
-        .status-container { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; }
-        .pulse-dot { width: 8px; height: 8px; background-color: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
-        .status-text { font-size: 0.7rem; letter-spacing: 2px; color: var(--text-gray); }
-
-        /* Gallery System Overlay */
+        /* Gallery Overlay */
         .gallery-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.96);
-            backdrop-filter: blur(25px);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -175,29 +167,25 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             width: 80%;
             max-height: 80vh;
             overflow-y: auto;
             padding: 20px;
         }
 
-        /* Classy Staggered Fade-In */
         .gallery-grid img {
             width: 100%;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 2px solid var(--neon-gold);
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 0.6s ease forwards;
         }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* Once-Only Scan Animation */
         @keyframes scanOnce {
             0% { top: 0%; opacity: 1; }
             90% { top: 100%; opacity: 1; }
@@ -209,22 +197,53 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 2px;
             background: var(--neon-gold);
-            box-shadow: 0 0 20px var(--neon-gold);
+            box-shadow: 0 0 15px var(--neon-gold);
             animation: scanOnce 2s ease-in-out forwards;
             z-index: 2001;
             pointer-events: none;
         }
 
-        .specs-box {
-            position: absolute;
-            left: 5%; bottom: 5%;
-            color: var(--neon-gold);
-            font-family: monospace;
-            font-size: 11px;
-            border-left: 2px solid var(--neon-gold);
-            padding-left: 10px;
-            opacity: 0.6;
+        /* Floating AI Button & Chat */
+        #ai-chat-btn {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            width: 65px; height: 65px;
+            background: var(--deep-ads);
+            border: 2px solid var(--neon-gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-gold);
+            transition: 0.3s;
         }
+
+        #ai-chat-btn img { width: 45px; filter: drop-shadow(0 0 5px var(--neon-gold)); }
+
+        #chat-box {
+            position: fixed;
+            bottom: 110px; right: 30px;
+            width: 320px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--neon-gold);
+            border-radius: 15px;
+            display: none;
+            flex-direction: column;
+            z-index: 3000;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+        }
+
+        #chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; text-align: center; border-radius: 13px 13px 0 0; }
+        #chat-display { height: 300px; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
+        .bot-msg { color: var(--neon-gold); border-left: 2px solid var(--neon-gold); padding-left: 10px; line-height: 1.4; }
+        .user-msg { color: white; text-align: right; opacity: 0.8; font-style: italic; }
+        #chat-input-area { display: flex; border-top: 1px solid rgba(255, 204, 0, 0.2); }
+        #chat-input { flex: 1; background: transparent; border: none; color: white; padding: 15px; outline: none; font-family: 'Space Grotesk'; }
+        #send-btn { background: var(--neon-gold); border: none; padding: 15px; cursor: pointer; font-family: 'Syncopate'; font-size: 9px; font-weight: bold; }
+
     </style>
 </head>
 <body>
@@ -242,17 +261,13 @@
         <img src="GL_Logo.png" alt="Logo" class="gl-logo">
         <h1>GL PRINTS</h1>
         <p style="letter-spacing: 5px; color: var(--text-gray);">EST. 2025 | MUNTINLUPA CITY</p>
-        <div class="status-container">
-            <span class="pulse-dot"></span>
-            <p class="status-text">SYSTEM STATUS: OPERATIONAL</p>
-        </div>
         <button class="btn-glitch" onclick="window.location.href='#services'">ENTER SYSTEM</button>
     </header>
 
     <div class="container" id="services">
         <div class="tilt-card" data-tilt onclick="openGallery(['img/christeningb1-removebg-preview.png', 'img/locket2.jpg'])">
             <h3>EVENT & MEDIA PRINTS</h3>
-            <p>Premium bundles for Birthdays, Christening, and Weddings. High-resolution stickers and custom event stationery.</p>
+            <p>Premium bundles for Birthdays and Christenings. Custom stickers and event stationery.</p>
         </div>
         <div class="tilt-card" data-tilt>
             <h3>DIGITAL DESIGN</h3>
@@ -260,11 +275,11 @@
         </div>
         <div class="tilt-card" data-tilt>
             <h3>E-GOV & OFFICE ASSIST</h3>
-            <p>Assistance with E-Government applications, digital IDs, and data encoding.</p>
+            <p>E-Gov applications, digital IDs, and high-accuracy data encoding.</p>
         </div>
         <div class="tilt-card" data-tilt>
             <h3>TECH ASSIST</h3>
-            <p>Premium resume restructuring, technical research, and digital document formatting.</p>
+            <p>Resume restructuring, technical research, and document formatting.</p>
         </div>
         <div class="tilt-card" data-tilt>
             <h3>TECH SOLUTIONS</h3>
@@ -272,7 +287,7 @@
         </div>
         <div class="tilt-card" data-tilt>
             <h3>SPECIALIZED SERVICES</h3>
-            <p>Custom Website Development, Original Songwriting, and Musical Instrument tutoring.</p>
+            <p>Website Development, Original Songwriting, and Musical arrangements.</p>
         </div>
     </div>
 
@@ -283,42 +298,48 @@
     </section>
 
     <div id="gallery" class="gallery-overlay" onclick="closeGallery()">
-        <div class="specs-box">
-            <p style="font-weight: bold; margin-bottom: 5px;">SYSTEM DATA: PORTFOLIO</p>
-            <p>ACCESS: GRANTED</p>
-            <p>LOC: MUNTINLUPA_SECTOR_GL</p>
-        </div>
         <div class="gallery-grid" id="gallery-grid-content"></div>
+    </div>
+
+    <div id="ai-chat-btn" onclick="toggleChat()">
+        <img src="GL_Logo.png" alt="AI Assistant">
+    </div>
+
+    <div id="chat-box">
+        <div id="chat-header">GL SYSTEM AI</div>
+        <div id="chat-display">
+            <p class="bot-msg">Welcome to GL Prints. How can I assist you today? (Keywords: Price, Location, Services, Repair)</p>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a keyword...">
+            <button id="send-btn" onclick="askAI()">SEND</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
-        // Custom Cursor
+        // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Initialize 3D Tilt
-        VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
-            max: 15, speed: 400, glare: true, "max-glare": 0.3,
-        });
+        // 3D Tilt Init
+        VanillaTilt.init(document.querySelectorAll(".tilt-card"), { max: 15, speed: 400, glare: true, "max-glare": 0.3 });
 
-        // Gallery Functions
+        // Gallery Logic
         function openGallery(imagesArray) {
             const overlay = document.getElementById('gallery');
             const gridContent = document.getElementById('gallery-grid-content');
             gridContent.innerHTML = '';
-            
             imagesArray.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
-                img.style.animationDelay = (0.2 * index) + 's'; // Staggered delay per image
+                img.style.animationDelay = (0.2 * index) + 's';
                 img.onclick = (e) => e.stopPropagation();
                 gridContent.appendChild(img);
             });
-            
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -328,14 +349,46 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Copy Phone Logic
+        // AI Assistant Logic
+        const glKnowledge = {
+            "price": "Our rates are competitive! Documents start at ₱5, Lockets at ₱150. For custom design packages, please message our FB page.",
+            "location": "We are based in Muntinlupa City. We cater to local residents and offer delivery for bulk print orders.",
+            "services": "We specialize in Event Prints (Stickers/Instax), Digital Layouts, E-Gov assistance, and Tech Repairs.",
+            "repair": "We offer mobile and laptop diagnostics. Visit us for LCD replacements, battery issues, or software flashing.",
+            "hello": "System active. I am GL-AI. Type a keyword to begin inquiry.",
+            "default": "For specific quotes and faster processing, please contact us at 0991 636 1742 or message our Facebook."
+        };
+
+        function toggleChat() {
+            const box = document.getElementById('chat-box');
+            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function askAI() {
+            const input = document.getElementById('chat-input');
+            const display = document.getElementById('chat-display');
+            const msg = input.value.toLowerCase().trim();
+            if (!msg) return;
+
+            display.innerHTML += `<p class="user-msg">${msg}</p>`;
+            let response = glKnowledge["default"];
+            for (let key in glKnowledge) { if (msg.includes(key)) { response = glKnowledge[key]; break; } }
+
+            setTimeout(() => {
+                display.innerHTML += `<p class="bot-msg">GL-AI: ${response}</p>`;
+                display.scrollTop = display.scrollHeight;
+            }, 600);
+            input.value = "";
+        }
+
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') askAI(); });
+
+        // Copy Number
         function copyNumber() {
-            const number = "0991 636 1742";
-            navigator.clipboard.writeText(number).then(() => {
+            navigator.clipboard.writeText("0991 636 1742").then(() => {
                 const label = document.getElementById('phone-num');
-                label.innerText = "COPIED TO CLIPBOARD!";
-                label.style.color = "#00ff00";
-                setTimeout(() => { label.innerText = number; label.style.color = "white"; }, 2000);
+                label.innerText = "COPIED!"; label.style.color = "#00ff00";
+                setTimeout(() => { label.innerText = "0991 636 1742"; label.style.color = "white"; }, 2000);
             });
         }
     </script>
