@@ -408,7 +408,7 @@ const glKnowledge = {
     // --- LOGISTICS & INFO ---
     "delivery": {
         keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "ship", "rider"],
-        response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Master!"
+        response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Ma'am/Sir!"
     },
     "payment": {
         keywords: ["gcash", "payment", "bayad", "mop", "maya", "cash", "transfer"],
@@ -429,7 +429,7 @@ const glKnowledge = {
 
     // --- WITTY / PERSONAL ---
     "sino": {
-        keywords: ["sino", "owner", "ry", "master ry", "founder", "ate"],
+        keywords: ["sino", "owner", "ry", "Boss ry", "founder", "ate"],
         response: "The system is owned by **Ate Ry (Lria)** 👑"
     },
     "boring": {
@@ -453,7 +453,7 @@ const glKnowledge = {
     "greetings": {
         keywords: ["hi", "hello", "boss", "maam", "ma'am", "sir", "ate", "kuya", "hi po", "hello po", "question po", "tanong po", "uuy", "kamusta"],
         response: `System Active. I am **GL-AI**. 
-        <br><br>Hello, Master! Handa akong tumulong sa iyong concerns. Ano ang maitutulong ko sa iyo ngayon?
+        <br><br>Hello, Ma'am/Sir! Handa akong tumulong sa iyong concerns. Ano ang maitutulong ko sa iyo ngayon?
         <br><br><b style="color:var(--neon-gold)">Pumili ng category:</b>
         <br>• **Price** (Magkano ang services)
         <br>• **Location** (Saan ang shop)
@@ -470,7 +470,7 @@ const glKnowledge = {
         <br>• **Standard Thesis:** Short/A4/Long (70gsm - 80gsm)
         <br>• **Quality:** Crystal clear text, perfect para sa panels.
         <br>• **Encoding:** We also help with document formatting!
-        <br><br><i>Message us your PDF for a quotation, Master!</i>`
+        <br><br><i>Message us your PDF for a quotation, Ma'am/Sir!</i>`
     },
     "creative_printing": {
         keywords: ["magazine", "brochure", "portfolio", "booklet", "zine", "catalog"],
@@ -535,7 +535,7 @@ function askAI() {
         if (violationCount === 1) {
             display.innerHTML += `<p class="bot-msg" style="color:red">GL-AI: Warning. Be respectful. Logic error detected in your language.</p>`;
         } else {
-            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h1>PROTOCOL BREACH</h1><p>BANNED BY MASTER RY. EXITING...</p></div>`;
+            document.body.innerHTML = `<div style="height:100vh; background:red; color:black; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; flex-direction:column;"><h3>PROTOCOL BREACH</h3><p>BANNED. EXITING...</p></div>`;
             setTimeout(() => { window.location.href = "https://google.com"; }, 2000);
             return;
         }
