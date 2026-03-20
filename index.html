@@ -349,57 +349,64 @@
             document.getElementById('gallery').classList.remove('active');
             document.body.style.overflow = 'auto';
         }
-        
+
 const glKnowledge = {
     // --- SPECIAL CLARIFICATION LOGIC ---
     "generic_price": {
         keywords: ["magkano", "how much", "presyo", "hm", "piso"],
-        response: "Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Master? <br><br> Is it for **Prints**, **Rush ID**, **Stickers**, **Lamination**, or **Tech Repair**?"
+        response: `Para mabigyan kita ng accurate na presyo, ano ang specific na ipapagawa mo, Master? 
+        <br><br><b>Pumili ng category:</b>
+        <br>• Prints (Documents/Photos)
+        <br>• Rush ID (1x1, 2x2, Passport)
+        <br>• Stickers (Labels/Vinyl)
+        <br>• Lamination (ID to Long)
+        <br>• Tech Repair (Mobile/Laptop)
+        <br><br><i>Type mo lang yung keyword para sa presyo!</i>`
     },
 
     // --- SERVICES & PRICES ---
     "printing_prices": {
         keywords: ["print", "colored", "black and white", "b&w", "piso print", "document"],
         response: `Eto ang aming standard rates para sa prints:
-        <br>• **Document (B&W):** ₱3.00 - ₱5.00 (Short/A4/Long)
-        <br>• **Document (Colored):** ₱5.00 - ₱20.00 (Depende sa ink coverage)
-        <br>• **Full Colored/Photo:** ₱15.00 - ₱50.00 (High-quality glossy)
+        <br>• Document (B&W): ₱4.00 - ₱6.00 (Short/A4/Long)
+        <br>• Document (Colored): ₱6.00 - ₱15.00 (Depende sa ink coverage)
+        <br>• Full Colored/Photo: ₱15.00 - ₱30.00 (High-quality glossy)
         <br><br><i>Note: Mas mura ang rate pag bulk orders (50+ pages)!</i>`
     },
     "id_instax_prices": {
         keywords: ["id", "1x1", "2x2", "instax", "polaroid", "locket", "id picture", "id pic"],
         response: `Para sa iyong mga memories at documents:
-        <br>• **Rush ID Bundle:** ₱50.00 - ₱120.00 (Kasama na ang basic retouch at formal attire edit)
-        <br>• **Instax/Polaroid Prints:** ₱30.00 - ₱45.00 per piece (Original Fujifilm)
-        <br>• **Locket Size Photos:** ₱20.00 - ₱40.00 (Customized size for jewelry)`
+        <br>• Rush ID Bundle: ₱35.00 - ₱100.00 (Kasama na ang basic retouch at formal attire edit)
+        <br>• Instax/Polaroid Prints: ₱30.00 - ₱45.00 per piece (Original Fujifilm)
+        <br>• Locket Size Photos: ₱20.00 - ₱40.00 (Customized size for jewelry)`
     },
     "lamination_prices": {
         keywords: ["lamination", "laminate", "palaminate", "plastic", "cover"],
         response: `Protect your docs starting from:
-        <br>• **Small/ID Size:** ₱15.00 - ₱25.00
-        <br>• **Short/A4/Long:** ₱30.00 - ₱60.00 (Premium thick plastic)`
+        <br>• Small/ID Size: ₱15.00 - ₱25.00
+        <br>• Short/A4/Long: ₱30.00 - ₱60.00 (Premium thick plastic)`
     },
     "tech_prices": {
         keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "software", "laptop", "iphone", "samsung", "realme", "infinix"],
         response: `Technical diagnostics for Mobile and Laptops:
-        <br>• **Software (Reformat/Reprogram):** ₱300.00 - ₱800.00
-        <br>• **Hardware (LCD/Battery):** ₱800.00 - ₱4,500.00 (Depende sa unit at model)
+        <br>• Software (Reformat/Reprogram): ₱300.00 - ₱800.00
+        <br>• Hardware (LCD/Battery): ₱800.00 - ₱4,500.00 (Depende sa unit at model)
         <br><br><b>FREE Check-up</b> pag dinala ang unit sa amin!`
     },
     "sticker_prices": {
         keywords: ["sticker", "label", "produkto", "product label", "glossy", "cut", "pabilog"],
         response: `Customized labels for business or personal:
-        <br>• **Per A4 Sheet:** ₱40.00 - ₱85.00 (Depende kung Matte, Glossy, or Vinyl Waterproof)`
+        <br>• Per A4 Sheet: ₱50.00 - ₱85.00 (Depende kung Standard, Glossy, or Inkjet)`
     },
     "photocopy_prices": {
-        keywords: ["xerox", "photocopy", "pa-copy"],
+        keywords: ["xerox", "photocopy", "pa copy", "pa xerox"],
         response: `Clear and accurate copies:
-        <br>• **Standard Copy:** ₱2.00 - ₱4.00 per page (Short/A4/Long)`
+        <br>• Standard Copy: ₱2.00 - ₱6.00 per page (Short/A4/Long)`
     },
 
     // --- LOGISTICS & INFO ---
     "delivery": {
-        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "ship"],
+        keywords: ["delivery", "pahatid", "lalamove", "grab", "shipping", "isend", "ipadala", "ship", "pwede deluver?", "rider"],
         response: "Yes! We offer delivery via **Lalamove or Grab** (buyer shoulders the fee). For bulk orders within Muntinlupa, we can arrange special delivery. Pa-message lang ng location niyo, Master!"
     },
     "payment": {
@@ -430,7 +437,7 @@ const glKnowledge = {
     },
     "what_is_gl": {
         keywords: ["what is gl", "gl?", "ano ang gl"],
-        response: "**GL** stands for the initials of our founder, **G. Lamigas**, but for our customers, it means **Great Logic & Guaranteed Layouts**. 👑"
+        response: "**GL** stands for the initials of our founder, but for our customers, it means **Great Logic & Guaranteed Layouts**. 👑"
     },
 
     "default": "Para sa ibang detalye, best na kausapin ang aming team sa Messenger: <a href='https://m.me/GLprinting.services/' target='_blank'>Chat with us!</a>"
@@ -445,7 +452,7 @@ let violationCount = 0; // Ilagay ito sa labas ng function (top of script)
 // Listahan ng lahat ng mura (Tagalog & English)
 const cursedWords = [
     "gago", "puta", "tangina", "pakyu", "bobo", "pota", "tarantado", "hayop", "lintek", 
-    "hudas", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "kupal", "t*ngina"
+    "hudas", "sh*t", "f*ck", "p*tangina", "g*go", "ulol", "bwisit", "kupal", "t*ngina", "bonak", "pepe", "tite", "giatay"
 ];
 
 // 1. ENTER KEY LOGIC (Eto yung request mo na gumana ang Enter)
