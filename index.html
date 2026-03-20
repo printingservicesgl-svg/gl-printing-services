@@ -564,6 +564,15 @@ function askAI() {
     }, 500);
     input.value = "";
 }
+// Kung walang nahanap na match sa loop, gamitin ang default
+    if (!response || response === glKnowledge["default"]) {
+        response = glKnowledge["default"];
+    }
+
+    setTimeout(() => {
+        display.innerHTML += `<p class="bot-msg"><b>GL-AI:</b><br>${response}</p>`;
+        display.scrollTop = display.scrollHeight;
+    }, 500);
 
     </script>
 </body>
