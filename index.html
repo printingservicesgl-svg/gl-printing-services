@@ -561,6 +561,26 @@ function askAI() {
         addBotMsg(randomDefault);
     }
 }
+function toggleChat() {
+    const chatContainer = document.getElementById("chat-container");
+    const chatIcon = document.getElementById("chat-icon"); // Yung button na bilog
+
+    if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
+        chatContainer.style.display = "flex"; // I-open ang chat
+        chatIcon.style.display = "none";     // Itago ang icon habang nakabukas ang chat
+        
+        // Auto-focus sa input para ready na mag-type (Optional)
+        setTimeout(() => document.getElementById("chat-input").focus(), 300);
+        
+        // Unang bati ni AI kung empty pa ang display
+        if(document.getElementById("chat-display").innerHTML === "") {
+            addBotMsg("Hello! Welcome to <b>GL Printing Services</b>. I am <b>GL-AI</b>. How can I assist you today?");
+        }
+    } else {
+        chatContainer.style.display = "none"; // I-close ang chat
+        chatIcon.style.display = "block";    // Ibalik ang icon para pwedeng i-open ulit
+    }
+}
 </script>
 
 </body>
