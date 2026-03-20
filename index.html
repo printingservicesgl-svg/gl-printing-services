@@ -70,12 +70,15 @@ nav{
     border: 1px solid rgba(255,204,0,0.1);
 }
 
-nav a{
-    color:white;
-    text-decoration:none;
-    font-size:0.75rem;
-    font-family: 'Syncopate';
-    transition:0.3s;
+nav a {
+    color: white;
+    text-decoration: none;
+    font-family: 'Syncopate', sans-serif; /* Applied font */
+    font-weight: 700; /* Bold weight for that 'Nexus' look */
+    font-size: 0.7rem; 
+    letter-spacing: 3px; /* Increased spacing to match the image */
+    text-transform: uppercase; /* Ensures All-Caps */
+    transition: 0.3s;
 }
 
 nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
@@ -142,7 +145,42 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     backdrop-filter: blur(20px);
 }
 
-#chat-header { background: var(--neon-gold); color: black; padding: 12px; font-family: 'Syncopate'; font-size: 10px; font-weight: bold; text-align: center; }
+/* Chat Header */
+#chat-header {
+    background: var(--neon-gold);
+    color: black;
+    padding: 15px;
+    font-family: 'Syncopate', sans-serif; /* Match the header font */
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* AI Welcome Message/Bot Bubbles */
+.bot-bubble {
+    background: rgba(255, 204, 0, 0.05);
+    border-left: 3px solid var(--neon-gold);
+    padding: 12px;
+    color: white;
+    font-family: 'Space Grotesk', sans-serif; /* Keep Grotesk for readability */
+    line-height: 1.5;
+}
+
+/* Send Button */
+.send-btn {
+    padding: 10px 20px;
+    background: var(--neon-gold);
+    border: none;
+    cursor: pointer;
+    font-family: 'Syncopate', sans-serif; /* Match the button font */
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    text-transform: uppercase;
+}
 #chat-display{ flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
 
 .bot-bubble{ background:rgba(255,204,0,0.05); border-left:3px solid var(--neon-gold); padding:10px; font-size:13px; color: #ccc; }
