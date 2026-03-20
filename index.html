@@ -289,6 +289,13 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1.0); }
 }
+#chat-input {
+    font-size: 16px; /* Eto ang pampigil sa auto-zoom */
+    /* ... panatilihin ang iba mo pang styles gaya ng padding, border, etc. ... */
+}
+
+/* Kung gusto mo na magmukhang maliit pa rin ang text sa paningin, 
+   huwag mo babaan ang font-size, baguhin mo na lang ang padding. */
 </style>
 </head>
 
@@ -365,57 +372,83 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
 <script>
 const glKnowledge = {
+    // --- GREETINGS & RESPECTFUL TITLES ---
     "greetings": {
-        keywords: ["hi", "hello", "good morning", "good afternoon", "good evening", "magandang", "morning", "afternoon", "evening", "hi po", "hello po", "tanong po", "ma'am", "sir", "ate", "kuya"],
-        response: "Hello! Magandang araw sa inyo. Ako si <b>GL SYSTEM AI</b>. Handa kaming tumulong sa inyong <b>Printing</b>, <b>Tech Repair</b>, at <b>Academic needs</b>.<br><br>Ano po ang maitutulong ko sa inyo ngayon?"
+        keywords: ["hi", "hello", "good morning", "good afternoon", "good evening", "magandang", "morning", "afternoon", "evening", "hi po", "hello po", "tanong po", "ma'am", "sir", "ate", "kuya", "boss"],
+        response: "Hello! Welcome to <b>GL Printing Services</b>. I am <b>GL-AI</b>, your digital assistant for <b>Printing</b>, <b>Tech Repair</b>, and <b>Academic needs</b>.<br><br>How can I make your day easier?"
     },
+    "compliments": {
+        keywords: ["ganda", "maganda", "nice", "website", "cute", "aesthetic", "impressive", "wow", "galing", "professional", "ang linis", "ayos", "lupet", "cool"],
+        response: "<b>Thank you so much!</b> I'm glad you appreciate the effort. We really aimed for a clean and professional vibe for <b>GL Printing Services</b>. ✨<br><br>As a BSIT graduate, I wanted to make sure our digital presence is as quality as our actual services. Feel free to explore!"
+    },
+    "feedback": {
+        keywords: ["mura", "sulit", "bilis", "mabilis", "maayos kausap", "bait", "mabait"],
+        response: "<b>We appreciate the kind words!</b> Our goal is to provide quality service that’s worth your trust and investment. Stay tuned for more updates and services! 🤙"
+    },
+    // --- ORGANIZED PRICING & SERVICES (CLASSY VERSION) ---
     "printing": {
         keywords: ["print", "xerox", "photo", "scan", "lamination", "laminating", "magazine", "wallet", "instax", "polaroid", "id photo"],
-        response: "<b>PRINTING SERVICES & RATES:</b><br>• Documents (B&W/Color): ₱4 - ₱30<br>• ID Photos (Rush): ₱35 - ₱100<br>• Wallet Size: ₱25 - ₱50<br>• Instax/Polaroid Style: ₱25 - ₱40<br>• Lamination (ID to A4): ₱15 - ₱50<br>• Magazine/Layout: <i>Message us for quote.</i>"
+        response: "<b>PRINTING SERVICES & RATES:</b><br>• Documents (B&W/Color): ₱4 - ₱30<br>• ID Photos (Rush) & Develop: ₱35 - ₱100<br> (Depending on sizes)• Wallet Size: ₱25 - ₱50<br>• Instax/Polaroid Style: ₱25 - ₱40<br>• Lamination (ID to A4): ₱15 - ₱50<br>• Magazine/Layout: <i>Message us for a custom quote.</i>"
     },
     "tech": { 
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone", "phone", "hang", "basag", "troubleshoot", "develop"], 
-        response: "<b>TECH REPAIR & SERVICES:</b><br>• <b>Check-up/Diagnostics: FREE!</b><br>• Software/Reformat: ₱300 - ₱800<br>• Hardware (LCD/Battery/Camera/Lenses/Charging boards/etc): Price depends on unit model.<br><br><i>Dalhin lang ang unit sa shop para sa libreng check-up!</i>" 
+        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone", "phone", "hang", "basag", "troubleshoot", "camera", "lens", "charging"], 
+        response: "<b>TECH REPAIR & SERVICES:</b><br>• <b>Diagnostics: COMPLIMENTARY/FREE</b><br>• Software/Reformat: ₱300 - ₱800<br>• Hardware (LCD/Battery/Camera/Lenses): Price depends on the unit model.<br><br><i>Feel free to bring your unit us for a free check-up. Quality is our priority.</i>" 
     },
     "academic": {
         keywords: ["research", "help", "tulong", "reviewer", "ppt", "powerpoint", "word", "ms word", "excel", "ms office", "typing", "encode", "academic"],
-        response: "<b>ACADEMIC & OFFICE ASSIST:</b><br>• Typing/Encoding: ₱20 - ₱50 per page<br>• PPT/Research Help: <i>Price depends on complexity.</i><br>• Reviewer Layout: ₱50 - ₱150<br><br>✨ <i>We help dedicated students, but we do not tolerate cheating!</i>"
+        response: "<b>ACADEMIC & OFFICE ASSIST:</b><br>• Typing/Encoding: ₱20 - ₱50 per page<br>• PPT/Research Help: <i>Price depends on complexity.</i><br>• Reviewer Layout: ₱50 - ₱150<br><br>✨ <i>Note: We support students' growth, but <b>we do not tolerate cheating</b>. We offer guidance, not exam answers. Laban!</i>"
     },
     "specialized": {
         keywords: ["resume", "cv", "lyrics", "locket", "jewelry", "layout", "edit"],
-        response: "<b>SPECIALIZED SERVICES:</b><br>• Resume/CV Edit: ₱50 - ₱150<br>• Locket Size Photos: ₱20 - ₱40<br>• Custom Layouts: <i>Message for pricing.</i>"
+        response: "<b>SPECIALIZED SERVICES:</b><br>• Resume/CV Professional Edit: ₱50 - ₱150<br>• Locket Size Photos (DIY Jewelry): ₱20 - ₱40<br>• Custom Creative Layouts: <i>Message for pricing.</i>"
     },
+
+    // --- CLASSY & WITTY RESPONSES ---
+    "agree": {
+        keywords: ["yes", "oo", "sige", "ok", "okay", "deal", "pwedeng", "pwede", "ge", "g", "sure", "mismo", "true"],
+        response: "<b>Perfect.</b> Noted on that! What other details should I know? You may also message us on FB to finalize your project. ✨"
+    },
+    "disagree": {
+        keywords: ["no", "hindi", "ayoko", "wag", "deins", "nope", "cancel", "pass", "wala", "ekis"],
+        response: "<b>No worries.</b> I understand! I’ll be here if you change your mind or if there’s anything else you need. Stay safe! 🤙"
+    },
+    "prangka_classy": {
+        keywords: ["mahal", "expensive", "tagal", "matagal", "kuripot", "libre", "discount", "tawad"],
+        response: "<b>Quality over quantity, always.</b> We ensure our rates are fair for the technical skills and precision we provide. After all, your projects deserve the best. 😉"
+    },
+
+    // --- SYSTEM & LOCATION INFO ---
     "generic_price": { 
         keywords: ["magkano", "how much", "presyo", "hm", "price", "pila"], 
-        response: "<b>QUICK PRICE GUIDE:</b><br>• Docs: ₱4+ | ID Photos: ₱35+<br>• Wallet Size: ₱25+ | Locket: ₱20+<br>• Tech Repair: <b>FREE Checkup</b><br>• Software Fix: ₱300+<br><br><i>Para sa accurate na presyo, ano po ang ipapagawa niyo?</i>" 
+        response: "<b>QUICK PRICE GUIDE:</b><br>• Docs: ₱4+ | ID Photos: ₱35+<br>• Wallet Size: ₱25+ | Locket: ₱20+<br>• Tech Repair: <b>FREE Checkup</b><br>• Software Fix: ₱300+<br><br><i>To give you an accurate price, may I know what service you need?</i>" 
     },
     "location": { 
         keywords: ["saan", "location", "address", "muntinlupa", "pwesto", "shop", "landmark"], 
-        response: "Nasa <b>Muntinlupa City</b> kami! Para sa exact pinpoint at Google Maps link, mangyaring mag-message directly sa aming FB Page." 
+        response: "We are located in <b>Muntinlupa City</b>. For the exact pinpoint and Google Maps link, kindly message us directly on our FB Page.Just click the link below to talk to <b>GL Prnts</b>:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 MESSAGE US ON FACEBOOK</a>" 
     },
     "complex_queries": {
         keywords: ["pwedeng magpagawa", "gumagawa po ba kayo", "nag edit po ba kayo", "nagawa po ba kayo", "pa-layout", "pa-edit", "custom", "special request"],
-        response: "<b>SYSTEM NOTICE:</b><br>Basic questions lang po ang kaya kong sagutin sa ngayon.<br><br>Para sa <b>custom layouts, complex edits, at actual orders</b>, mangyaring mag-message directly kay <b>sa GL Prnts</b> sa aming Facebook Page:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 CLICK HERE TO MESSAGE US</a>"
+        response: "<b>SYSTEM NOTICE:</b><br>As an AI, I am optimized for basic inquiries (Pricing, Location, Services).<br><br>For <b>custom layouts or actual orders</b>, please message our team directly at <b>GL Prnts</b> on Facebook:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 CLICK HERE TO MESSAGE US</a>"
     },
     "owner": { 
         keywords: ["sino", "owner", "lria", "ry", "ate ry", "manager"], 
-        response: "Ang GL Printing Services ay itinatag at pinapatakbo ni <b>Ate Ry (Lria)</b>. Bilang isang BSIT graduate, ginagamit niya ang kanyang kaalaman para makapagbigay ng de-kalidad at tapat na serbisyo." 
+        response: "<b>GL Printing Services</b> is founded and managed by <b>Ate Ry (Lria)</b>. As a BSIT graduate, she utilizes her tech background to provide quality and trustworthy services to the community." 
     },
     "direct_msg": {
         keywords: ["message", "chat", "order", "pabili", "pa-book", "appointment", "usap", "fb", "facebook", "messenger", "pm", "direct"],
-        response: "Para sa orders at bookings, i-click lang ang link na ito para makausap si <b>GL Prnts</b>:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 MESSAGE US ON FACEBOOK</a>"
+        response: "Ready to proceed? Just click the link below to talk to <b>GL Prnts</b>:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 MESSAGE US ON FACEBOOK</a>"
     },
     "closing": {
         keywords: ["salamat", "thank you", "thanks", "ty", "bye", "paalam", "okay na", "ge po", "sige po", "ok na po"],
-        response: "Walang anuman! Salamat sa pag-inquire sa <b>GL Printing Services</b>. Have a great day! ✨"
+        response: "You're very welcome! Thank you for choosing <b>GL Printing Services</b>. Have a productive day! ✨"
     }
-    
-}; 
+};
+
 const defaultResponses = [
-    "Pasensya na, basic questions lang po ang kaya kong sagutin sa ngayon. Baka gusto niyo pong i-message si <b>GL Prnts</b> directly sa Facebook?",
-    "Hmm, hindi ko po mahanap ang saktong sagot. Pwede niyo pong subukan ang keywords na <b>'Price'</b>, <b>'Repair'</b>, o <b>'Location'</b>.",
-    "Para sa mga special requests o complex na tanong, mas mabuting mag-message po kayo sa aming FB Page: <a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold);'>Click here</a>.",
-    "Hindi ko po nakuha 'yun. Pero online po si GL Prnts sa Facebook para sagutin ang inyong mga katanungan!"
+    "I'm sorry, I couldn't quite catch that. Would you like to check our <b>Pricing</b>, <b>Location</b>, or <b>Services</b> instead?",
+    "Hmm, that seems a bit complex for me. Perhaps you’d like to message <b>GL Prnts</b> directly on Facebook for more details?",
+    "Pardon me, I’m still learning! For special requests, feel free to reach us here: <a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold);'>Click here</a>.",
+    "I'm not sure I understand, but our team is online on Facebook to assist you further. Send us a message!"
 ];
 
 // Default message fallback (kung hindi gagamit ng random array)
