@@ -397,7 +397,7 @@
         <div style="text-align: center; margin-top: 30px; font-size: 10px; border-top: 1px solid #eee; padding-top: 10px;">
             <p><strong>REF: 121024-<span id="ref-id"></span></strong></p>
             <p>Date: <span id="receipt-date"></span></p>
-            <p style="margin-top:10px; font-style: italic;">Show this receipt at the counter.</p>
+            <p style="margin-top:10px; font-style: italic;">Show this receipt to GL Prnts.</p>
         </div>
     </div>
 </div>
@@ -582,8 +582,19 @@
         let total = 0;
         bundle.forEach(item => {
             total += item.price;
-            list.innerHTML += `<div class="receipt-row"><span>${item.name}</span><span>₱${item.price.toFixed(2)}</span></div>
-                               <div style="font-size:10px; color:#555; margin-bottom:10px;">${item.meta}</div>`;
+            list.innerHTML += `
+                <div style="margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px;">
+                    <div class="receipt-row">
+                        <span style="font-size: 12px;">${item.name}</span>
+                        <span>₱${item.price.toFixed(2)}</span>
+                    </div>
+                    <div style="font-size: 9px; color: #333; margin-top: 2px;">
+                        📄 <b>FILE:</b> ${item.fileName}
+                    </div>
+                    <div style="font-size: 9px; color: #777;">
+                        ${item.meta}
+                    </div>
+                </div>`;
         });
 
         document.getElementById('receipt-grand-total').innerText = `₱${total.toFixed(2)}`;
@@ -610,7 +621,7 @@
 
     function closePreview() { document.getElementById('receipt-preview-overlay').style.display = 'none'; }
 
-    // --- AI KNOWLEDGE BASE (UNCHANGED) ---
+    // --- AI KNOWLEDGE BASE ---
     const glKnowledge = {
         "greetings": { keywords: ["hi", "hello", "magandang", "morning", "afternoon", "evening", "hi po", "hello po"], response: "Hello! Welcome to <b>GL Printing Services</b>. I am <b>GL-AI</b>. How can I assist you today?" },
         "printing": { keywords: ["print", "xerox", "photo", "scan", "lamination", "instax", "polaroid"], response: "<b>PRINTING RATES:</b><br>• Documents: ₱4 - ₱30<br>• ID Photos: ₱35 - ₱100<br>• Wallet Size: ₱25 - ₱50<br>• Lamination: ₱15 - ₱50" },
@@ -627,7 +638,7 @@
         const chatBox = document.getElementById("chat-box");
         chatBox.classList.toggle("active");
         const display = document.getElementById("chat-display");
-        if (display.innerHTML === "") { addBotMsg("<b>SYSTEM ONLINE:</b> Hello! How can I assist you po?"); }
+        if (display.innerHTML === "") { addBotMsg("Hello! How can I assist you po?"); }
     }
 
     function addBotMsg(text) {
@@ -648,15 +659,22 @@
         const display = document.getElementById("chat-display");
         const raw = input.value.trim();
         if(!raw) return;
-        display.innerHTML += `<div class="user-msg">${raw}</div>`;
+        
+        const userDiv = document.createElement("div");
+        userDiv.className = "user-msg";
+        userDiv.innerText = raw;
+        display.appendChild(userDiv);
+        
         const msg = raw.toLowerCase();
         input.value = "";
+        
         if (cursedWords.some(w => msg.includes(w))) {
             violationCount++;
             if (violationCount === 1) addBotMsg("<span style='color:red'>Warning. Use professional language.</span>");
             else { location.reload(); }
             return;
         }
+        
         let found = false;
         for (let key in glKnowledge) {
             if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
@@ -667,7 +685,12 @@
         if (!found) addBotMsg(defaultResponses[Math.floor(Math.random() * defaultResponses.length)]);
     }
 
-    function quickAsk(key) { document.getElementById("chat-input").value = key; askAI(); }
+    function quickAsk(key) { 
+        const keywords = { price: "printing", repair: "repair", location: "location" };
+        document.getElementById("chat-input").value = keywords[key] || key; 
+        askAI(); 
+    }
+    
     document.getElementById("chat-input").addEventListener("keypress", (e) => { if(e.key === "Enter") askAI(); });
 </script>
 
