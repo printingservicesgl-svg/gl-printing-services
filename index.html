@@ -1,362 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GL PRINTS | Muntinlupa City</title>
-<link rel="icon" type="image/png" href="GL_Logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GL PRINTS | Muntinlupa City</title>
+    <link rel="icon" type="image/png" href="GL_Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
 
-<style>
-:root {
-    --neon-gold:#ffcc00;
-    --deep:#0a0a0a;
-    --glass: rgba(255, 255, 255, 0.07);
-    --glass-border: rgba(255, 204, 0, 0.3);
-}
+    <style>
+        :root {
+            --neon-gold: #ffcc00;
+            --deep: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 204, 0, 0.3);
+            --panel-3d: linear-gradient(145deg, rgba(20,20,20,0.9), rgba(5,5,5,0.95));
+        }
 
-/* GLOBAL */
-*{margin:0;padding:0;box-sizing:border-box; scroll-behavior: smooth;}
-body{
-    background:var(--deep);
-    color:white;
-    font-family:'Space Grotesk';
-    overflow-x: hidden;
-}
+        /* GLOBAL */
+        * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
+        body {
+            background: var(--deep);
+            color: white;
+            font-family: 'Space Grotesk';
+            overflow-x: hidden;
+        }
 
-/* HEADER & ANIMATED LOGO */
-header{
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    background: radial-gradient(circle at center, rgba(255,204,0,0.05) 0%, rgba(0,0,0,1) 80%);
-}
+        /* 1. COVER PAGE */
+        #cover-page {
+            height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; background: radial-gradient(circle at center, rgba(255,204,0,0.08) 0%, rgba(0,0,0,1) 85%);
+            position: fixed; top: 0; left: 0; z-index: 9999;
+            transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+        #cover-page.exit { transform: translateY(-100%); }
 
-.gl-logo{
-    width: clamp(120px, 15vw, 150px);
-    filter: drop-shadow(0 0 20px var(--neon-gold));
-    animation: float 4s ease-in-out infinite;
-}
+        .gl-logo-cover {
+            width: clamp(130px, 20vw, 160px);
+            filter: drop-shadow(0 0 30px var(--neon-gold));
+            margin-bottom: 20px;
+            animation: pulse 3s infinite ease-in-out;
+        }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-15px) rotate(2deg); }
-}
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--neon-gold)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px var(--neon-gold)); }
+        }
 
-h1{
-    font-family:'Syncopate';
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    letter-spacing:8px;
-    background:linear-gradient(to right,#fff,var(--neon-gold),#fff);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    margin-top: 20px;
-}
+        /* 2. MAIN CONTENT */
+        #main-system { opacity: 0; transition: opacity 1s ease; visibility: hidden; }
 
-/* NAV - Adjusted Z-Index to stay below Chat */
-nav{
-    position:fixed;
-    bottom:25px;
-    left:50%;
-    transform:translateX(-50%);
-    background:rgba(0,0,0,0.8);
-    padding:12px 30px;
-    border-radius:50px;
-    display:flex;
-    gap:25px;
-    backdrop-filter:blur(15px);
-    z-index: 1000;
-    border: 1px solid rgba(255,204,0,0.1);
-}
+        nav {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); padding: 12px 30px; border-radius: 50px;
+            display: flex; gap: 25px; backdrop-filter: blur(20px); z-index: 2000;
+            border: 1px solid rgba(255,204,0,0.1);
+        }
+        nav a {
+            color: white; text-decoration: none; font-family: 'Syncopate';
+            font-size: 0.65rem; letter-spacing: 3px; transition: 0.3s;
+        }
+        nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
-nav a {
-    color: white;
-    text-decoration: none;
-    font-family: 'Syncopate', sans-serif;
-    font-weight: 300;
-    font-size: 0.6rem; 
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
+        /* SERVICES GRID */
+        .container {
+            padding: 120px 5% 150px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; max-width: 1200px; margin: 0 auto;
+        }
+        .tilt-card {
+            background: var(--glass); padding: 40px 30px; border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.4s;
+            text-align: center; backdrop-filter: blur(10px);
+        }
+        .tilt-card:hover {
+            transform: translateY(-12px); border-color: var(--neon-gold);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); background: rgba(255,204,0,0.02);
+        }
+        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1rem; margin-bottom: 15px; }
+        .tilt-card p { font-size: 0.9rem; color: #999; line-height: 1.6; }
 
-nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
+        /* CONTACT SECTION */
+        #contact { text-align: center; padding: 100px 5%; border-top: 1px solid rgba(255,255,255,0.05); }
+        #phone-num { font-size: 2rem; color: var(--neon-gold); cursor: pointer; letter-spacing: 4px; margin: 25px 0; font-weight: 700; }
 
-/* SERVICES GRID */
-.container{
-    padding:80px 5%;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:25px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+        .btn-glitch { 
+            margin-top: 20px; padding: 18px 45px; background: transparent; 
+            border: 1px solid var(--neon-gold); color: var(--neon-gold); 
+            font-family: 'Syncopate'; font-size: 0.75rem; letter-spacing: 5px; 
+            cursor: pointer; transition: 0.4s; 
+        }
+        .btn-glitch:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 30px var(--neon-gold); }
 
-.tilt-card{
-    background:rgba(255,255,255,0.03);
-    padding:35px 25px;
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,0.1);
-    transition:0.4s;
-    text-align: center;
-}
+        /* --- 3D MODERN AI CHAT UI --- */
+        #ai-chat-btn {
+            position: fixed; bottom: 90px; right: 25px;
+            width: 65px; height: 65px; background: #000;
+            border: 2px solid var(--neon-gold); border-radius: 50%;
+            display: none; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 5000; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,204,0,0.2);
+        }
+        #ai-chat-btn:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 25px var(--neon-gold); }
 
-.tilt-card:hover{
-    transform:translateY(-10px);
-    border-color:var(--neon-gold);
-    box-shadow:0 0 25px rgba(255,204,0,0.2);
-    background: rgba(255,204,0,0.02);
-}
+        #chat-box {
+            position: fixed; bottom: 170px; right: 25px;
+            width: min(400px, 90vw); height: 550px;
+            background: var(--panel-3d); border: 1px solid var(--glass-border);
+            border-radius: 30px; z-index: 5000; overflow: hidden;
+            backdrop-filter: blur(40px); display: flex; flex-direction: column;
+            box-shadow: -20px 20px 50px rgba(0,0,0,0.8);
 
-.tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1rem; margin-bottom: 10px; }
-.tilt-card p { font-size: 0.9rem; color: #888; line-height: 1.5; }
+            /* 3D Entry State */
+            visibility: hidden; opacity: 0;
+            transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) translateY(30px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
 
-/* CHAT BUTTON & BOX - Adjusted positions to avoid overlap */
-#ai-chat-btn {
-    position: fixed;
-    bottom: 90px; /* Inangat natin para hindi tapat sa Nav */
-    right: 20px;
-    width: 60px; height: 60px;
-    background: #0a0a0a;
-    border: 2px solid var(--neon-gold);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 3000; /* Mataas para laging nasa ibabaw */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,204,0,0.2);
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        #chat-box.active {
+            visibility: visible; opacity: 1; pointer-events: auto;
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0) scale(1);
+        }
 
-#ai-chat-btn:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 25px var(--neon-gold); }
+        #chat-header { 
+            background: linear-gradient(90deg, var(--neon-gold), #ffaa00); color: black; 
+            padding: 20px; font-family: 'Syncopate'; font-weight: 800; text-align: center; 
+            font-size: 10px; letter-spacing: 3px; 
+        }
 
-/* CHAT BOX - Professional & Static Position */
-#chat-box {
-    position: fixed;
-    bottom: 160px;
-    right: 20px;
-    width: min(380px, 90vw);
-    height: 500px;
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    z-index: 3000;
-    overflow: hidden;
-    backdrop-filter: blur(30px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-    display: flex;
-    flex-direction: column;
+        #chat-display { 
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; 
+            background: radial-gradient(circle at top right, rgba(255,204,0,0.03), transparent);
+        }
 
-    /* MOBILE VISIBILITY FIX (No Display:None Conflict) */
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-}
+        .bot-bubble { 
+            align-self: flex-start; background: rgba(255,255,255,0.05); padding: 14px 18px; 
+            border-radius: 20px 20px 20px 5px; font-size: 14px; color: #efefef; 
+            border: 1px solid rgba(255,255,255,0.08); line-height: 1.5;
+            animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
 
-#chat-box.active {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
+        .user-msg { 
+            align-self: flex-end; background: var(--neon-gold); color: black; padding: 12px 18px; 
+            border-radius: 20px 20px 5px 20px; font-size: 14px; font-weight: 600; 
+            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.2);
+            animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
 
-/* ANTI-ZOOM & CLASSY INPUT */
-#chat-input { 
-    flex: 1; 
-    padding: 12px 18px; 
-    background: rgba(255,255,255,0.05); 
-    border: 1px solid rgba(255,255,255,0.1); 
-    border-radius: 12px;
-    color: white; 
-    outline: none; 
-    font-size: 16px !important; /* Forces iPhone not to auto-zoom */
-}
+        @keyframes bubblePop {
+            from { opacity: 0; transform: scale(0.5) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
-#chat-header {
-    background: linear-gradient(90deg, var(--neon-gold), #ffaa00);
-    color: black;
-    padding: 18px;
-    font-family: 'Syncopate', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-align: center;
-}
+        .chat-input-area { padding: 20px; display: flex; gap: 12px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); }
+        #chat-input { 
+            flex: 1; padding: 14px 20px; background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; 
+            outline: none; font-size: 16px !important; 
+        }
 
-.quick-actions {
-    display: flex;
-    gap: 10px;
-    padding: 12px;
-    background: rgba(255,255,255,0.03);
-}
+        .send-btn { 
+            width: 50px; background: var(--neon-gold); border: none; border-radius: 15px; 
+            cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.3s;
+        }
+        .send-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon-gold); }
 
-.action-btn {
-    flex: 1;
-    padding: 8px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,204,0,0.2);
-    color: #fff;
-    font-family: 'Space Grotesk';
-    font-size: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+        .quick-actions { display: flex; gap: 8px; padding: 0 20px 15px; }
+        .action-btn { 
+            flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); 
+            color: white; font-size: 9px; border-radius: 12px; cursor: pointer; font-family: 'Syncopate'; transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--neon-gold); color: black; transform: translateY(-3px); }
 
-.action-btn:hover { background: var(--neon-gold); color: black; transform: translateY(-3px); }
-
-#chat-display { 
-    flex: 1; 
-    padding: 15px; 
-    overflow-y: auto; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    perspective: 1000px;
-}
-
-.bot-bubble { 
-    align-self: flex-start;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 16px; 
-    font-size: 13px; 
-    color: #eee; 
-    border-radius: 18px 18px 18px 4px;
-    animation: slideInLeft 0.4s ease forwards;
-}
-
-.user-msg { 
-    align-self: flex-end; 
-    background: linear-gradient(135deg, var(--neon-gold), #ffaa00);
-    color: black;
-    padding: 10px 16px; 
-    border-radius: 18px 18px 4px 18px; 
-    font-size: 13px; 
-    animation: slideInRight 0.4s ease forwards;
-}
-
-@keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-20px) rotateY(20deg); }
-    to { opacity: 1; transform: translateX(0) rotateY(0); }
-}
-
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(20px) rotateY(-20deg); }
-    to { opacity: 1; transform: translateX(0) rotateY(0); }
-}
-
-.chat-input-area { 
-    padding: 15px;
-    display: flex; 
-    gap: 10px;
-    background: rgba(0,0,0,0.3);
-}
-
-#chat-input { 
-    flex: 1; 
-    padding: 12px 18px; 
-    background: rgba(255,255,255,0.05); 
-    border: 1px solid rgba(255,255,255,0.1); 
-    border-radius: 12px;
-    color: white; 
-    outline: none; 
-}
-
-.send-btn { 
-    width: 45px; height: 45px;
-    background: var(--neon-gold); 
-    border: none; 
-    border-radius: 12px;
-    cursor: pointer; 
-    font-weight: bold;
-}
-
-/* UTILS */
-.btn-glitch { margin-top:20px; padding:15px 40px; background:transparent; border:2px solid var(--neon-gold); color:var(--neon-gold); font-family:'Syncopate'; cursor:pointer; transition:0.3s; }
-.btn-glitch:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 20px var(--neon-gold); }
-
-#contact { text-align:center; padding:100px 5%; border-top: 1px solid rgba(255,255,255,0.05); }
-#phone-num { font-size: 1.5rem; color: var(--neon-gold); cursor: pointer; margin: 20px 0; letter-spacing: 3px; }
-
-/* TYPING ANIMATION DOTS */
-.typing {
-    display: flex;
-    gap: 4px;
-    padding: 10px;
-}
-
-.dot {
-    width: 6px;
-    height: 6px;
-    background: var(--neon-gold);
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out;
-}
-
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1.0); }
-}
-</style>
+        /* TYPING ANIMATION */
+        .typing { display: flex; gap: 4px; padding: 5px; }
+        .dot { width: 6px; height: 6px; background: var(--neon-gold); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
+        .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    </style>
 </head>
 
 <body>
 
-<nav>
-    <a href="#home">Home</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-</nav>
-
-<header id="home">
-    <img src="GL_Logo.png" class="gl-logo" alt="GL Logo">
-    <h1>GL PRINTS</h1>
-    <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem;">EST. 2025 | MUNTINLUPA CITY</p>
-    <button class="btn-glitch" onclick="location.href='#services'">ENTER SYSTEM</button>
-</header>
-
-<section id="services" class="container">
-    <div class="tilt-card">
-        <h3>EVENT & MEDIA</h3>
-        <p>Premium bundles for Birthdays, Christenings, Weddings, and more. Stickers, Instax, and Custom Prints.</p>
-    </div>
-    <div class="tilt-card">
-        <h3>DIGITAL DESIGN</h3>
-        <p>Professional layouts for business branding, social media, and personal projects.</p>
-    </div>
-    <div class="tilt-card">
-        <h3>E-GOV & OFFICE</h3>
-        <p>E-Gov applications, Digital IDs, and high-accuracy data encoding services.</p>
-    </div>
-    <div class="tilt-card">
-        <h3>TECH ASSIST</h3>
-        <p>Resume restructuring, technical research, and academic document formatting.</p>
-    </div>
-    <div class="tilt-card">
-        <h3>TECH SOLUTIONS</h3>
-        <p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p>
-    </div>
-    <div class="tilt-card">
-        <h3>SPECIALIZED</h3>
-        <p>Locket size prints, Web Dev, Songwriting, and Tutoring, etc.</p>
-    </div>
+<section id="cover-page">
+    <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
+    <h1 style="font-family:'Syncopate'; letter-spacing:10px; font-size: clamp(2.2rem, 6vw, 3.5rem);">GL PRINTS</h1>
+    <p style="letter-spacing: 6px; opacity: 0.4; font-size: 0.7rem; margin-top: 10px;">SYSTEM ACCESS AUTHORIZED</p>
+    <button class="btn-glitch" onclick="unlockSystem()">ENTER SYSTEM</button>
 </section>
 
-<section id="contact">
-    <h2 style="font-family: 'Syncopate'; font-size: 1rem; opacity: 0.6;">OPERATIONAL SECTOR</h2>
-    <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-    <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE US</button>
-</section>
+<div id="main-system">
+    <nav>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <section id="services" class="container">
+        <div class="tilt-card">
+            <h3>EVENT & MEDIA</h3>
+            <p>Premium bundles for Birthdays, Christenings, Weddings. Stickers, Instax, and High-Gloss Custom Prints.</p>
+        </div>
+        <div class="tilt-card">
+            <h3>DIGITAL DESIGN</h3>
+            <p>Professional layouts for business branding, social media, and high-end personal projects.</p>
+        </div>
+        <div class="tilt-card">
+            <h3>E-GOV & OFFICE</h3>
+            <p>E-Gov applications, Digital IDs, and high-accuracy data encoding services.</p>
+        </div>
+        <div class="tilt-card">
+            <h3>TECH ASSIST</h3>
+            <p>Resume restructuring, technical research, and academic document formatting.</p>
+        </div>
+        <div class="tilt-card">
+            <h3>TECH SOLUTIONS</h3>
+            <p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p>
+        </div>
+        <div class="tilt-card">
+            <h3>SPECIALIZED</h3>
+            <p>Locket size prints, Web Dev, Songwriting, and Technical Tutoring.</p>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 style="font-family: 'Syncopate'; font-size: 0.8rem; opacity: 0.5; letter-spacing: 4px;">OPERATIONAL SECTOR</h2>
+        <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
+        <button class="btn-glitch" style="font-size: 0.65rem;" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE FACEBOOK</button>
+    </section>
+</div>
 
 <div id="ai-chat-btn" onclick="toggleChat()">
     <img src="GL_Logo.png" style="width:35px;" alt="AI">
@@ -364,292 +236,109 @@ nav a:hover{ color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold); }
 
 <div id="chat-box">
     <div id="chat-header">GL SYSTEM AI</div>
-    
-    <div class="quick-actions">
+    <div class="quick-actions" style="margin-top:15px;">
         <button class="action-btn" onclick="quickAsk('price')">PRICING</button>
         <button class="action-btn" onclick="quickAsk('repair')">REPAIR</button>
         <button class="action-btn" onclick="quickAsk('location')">LOCATION</button>
     </div>
-
-    <div id="chat-display">
-        <div class="bot-bubble"><b>SYSTEM:</b> Online. Happy to assist you po.</div>
-    </div>
-    
+    <div id="chat-display"></div>
     <div class="chat-input-area">
-        <input id="chat-input" placeholder="Enter keyword..." autocomplete="off">
+        <input id="chat-input" placeholder="Type a keyword..." autocomplete="off">
         <button class="send-btn" onclick="askAI()">></button>
     </div>
 </div>
 
 <script>
-const glKnowledge = {
-    // --- GREETINGS & RESPECTFUL TITLES ---
-    "greetings": {
-        keywords: ["hi", "hello", "good morning", "good afternoon", "good evening", "magandang", "morning", "afternoon", "evening", "hi po", "hello po", "tanong po", "ma'am", "sir", "ate", "kuya", "boss"],
-        response: "Hello! Welcome to <b>GL Printing Services</b>. I am <b>GL-AI</b>, your digital assistant for <b>Printing</b>, <b>Tech Repair</b>, and <b>Academic needs</b>.<br><br>How can I make your day easier?"
-    },
-    "compliments": {
-        keywords: ["ganda", "maganda", "nice", "website", "cute", "aesthetic", "impressive", "wow", "galing", "professional", "ang linis", "ayos", "lupet", "cool"],
-        response: "<b>Thank you so much!</b> I'm glad you appreciate the effort. We really aimed for a clean and professional vibe for <b>GL Printing Services</b>. ✨<br><br>As a BSIT graduate, I wanted to make sure our digital presence is as quality as our actual services. Feel free to explore!"
-    },
-    "feedback": {
-        keywords: ["mura", "sulit", "bilis", "mabilis", "maayos kausap", "bait", "mabait"],
-        response: "<b>We appreciate the kind words!</b> Our goal is to provide quality service that’s worth your trust and investment. Stay tuned for more updates and services! 🤙"
-    },
+    // --- SYSTEM LOGIC ---
+    function unlockSystem() {
+        const cover = document.getElementById('cover-page');
+        const main = document.getElementById('main-system');
+        const chatBtn = document.getElementById('ai-chat-btn');
 
+        cover.classList.add('exit');
+        main.style.visibility = 'visible';
+        main.style.opacity = '1';
+        chatBtn.style.display = 'flex';
 
-    // --- ORGANIZED PRICING & SERVICES (CLASSY VERSION) ---
-    "printing": {
-        keywords: ["print", "xerox", "photo", "scan", "lamination", "laminating", "magazine", "wallet", "instax", "polaroid", "id photo"],
-        response: "<b>PRINTING SERVICES & RATES:</b><br>• Documents (B&W/Color): ₱4 - ₱30<br>• ID Photos (Rush) & Develop: ₱35 - ₱100<br> (Depending on sizes)• Wallet Size: ₱25 - ₱50<br>• Instax/Polaroid Style: ₱25 - ₱40<br>• Lamination (ID to A4): ₱15 - ₱50<br>• Magazine/Layout: <i>Message us for a custom quote.</i>"
-    },
-    "tech": { 
-        keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone", "phone", "hang", "basag", "troubleshoot", "camera", "lens", "charging"], 
-        response: "<b>TECH REPAIR & SERVICES:</b><br>• <b>Diagnostics: COMPLIMENTARY/FREE</b><br>• Software/Reformat: ₱300 - ₱800<br>• Hardware (LCD/Battery/Camera/Lenses): Price depends on the unit model.<br><br><i>Feel free to bring your unit us for a free check-up. Quality is our priority.</i>" 
-    },
-    "academic": {
-        keywords: ["research", "help", "tulong", "reviewer", "ppt", "powerpoint", "word", "ms word", "excel", "ms office", "typing", "encode", "academic"],
-        response: "<b>ACADEMIC & OFFICE ASSIST:</b><br>• Typing/Encoding: ₱20 - ₱50 per page<br>• PPT/Research Help: <i>Price depends on complexity.</i><br>• Reviewer Layout: ₱50 - ₱150<br><br>✨ <i>Note: We support students' growth, but <b>we do not tolerate cheating</b>. We offer guidance, not exam answers. Laban!</i>"
-    },
-    "specialized": {
-        keywords: ["resume", "cv", "lyrics", "locket", "jewelry", "layout", "edit"],
-        response: "<b>SPECIALIZED SERVICES:</b><br>• Resume/CV Professional Edit: ₱50 - ₱150<br>• Locket Size Photos (DIY Jewelry): ₱20 - ₱40<br>• Custom Creative Layouts: <i>Message for pricing.</i>"
-    },
-
-    // --- CLASSY & WITTY RESPONSES ---
-    "agree": {
-        keywords: ["yes", "oo", "sige", "ok", "okay", "deal", "pwedeng", "pwede", "ge", "g", "sure", "mismo", "true"],
-        response: "<b>Perfect.</b> Noted on that! What other details should I know? You may also message us on FB to finalize your project. ✨"
-    },
-    "disagree": {
-        keywords: ["no", "hindi", "ayoko", "wag", "deins", "nope", "cancel", "pass", "wala", "ekis"],
-        response: "<b>No worries.</b> I understand! I’ll be here if you change your mind or if there’s anything else you need. Stay safe! 🤙"
-    },
-    "prangka_classy": {
-        keywords: ["mahal", "expensive", "tagal", "matagal", "kuripot", "libre", "discount", "tawad"],
-        response: "<b>Quality over quantity, always.</b> We ensure our rates are fair for the technical skills and precision we provide. After all, your projects deserve the best. 😉"
-    },
-
-    // --- SYSTEM & LOCATION INFO ---
-    "generic_price": { 
-        keywords: ["magkano", "how much", "presyo", "hm", "price", "pila"], 
-        response: "<b>QUICK PRICE GUIDE:</b><br>• Docs: ₱4+ | ID Photos: ₱35+<br>• Wallet Size: ₱25+ | Locket: ₱20+<br>• Tech Repair: <b>FREE Checkup</b><br>• Software Fix: ₱300+<br><br><i>To give you an accurate price, may I know what service you need?</i>" 
-    },
-    "location": { 
-        keywords: ["saan", "location", "address", "muntinlupa", "pwesto", "shop", "landmark"], 
-        response: "We are located in <b>Muntinlupa City</b>. For the exact pinpoint and Google Maps link, kindly message us directly on our FB Page.Just click the link below to talk to <b>GL Prnts</b>:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 MESSAGE US ON FACEBOOK</a>" 
-    },
-    "complex_queries": {
-        keywords: ["pwedeng magpagawa", "gumagawa po ba kayo", "nag edit po ba kayo", "nagawa po ba kayo", "pa-layout", "pa-edit", "custom", "special request"],
-        response: "<b>SYSTEM NOTICE:</b><br>As an AI, I am optimized for basic inquiries (Pricing, Location, Services).<br><br>For <b>custom layouts or actual orders</b>, please message our team directly at <b>GL Prnts</b> on Facebook:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 CLICK HERE TO MESSAGE US</a>"
-    },
-    "owner": { 
-        keywords: ["sino", "owner", "lria", "ry", "ate ry", "manager"], 
-        response: "<b>GL Printing Services</b> is founded and managed by <b>Ate Ry (Lria)</b>. As a BSIT graduate, she utilizes her tech background to provide quality and trustworthy services to the community." 
-    },
-    "direct_msg": {
-        keywords: ["message", "chat", "order", "pabili", "pa-book", "appointment", "usap", "fb", "facebook", "messenger", "pm", "direct"],
-        response: "Ready to proceed? Just click the link below to talk to <b>GL Prnts</b>:<br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); font-weight:bold;'>👉 MESSAGE US ON FACEBOOK</a>"
-    },
-    "closing": {
-        keywords: ["salamat", "thank you", "thanks", "ty", "bye", "paalam", "okay na", "ge po", "sige po", "ok na po"],
-        response: "You're very welcome! Thank you for choosing <b>GL Printing Services</b>. Have a productive day! ✨"
+        setTimeout(() => {
+            document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+        }, 600);
     }
-};
 
-const defaultResponses = [
-    "I'm sorry, I couldn't quite catch that. Would you like to check our <b>Pricing</b>, <b>Location</b>, or <b>Services</b> instead?",
-    "Hmm, that seems a bit complex for me. Perhaps you’d like to message <b>GL Prnts</b> directly on Facebook for more details?",
-    "Pardon me, I’m still learning! For special requests, feel free to reach us here: <a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold);'>Click here</a>.",
-    "I'm not sure I understand, but our team is online on Facebook to assist you further. Send us a message!"
-];
+    function copyNumber(){
+        navigator.clipboard.writeText("09916361742");
+        alert("Number copied!");
+    }
 
-// Default message fallback (kung hindi gagamit ng random array)
-const defaultMsg = "Pasensya na, hindi ko mahanap ang saktong sagot. Kung may further katanungan po kayo, mangyaring mag-message directly sa aming Facebook page: <br><br><a href='https://facebook.com/GLprinting.services/' target='_blank' style='color:var(--neon-gold); text-decoration:underline;'>fb.com/GLprinting.services</a>";
+    // --- AI KNOWLEDGE BASE ---
+    const glKnowledge = {
+        "greetings": { keywords: ["hi", "hello", "magandang", "morning", "afternoon", "evening", "hi po", "hello po"], response: "Hello! Welcome to <b>GL Printing Services</b>. I am <b>GL-AI</b>. How can I assist you today?" },
+        "printing": { keywords: ["print", "xerox", "photo", "scan", "lamination", "instax", "polaroid"], response: "<b>PRINTING RATES:</b><br>• Documents: ₱4 - ₱30<br>• ID Photos: ₱35 - ₱100<br>• Wallet Size: ₱25 - ₱50<br>• Lamination: ₱15 - ₱50" },
+        "tech": { keywords: ["repair", "ayos", "sira", "lcd", "battery", "reformat", "laptop", "iphone", "phone"], response: "<b>TECH REPAIR:</b><br>• <b>Diagnostics: FREE</b><br>• Software/Reformat: ₱300 - ₱800<br>• Hardware: Price depends on unit model." },
+        "location": { keywords: ["saan", "location", "address", "muntinlupa", "pwesto"], response: "Located in <b>Muntinlupa City</b>. Message us on FB for the exact maps pinpoint!" },
+        "owner": { keywords: ["sino", "owner", "lria", "ry"], response: "<b>GL Printing Services</b> is managed by <b>Ate Ry (Lria)</b>, a BSIT graduate dedicated to quality tech services." },
+        "closing": { keywords: ["salamat", "thank you", "thanks", "bye"], response: "You're welcome! Have a productive day! ✨" }
+    };
 
-let violationCount = 0;
-const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo", "ulol", "pakyu" , "fuck you", "putangina", "putang ina", "inamo", "yawa", "bilat", "puke", "puki", "tite", "tanga", "pokpok", "tomboy", "chupa", "sex", "kantot", "kantutan", "sexy", "bj", "blowjob", "shet", "shit"];
+    const defaultResponses = ["I couldn't quite catch that. Check our <b>Pricing</b>, <b>Location</b>, or <b>Services</b>?", "For custom requests, message our FB page!"];
+    const cursedWords = ["gago", "puta", "tangina", "pakyu", "bobo", "ulol", "fuck", "shit"];
+    let violationCount = 0;
 
-// --- TOGGLE CHAT (Fix for Mobile Re-opening) ---
-function toggleChat() {
-    const chatBox = document.getElementById("chat-box");
-    chatBox.classList.toggle("active");
-
-    if (chatBox.classList.contains("active")) {
-        // Anti-zoom focus
-        setTimeout(() => document.getElementById("chat-input").focus(), 300);
-        
-        // Initial Greeting if empty
+    function toggleChat() {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.classList.toggle("active");
         const display = document.getElementById("chat-display");
-        if (display.innerText.trim() === "" || display.innerText.includes("Online.")) {
-            display.innerHTML = ""; 
-            addBotMsg("<b>SYSTEM ONLINE:</b><br>Hello! I am <b>GL-AI</b>. How can I assist you with our <b>Printing</b> or <b>Tech</b> services today?");
-        }
-    }
-}
-
-// --- MAIN AI ENGINE ---
-function askAI() {
-    const input = document.getElementById("chat-input");
-    const display = document.getElementById("chat-display");
-    const raw = input.value.trim();
-    
-    if(!raw) return;
-
-    // 1. Show User Message
-    display.innerHTML += `<div class="user-msg">${raw}</div>`;
-    const msg = raw.toLowerCase();
-    input.value = "";
-    
-    // 2. Reset Keyboard/Zoom on Mobile
-    input.blur();
-
-    // 3. Cursed Words Shield
-    if (cursedWords.some(w => msg.includes(w))) {
-        violationCount++;
-        if (violationCount === 1) {
-            addBotMsg("<span style='color:#ff4444'>Warning. Please use professional language.</span>");
-        } else {
-            document.body.innerHTML = `<div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; font-family:'Syncopate'; text-align:center; padding:20px;">PROTOCOL BREACH.<br>ACCESS DENIED.</div>`;
-            setTimeout(() => { location.reload(); }, 3000);
-        }
-        return;
-    }
-
-    // 4. Response Matching
-    let found = false;
-    for (let key in glKnowledge) {
-        if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
-            addBotMsg(glKnowledge[key].response);
-            found = true;
-            break;
+        if (display.innerHTML === "") {
+            addBotMsg("<b>SYSTEM ONLINE:</b> Hello! How can I assist you po?");
         }
     }
 
-    if (!found) {
-        const randomDefault = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-        addBotMsg(randomDefault);
-    }
-}
-
-// --- TYPING EFFECT & DISPLAY ---
-function addBotMsg(text) {
-    const display = document.getElementById("chat-display");
-    
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "bot-bubble";
-    typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-    display.appendChild(typingDiv);
-    display.scrollTop = display.scrollHeight;
-
-    setTimeout(() => {
-        typingDiv.innerHTML = `<b>GL-AI:</b><br>${text}`;
+    function addBotMsg(text) {
+        const display = document.getElementById("chat-display");
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "bot-bubble";
+        typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+        display.appendChild(typingDiv);
         display.scrollTop = display.scrollHeight;
-    }, 1200); 
-}
 
-// Quick Actions Support
-function quickAsk(key) {
-    document.getElementById("chat-input").value = key;
-    askAI();
-}
+        setTimeout(() => {
+            typingDiv.innerHTML = `<b>GL-AI:</b><br>${text}`;
+            display.scrollTop = display.scrollHeight;
+        }, 1200);
+    }
 
-// Enter Key Support
-document.getElementById("chat-input").addEventListener("keypress", (e) => { 
-    if(e.key === "Enter") askAI(); 
-});
+    function askAI() {
+        const input = document.getElementById("chat-input");
+        const display = document.getElementById("chat-display");
+        const raw = input.value.trim();
+        if(!raw) return;
 
-function quickAsk(key) {
-    document.getElementById("chat-input").value = key;
-    askAI();
-}
+        display.innerHTML += `<div class="user-msg">${raw}</div>`;
+        const msg = raw.toLowerCase();
+        input.value = "";
 
-function askAI(){
-    let input=document.getElementById("chat-input");
-    let rawMsg=input.value.trim();
-    let msg=rawMsg.toLowerCase();
-    let display=document.getElementById("chat-display");
-
-    if(!msg) return;
-
-    display.innerHTML+=`<div class="user-msg">${rawMsg}</div>`;
-    input.value="";
-
-    if (cursedWords.some(w => msg.includes(w))) {
-        violationCount++;
-        if (violationCount === 1) {
-            display.innerHTML += `<div class="bot-bubble" style="color:#ff4444">Warning. System requires professional language.</div>`;
-        } else {
-            document.body.innerHTML = `<div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; font-family:'Syncopate';">PROTOCOL BREACH. ACCESS DENIED.</div>`;
-            setTimeout(() => { location.reload(); }, 3000);
+        if (cursedWords.some(w => msg.includes(w))) {
+            violationCount++;
+            if (violationCount === 1) addBotMsg("<span style='color:red'>Warning. Use professional language.</span>");
+            else { 
+                document.body.innerHTML = "<div style='height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; font-family:Syncopate; letter-spacing:10px;'>PROTOCOL BREACH.</div>"; 
+                setTimeout(()=>location.reload(), 2000); 
+            }
+            return;
         }
-        return;
-    }
 
-    let response = glKnowledge["default"];
-    for (let key in glKnowledge) {
-        if (glKnowledge[key].keywords && glKnowledge[key].keywords.some(k => msg.includes(k))) {
-            response = glKnowledge[key].response;
-            break;
+        let found = false;
+        for (let key in glKnowledge) {
+            if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
+                addBotMsg(glKnowledge[key].response);
+                found = true; break;
+            }
         }
+        if (!found) addBotMsg(defaultResponses[Math.floor(Math.random() * defaultResponses.length)]);
     }
 
-    setTimeout(()=>{
-        display.innerHTML+=`<div class="bot-bubble"><b>GL-AI:</b><br>${response}</div>`;
-        display.scrollTop=display.scrollHeight;
-    },600);
-}
-
-document.getElementById("chat-input").addEventListener("keypress", (e) => { if(e.key==="Enter") askAI(); });
-
-function copyNumber(){
-    navigator.clipboard.writeText("09916361742");
-    alert("Number copied!");
-}
-// Function para sa Bot Message na may kasamang Typing effect
-function addBotMsg(text) {
-    const display = document.getElementById("chat-display");
-    
-    // 1. I-pakita muna ang Typing Dots
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "bot-bubble typing-container";
-    typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-    display.appendChild(typingDiv);
-    display.scrollTop = display.scrollHeight;
-
-    // 2. Pagkatapos ng 1.5 seconds, palitan ang Dots ng totoong sagot
-    setTimeout(() => {
-        typingDiv.classList.remove("typing-container");
-        typingDiv.innerHTML = `<b>GL-AI:</b><br>${text}`;
-        display.scrollTop = display.scrollHeight;
-    }, 1500); 
-}
-
-function askAI() {
-    const input = document.getElementById("chat-input");
-    const display = document.getElementById("chat-display");
-    const raw = input.value.trim();
-    if(!raw) return;
-
-    // I-display ang message ng user
-    display.innerHTML += `<div class="user-msg">${raw}</div>`;
-    const msg = raw.toLowerCase();
-    input.value = "";
-
-    let found = false;
-    for (let key in glKnowledge) {
-        if (glKnowledge[key].keywords.some(k => msg.includes(k))) {
-            addBotMsg(glKnowledge[key].response);
-            found = true;
-            break;
-        }
-    }
-
-    if (!found) {
-        const randomDefault = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-        addBotMsg(randomDefault);
-    }
-}
+    function quickAsk(key) { document.getElementById("chat-input").value = key; askAI(); }
+    document.getElementById("chat-input").addEventListener("keypress", (e) => { if(e.key === "Enter") askAI(); });
 </script>
 
 </body>
