@@ -316,9 +316,16 @@
 
 <canvas id="scan-canvas" style="display:none;"></canvas>
 
-<div id="payment-modal" class="modal">
-    <div class="modal-content" style="background:white; color:black;">
-        <p style="font-weight:900; color:#0052da; font-family:'Syncopate';">GCASH PAYMENT</p>
+    <div id="payment-modal" class="modal">
+        <div class="modal-content" style="background:white; color:black;">
+        <div style="text-align:left; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid #333;">
+        <label style="color:var(--neon-gold); font-size:10px; font-weight:bold; letter-spacing:1px;">CUSTOMER NAME</label>
+        <input type="text" id="cust-name" placeholder="Full Name (e.g. Juan DC)" 
+            style="width:100%; padding:12px; margin-top:5px; border-radius:8px; border:1px solid #444; background:#111; color:white; font-family:'Syncopate'; font-size:11px;">
+        <p style="font-size:8px; color:#888; margin-top:8px; line-height:1.4;">
+            * Ginagamit po ang pangalan niyo para sa <b>Order Label</b> at para hindi magkamali sa pag-abot ng inyong prints. ✨
+        </p>
+    </div>
         <img src="img/Gcash Payment_QR.jpg" style="width:160px; margin:15px 0;">
         <p style="font-weight:bold;">Total: <span id="pay-amount">₱0.00</span></p>
         <div style="border:2px dashed #0052da; padding:15px; border-radius:15px; margin-top:10px; cursor:pointer;" onclick="document.getElementById('proof-input').click()">
@@ -674,14 +681,11 @@ window.onload = lockSystem;
     const grandTotal = document.getElementById('grand-total').innerText;
     const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
     
-    // --- TAMANG USERNAME NG GL PRINTING ---
-    const FB_PAGE_USER_ID = "GLprinting.services"; 
-
     btn.innerText = "SENDING TO ADMIN..."; 
     btn.disabled = true;
 
     try {
-        // 1. KALKULAHIN ANG ETA
+        // 1. ETA CALCULATION
         let totalPages = 0;
         let additionalTime = 0;
         cart.forEach(item => {
@@ -690,85 +694,83 @@ window.onload = lockSystem;
             if(item.type.includes('full') || item.type.includes('color')) additionalTime += 2; 
         });
         let etaMins = 5 + (totalPages * 1) + additionalTime;
-        let etaDisplay = etaMins > 60 ? "1-2 Hours" : `${etaMins}-${etaMins + 5} Mins`;
+        let etaDisplay = `${etaMins}-${etaMins + 5} Mins`;
 
-        // 2. ADMIN SUMMARY (SA TELEGRAM MO)
-        let adminMsg = `<b>🆔 NEW ORDER: ${ref}</b>\n`;
+        // 2. ADMIN SUMMARY (I-SEND MUNA NATIN ITO)
+        // Gumamit tayo ng simple text lang muna para iwas error sa symbols
+        let adminMsg = `🧾 <b>NEW ORDER: ${ref}</b>\n`;
         adminMsg += `━━━━━━━━━━━━━━━━━━\n`;
         adminMsg += `💰 <b>TOTAL:</b> ${grandTotal}\n`;
-        adminMsg += `⏳ <b>ETA GIVEN:</b> ${etaDisplay}\n`;
+        adminMsg += `⏳ <b>ETA:</b> ${etaDisplay}\n`;
         adminMsg += `━━━━━━━━━━━━━━━━━━\n\n`;
 
         cart.forEach((item, i) => {
-            adminMsg += `<b>${i+1}. ${item.name}</b>\n`;
+            // Clean natin ang item name para hindi mag-error sa HTML tags
+            let cleanName = item.name.replace(/[<>]/g, ''); 
+            adminMsg += `<b>${i+1}.</b> ${cleanName}\n`;
             adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n\n`;
         });
 
-        // Send Text Receipt to Telegram
-        await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
+        // SEND TEXT RECEIPT (Dapat mauna 'to)
+        const textResponse = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: adminMsg, parse_mode: 'HTML' })
+            body: JSON.stringify({ 
+                chat_id: CONFIG.CHAT_ID, 
+                text: adminMsg, 
+                parse_mode: 'HTML' 
+            })
         });
 
+        if (!textResponse.ok) throw new Error('Failed to send Text Receipt');
+
         // 3. SEND PROOF NG BAYAD
-        const proofFd = new FormData();
-        proofFd.append('chat_id', CONFIG.CHAT_ID);
-        proofFd.append('photo', document.getElementById('proof-input').files[0]);
-        proofFd.append('caption', `💰 PAYMENT PROOF [Ref: ${ref}]`);
-        await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method: 'POST', body: proofFd});
+        const proofInput = document.getElementById('proof-input');
+        if (proofInput.files.length > 0) {
+            const proofFd = new FormData();
+            proofFd.append('chat_id', CONFIG.CHAT_ID);
+            proofFd.append('photo', proofInput.files[0]);
+            proofFd.append('caption', `💰 PROOF [Ref: ${ref}]`);
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method: 'POST', body: proofFd});
+        }
 
         // 4. SEND CUSTOMER FILES
         for(let item of cart) {
             const fileFd = new FormData();
             fileFd.append('chat_id', CONFIG.CHAT_ID);
-            const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
+            const ext = item.name.split('.').pop().toLowerCase();
+            const isImg = ['jpg','jpeg','png'].includes(ext);
+            
             fileFd.append(isImg ? 'photo' : 'document', item.file);
             fileFd.append('caption', `📂 FILE: ${item.name}\nRef: ${ref}`);
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg?'sendPhoto':'sendDocument'}`, {method: 'POST', body: fileFd});
+            
+            const method = isImg ? 'sendPhoto' : 'sendDocument';
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${method}`, {method: 'POST', body: fileFd});
         }
 
-        // 5. UPDATE SUCCESS SCREEN (CUSTOMER SIDE)
+        // 5. SUCCESS SCREEN PARA SA CUSTOMER
         document.getElementById('final-ref').innerText = ref;
-        
-        // --- ITO ANG MAGIC LINK PARA SA MESSENGER ---
-        // PALITAN MO YUNG DATI NITONG VERSION:
-// I-update ang line na ito sa sendToTelegram() function mo:
-let messengerLink = `https://m.me/GLprinting.services`;
+        let messengerLink = `https://m.me/GLprinting.services`; // Simple link lang para iwas Privacy Error
 
         let etaBoxHTML = `
             <div style="margin: 15px 0; padding: 25px; border: 2px solid var(--neon-gold); border-radius: 20px; background: #000; text-align:center;">
-                <p style="font-size: 10px; opacity: 0.6; color:white; letter-spacing: 2px;">ORDER ISSUED SUCCESSFULLY</p>
-                <h1 style="color: var(--neon-gold); font-family: 'Syncopate'; margin: 10px 0; font-size: 2.2rem;">${ref}</h1>
+                <h1 style="color: var(--neon-gold); font-family: 'Syncopate'; margin: 10px 0;">${ref}</h1>
                 <p style="font-size: 11px; color: white; margin-bottom: 20px;">Ready in: <b>${etaDisplay}</b></p>
-                
-                <a href="${messengerLink}" target="_blank" 
-                   style="display:block; background:#0084FF; color:white; padding:18px; border-radius:12px; text-decoration:none; font-size:13px; font-weight:bold; border: 1px solid #fff;">
-                   💬 SEND TO MESSENGER
-                </a>
-                <p style="font-size: 8px; color: grey; margin-top: 10px;">Click the button to confirm your order details.</p>
+                <a href="${messengerLink}" target="_blank" style="display:block; background:#0084FF; color:white; padding:18px; border-radius:12px; text-decoration:none; font-size:13px; font-weight:bold;">💬 OPEN MESSENGER</a>
             </div>
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
         `;
 
-        let summaryHTML = `<b style="color:var(--neon-gold)">Summary (${grandTotal})</b><br>`;
-        cart.forEach(item => {
-            summaryHTML += `<div style="margin-top:8px; font-size:10px; color:white;">• ${item.name} (${item.meta})</div>`;
-        });
-
-        document.getElementById('customer-receipt-summary').innerHTML = etaBoxHTML + summaryHTML;
-
+        document.getElementById('customer-receipt-summary').innerHTML = etaBoxHTML;
         closeModal('payment-modal');
         document.getElementById('success-modal').style.display = 'flex';
 
     } catch (e) { 
         console.error("Order Error:", e);
-        alert("System Busy. Please try again."); 
+        alert("System Busy. Paki-check ang internet o ang Telegram Bot settings."); 
         btn.innerText = "RETRY"; 
         btn.disabled = false; 
     }
-}
-    
+}    
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
 </body>
