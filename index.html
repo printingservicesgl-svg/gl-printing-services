@@ -145,15 +145,35 @@
         }
         #ai-chat-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--neon-gold); }
 
-        #chat-box { 
-            position: fixed; bottom: 170px; right: 25px; width: min(350px, 85vw); height: 500px; 
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 25px; z-index: 5000; 
-            overflow: hidden; display: none; flex-direction: column;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 204, 0, 0.1); /* 3D & Inner Glow */
-        }
-        #chat-box.active { display: flex; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      /* I-overrule natin lahat ng harang */
+/* Chat Box - Floating UI */
+#chat-box {
+    position: fixed !important;
+    bottom: 110px !important; /* Nakapatong sa AI Button */
+    right: 30px !important;
+    width: 320px !important;
+    height: 450px !important;
+    z-index: 100001 !important;
+    display: none; /* Default hidden */
+    flex-direction: column;
+    background: rgba(10, 10, 10, 0.98) !important;
+    border: 1px solid var(--neon-gold) !important;
+    border-radius: 20px !important;
+    overflow: hidden;
+    box-shadow: 0 10px 50px rgba(0,0,0,1);
+}
+
+/* Kapag may 'active' class, dapat mag-flex */
+#chat-box.active { 
+    display: flex !important; 
+    animation: slideUp 0.4s ease forwards;
+}
+
+#ai-chat-btn {
+    z-index: 100000 !important;
+    pointer-events: all !important;
+    display: flex !important; /* Laging visible ang logo */
+}
 
         #chat-display { flex: 1; padding: 20px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
         .bot-bubble { 
@@ -183,9 +203,19 @@
     text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
     </style>
-</head>
+</head>     
 
 <body>
+    
+    <div id="freeze-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(15px); z-index:9998; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    <img src="GL_Logo.png" 
+     class="gl-logo-cover" 
+     alt="GL Logo" 
+     onclick="adminSecretTap()" 
+     style="cursor: pointer; pointer-events: all !important; z-index: 10000;">
+    <h2 style="font-family:'Syncopate'; color:#ff4444; letter-spacing:8px; font-size:1.2rem;">SYSTEM OFFLINE</h2>
+    <p style="font-size:0.7rem; opacity:0.5; margin-top:10px; letter-spacing:3px;">GL PRINTS: CLOSED FOR MAINTENANCE</p>
+</div>
 
 <section id="cover-page">
     <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
@@ -327,6 +357,121 @@
 </div>
 
 <script>
+
+    function checkSystemStatus() {
+    const now = new Date();
+    const hour = now.getHours();
+    const overlay = document.getElementById('freeze-overlay');
+    const isAdmin = sessionStorage.getItem('gl_admin_access') === 'true';
+
+    // OPEN: 8:00 AM (8) hanggang 12:00 AM (0)
+    // LOCKED: 12:01 AM (0) hanggang 7:59 AM (7)
+    const isClosed = (hour >= 0 && hour < 8);
+
+    if (isAdmin) {
+        if(overlay) overlay.style.display = 'none';
+        document.getElementById('main-system').style.pointerEvents = 'all';
+        return;
+    }
+
+    if (isClosed) {
+        if(overlay) {
+            overlay.style.display = 'flex';
+            overlay.querySelector('p').innerHTML = "SHOP OPENS AT 8:00 AM<br>CLOSES AT 12:00 AM";
+        }
+        document.getElementById('main-system').style.pointerEvents = 'none';
+    } else {
+        if(overlay) overlay.style.display = 'none';
+        document.getElementById('main-system').style.pointerEvents = 'all';
+    }
+}
+
+// Tawagin ang function pagka-load ng page
+window.addEventListener('load', checkSystemStatus);
+// Check bawat minuto para kusa mag-lock pagpatak ng 12 AM
+setInterval(checkSystemStatus, 60000);
+
+    let tapCount = 0;
+let tapTimer;
+
+function adminSecretTap() {
+    tapCount++;
+    
+    // I-reset ang count kung matagal ang pagitan ng tap
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1000);
+
+    // Kapag naka-3 taps ka na sa logo
+    if (tapCount === 3) {
+        const pass = prompt("GL SYSTEM ACCESS: ENTER PASSWORD");
+        
+        if (pass === "L121024_") {
+            sessionStorage.setItem('gl_admin_access', 'true');
+            forceUnlockSystem();
+        } else if (pass !== null) {
+            alert("ACCESS DENIED.");
+        }
+        tapCount = 0;
+    }
+}
+
+function forceUnlockSystem() {
+    // 1. Alisin ang lahat ng harang
+    const cover = document.getElementById('cover-page');
+    const main = document.getElementById('main-system');
+    const aiBtn = document.getElementById('ai-chat-btn');
+
+    if(cover) {
+        cover.style.display = 'none';
+        cover.classList.add('exit');
+    }
+    
+    // 2. I-show ang system
+    if(main) {
+        main.style.visibility = 'visible';
+        main.style.opacity = '1';
+        main.style.pointerEvents = 'all';
+    }
+
+    // 3. I-show ang AI button
+    if(aiBtn) aiBtn.style.display = 'flex';
+
+    alert("WELCOME BACK, BOSS Ry! ✨ System Unlocked.");
+}
+
+    // 1. Gawin nating naka-LOCK ang system sa simula
+function lockSystem() {
+    const isAdmin = sessionStorage.getItem('gl_admin_access') === 'true';
+    const overlay = document.getElementById('freeze-overlay');
+
+    if (!isAdmin) {
+        overlay.style.display = 'flex'; // I-lock ang screen
+        document.getElementById('main-system').style.pointerEvents = 'none'; // Bawal pindutin ang system
+    }
+}
+
+// 2. Ang Code mo na pambukas
+let adminBuffer = "";
+const secretCode = "L121024_";
+
+document.addEventListener('keydown', (e) => {
+    adminBuffer += e.key;
+    if (adminBuffer.length > secretCode.length) {
+        adminBuffer = adminBuffer.substring(adminBuffer.length - secretCode.length);
+    }
+
+    if (adminBuffer === secretCode) {
+        sessionStorage.setItem('gl_admin_access', 'true');
+        document.getElementById('freeze-overlay').style.display = 'none';
+        document.getElementById('main-system').style.pointerEvents = 'all';
+        alert("ADMIN BYPASS ACTIVE. System Unlocked.");
+        adminBuffer = "";
+    }
+});
+
+// Patakbuhin ang lock pagka-load ng website
+window.onload = lockSystem;
+
     const CONFIG = { TOKEN: '8621389622:AAFFAGg6bTitSp9VtVHdcXCd2GegOTy4gNk', CHAT_ID: '7541789801' };
     const PRICING = {
         "bw_text": {short:4, a4:5, long:6}, "color_text": {short:7, a4:8, long:9},
@@ -350,18 +495,28 @@
     function goHome() { document.getElementById('cover-page').classList.remove('exit'); }
 
     // --- ENHANCED AI FUNCTIONS ---
-    function toggleChat() {
-        const chatBox = document.getElementById('chat-box');
-        chatBox.classList.toggle('active');
-        
-        // AUTO-GREETING PAGBUKAS
-        if (chatBox.classList.contains('active') && !hasGreeted) {
-            setTimeout(() => {
-                startTyping("Glow day! ✨ Ako ang GL AI. Paano kita matutulungan sa iyong printing needs ngayon?");
-                hasGreeted = true;
-            }, 500);
-        }
+   function toggleChat() {
+    const chatBox = document.getElementById('chat-box');
+    
+    if (!chatBox) {
+        console.error("Chat box not found!");
+        return;
     }
+
+    // I-toggle ang 'active' class
+    chatBox.classList.toggle('active');
+
+    // Debugging: Tingnan sa console kung gumagana
+    console.log("Chat box status:", chatBox.classList.contains('active'));
+
+    // Greeting logic
+    if (chatBox.classList.contains('active') && !hasGreeted) {
+        setTimeout(() => {
+            startTyping("Glow day! ✨ Ako ang GL AI. Paano kita matutulungan?");
+            hasGreeted = true;
+        }, 300);
+    }
+}
 
     async function askAI() {
         const input = document.getElementById('chat-input');
