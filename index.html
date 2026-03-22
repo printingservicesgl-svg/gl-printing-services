@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GL PRINTS | Muntinlupa City</title>
     <link rel="icon" type="image/png" href="GL_Logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -14,13 +14,13 @@
             --neon-gold: #ffcc00;
             --gold-gradient: linear-gradient(135deg, #ffcc00 0%, #cc9900 100%);
             --deep: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.07);
             --glass-border: rgba(255, 204, 0, 0.3);
-            --panel-3d: linear-gradient(145deg, #111 0%, #050505 100%);
+            --panel-3d: linear-gradient(165deg, rgba(25,25,25,0.95) 0%, rgba(10,10,10,0.98) 100%);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
-        body { background: var(--deep); color: white; font-family: 'Space Grotesk'; overflow-x: hidden; perspective: 1000px; }
+        body { background: var(--deep); color: white; font-family: 'Space Grotesk'; overflow-x: hidden; }
 
         /* 1. COVER PAGE */
         #cover-page {
@@ -39,112 +39,58 @@
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.85); padding: 12px 25px; border-radius: 50px;
             display: flex; justify-content: center; gap: 15px; backdrop-filter: blur(20px); z-index: 2000;
-            border: 1px solid rgba(255,204,0,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,204,0,0.2);
         }
-        nav a { color: white; text-decoration: none; font-family: 'Syncopate'; font-size: 0.6rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; opacity: 0.7; transition: 0.3s; }
-        nav a:hover { opacity: 1; color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
+        nav a { color: white; text-decoration: none; font-family: 'Syncopate'; font-size: 0.65rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
+        nav a:hover { color: var(--neon-gold); }
 
         /* 3. MAIN SYSTEM & SERVICES */
-        #main-system { opacity: 0; transition: opacity 1s ease; visibility: hidden; padding-bottom: 120px; }
-        .section-title { font-family: 'Syncopate'; color: var(--neon-gold); text-align: center; margin: 80px 0 30px; font-size: 1.1rem; letter-spacing: 5px; text-transform: uppercase; }
+        #main-system { opacity: 0; transition: opacity 1s ease; visibility: hidden; padding-bottom: 100px; }
+        .section-title { font-family: 'Syncopate'; color: var(--neon-gold); text-align: center; margin: 80px 0 30px; font-size: 1.2rem; letter-spacing: 5px; }
         
-        .container { padding: 20px 5% 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .tilt-card { 
-            background: var(--glass); padding: 40px 30px; border-radius: 24px; 
-            border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: 0.4s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .tilt-card:hover { border-color: var(--neon-gold); transform: translateY(-10px) rotateX(2deg); background: rgba(255, 204, 0, 0.03); }
-        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); margin-bottom: 15px; font-size: 0.85rem; }
-        .tilt-card p { font-size: 0.9rem; opacity: 0.8; line-height: 1.5; }
+        .container { padding: 20px 5% 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+        .tilt-card { background: var(--glass); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: 0.4s; }
+        .tilt-card:hover { border-color: var(--neon-gold); transform: translateY(-10px); background: rgba(255, 204, 0, 0.03); }
+        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); margin-bottom: 15px; font-size: 0.9rem; }
 
-        /* 4. TERMINAL SECTOR */
+        /* 4. TERMINAL */
         #terminal-sector { padding: 40px 5%; max-width: 600px; margin: 0 auto; }
-        .terminal-card { 
-            background: #111; border: 1px solid var(--glass-border); padding: 30px; 
-            border-radius: 24px; box-shadow: 20px 20px 60px #050505;
-        }
-        .scanner-box { border: 2px dashed #333; padding: 40px 20px; text-align: center; border-radius: 15px; background: #080808; margin-bottom: 20px; cursor: pointer; transition: 0.3s; }
-        .scanner-box:hover { border-color: var(--neon-gold); background: #0c0c0c; }
-        label { font-size: 0.6rem; color: #777; display: block; margin: 15px 0 5px; font-weight: bold; text-transform: uppercase; font-family: 'Syncopate'; }
-        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: #fff; outline: none; font-family: 'Space Grotesk'; }
+        .terminal-card { background: #111; border: 1px solid var(--glass-border); padding: 30px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .scanner-box { border: 2px dashed #333; padding: 40px 20px; text-align: center; border-radius: 15px; background: #080808; margin-bottom: 20px; cursor: pointer; }
+        label { font-size: 0.6rem; color: #777; display: block; margin: 15px 0 5px; font-weight: bold; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: #fff; outline: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .btn-add { background: var(--neon-gold); color: #000; width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 25px; font-family: 'Syncopate'; font-size: 0.7rem; transition: 0.3s; }
-        .btn-add:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(255,204,0,0.4); }
-        .btn-glitch { margin-top: 20px; padding: 18px 45px; background: transparent; border: 1px solid var(--neon-gold); color: var(--neon-gold); font-family: 'Syncopate'; font-size: 0.7rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-glitch:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 30px var(--neon-gold); }
+        .btn-add { background: var(--neon-gold); color: #000; width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 25px; font-family: 'Syncopate'; font-size: 0.7rem; }
+        .btn-glitch { margin-top: 20px; padding: 18px 45px; background: transparent; border: 1px solid var(--neon-gold); color: var(--neon-gold); font-family: 'Syncopate'; font-size: 0.75rem; cursor: pointer; }
 
         /* 5. CONTACT SECTOR */
-        #contact { text-align: center; padding: 100px 5% 50px; border-top: 1px solid rgba(255,255,255,0.05); }
-        #phone-num { font-size: clamp(1.5rem, 5vw, 2rem); color: var(--neon-gold); cursor: pointer; letter-spacing: 4px; margin: 25px 0; font-weight: 700; transition: 0.3s; }
-        #phone-num:hover { text-shadow: 0 0 15px var(--neon-gold); transform: scale(1.05); }
+        #contact { text-align: center; padding: 100px 5%; border-top: 1px solid rgba(255,255,255,0.05); }
+        #phone-num { font-size: 2rem; color: var(--neon-gold); cursor: pointer; letter-spacing: 4px; margin: 25px 0; font-weight: 700; transition: 0.3s; }
+        #phone-num:hover { text-shadow: 0 0 15px var(--neon-gold); }
 
-        /* 6. GL AI - 3D INTERFACE */
-        #ai-chat-btn { position: fixed; bottom: 95px; right: 25px; width: 65px; height: 65px; background: #000; border: 2px solid var(--neon-gold); border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 5000; box-shadow: 0 0 20px rgba(255,204,0,0.3); transition: 0.3s; }
-        #ai-chat-btn:hover { transform: scale(1.1) rotate(10deg); }
+        /* 6. GL AI INTERFACE */
+        #ai-chat-btn { position: fixed; bottom: 95px; right: 25px; width: 65px; height: 65px; background: #000; border: 2px solid var(--neon-gold); border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 5000; box-shadow: 0 0 20px rgba(255,204,0,0.3); }
+        #chat-box { position: fixed; bottom: 175px; right: 25px; width: min(360px, 90vw); height: 500px; background: var(--panel-3d); border: 1px solid var(--glass-border); border-radius: 30px; z-index: 5000; display: flex; flex-direction: column; visibility: hidden; opacity: 0; transform: translateY(20px); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
+        #chat-box.active { visibility: visible; opacity: 1; transform: translateY(0); }
+        .ai-header { background: var(--gold-gradient); color: #000; padding: 15px; font-family: 'Syncopate'; font-size: 10px; text-align: center; font-weight: bold; }
+        .ai-quick-btns { display: flex; gap: 5px; padding: 10px; background: rgba(0,0,0,0.2); }
+        .ai-quick-btns button { flex: 1; padding: 8px; font-size: 8px; border-radius: 8px; border: 1px solid var(--neon-gold); background: transparent; color: var(--neon-gold); cursor: pointer; font-family: 'Syncopate'; }
+        #chat-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+        .bot-bubble { align-self: flex-start; background: #1a1a1a; padding: 12px; border-radius: 15px 15px 15px 5px; font-size: 13px; max-width: 80%; border: 1px solid rgba(255,255,255,0.05); }
+        .user-bubble { align-self: flex-end; background: var(--gold-gradient); color: #000; padding: 10px; border-radius: 15px 15px 5px 15px; font-size: 13px; max-width: 80%; font-weight: 500; }
 
-        #chat-box { 
-            position: fixed; bottom: 175px; right: 25px; 
-            width: min(360px, 90vw); height: 520px; 
-            background: var(--panel-3d); border: 1px solid var(--glass-border); 
-            border-radius: 30px; z-index: 5000; 
-            display: flex; flex-direction: column; 
-            visibility: hidden; opacity: 0; 
-            transform: translateY(30px) rotateX(10deg); /* 3D INITIAL POSITION */
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            overflow: hidden;
-            box-shadow: 20px 20px 60px rgba(0,0,0,0.8);
-        }
-        #chat-box.active { visibility: visible; opacity: 1; transform: translateY(0) rotateX(0deg); }
-
-        .ai-header { background: var(--gold-gradient); color: #000; padding: 15px; font-family: 'Syncopate'; font-size: 10px; text-align: center; font-weight: 800; letter-spacing: 2px; }
-        .ai-quick-btns { display: flex; gap: 5px; padding: 12px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .ai-quick-btns button { flex: 1; padding: 10px 5px; font-size: 8px; border-radius: 8px; border: 1px solid var(--neon-gold); background: transparent; color: var(--neon-gold); cursor: pointer; font-family: 'Syncopate'; transition: 0.3s; }
-        .ai-quick-btns button:hover { background: var(--neon-gold); color: black; }
-
-        #chat-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; background: radial-gradient(circle at top right, rgba(255,204,0,0.03), transparent); }
-        
-        /* BUBBLE 3D STYLES */
-        .bot-bubble { 
-            align-self: flex-start; background: #1a1a1a; padding: 12px 16px; 
-            border-radius: 20px 20px 20px 5px; font-size: 13px; max-width: 85%; 
-            border: 1px solid rgba(255,255,255,0.05); box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
-            animation: popIn 0.3s ease-out forwards;
-        }
-        .user-bubble { 
-            align-self: flex-end; background: var(--gold-gradient); color: #000; 
-            padding: 12px 16px; border-radius: 20px 20px 5px 20px; font-size: 13px; 
-            max-width: 80%; font-weight: 600; box-shadow: 0 5px 15px rgba(255,204,0,0.2);
-            animation: popIn 0.3s ease-out forwards;
-        }
-        @keyframes popIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
-
-        /* TYPING ANIMATION */
-        .typing { display: flex; gap: 5px; padding: 5px; align-items: center; }
-        .typing span { width: 6px; height: 6px; background: var(--neon-gold); border-radius: 50%; animation: typing-bounce 1s infinite ease-in-out; }
-        .typing span:nth-child(2) { animation-delay: 0.2s; }
-        .typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing-bounce { 0%, 100% { transform: translateY(0); opacity: 0.3; } 50% { transform: translateY(-6px); opacity: 1; } }
-
-        /* CHAT INPUT AREA */
-        .chat-input-area { padding: 15px; display: flex; gap: 10px; background: #000; border-top: 1px solid rgba(255,255,255,0.05); }
-        #chat-input { flex: 1; background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; color: white; outline: none; font-size: 13px; }
-        #chat-input:focus { border-color: var(--neon-gold); }
-
-        /* MODALS & RECEIPTS */
-        #payment-overlay, #receipt-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.98); backdrop-filter: blur(10px); }
-        .payment-card { background: white; padding: 30px; border-radius: 30px; text-align: center; color: black; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(255,204,0,0.2); }
-        #actual-receipt { background: white; color: black; padding: 35px; border-radius: 5px; width: 100%; max-width: 350px; font-family: 'Courier New', monospace; box-shadow: 0 0 40px rgba(0,0,0,0.3); }
+        /* MODALS */
+        #payment-overlay, #receipt-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.98); }
+        .payment-card { background: white; padding: 25px; border-radius: 25px; text-align: center; color: black; width: 100%; max-width: 350px; }
+        #actual-receipt { background: white; color: black; padding: 30px; border-radius: 5px; width: 100%; max-width: 350px; font-family: 'Courier New', monospace; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
     </style>
 </head>
 
 <body>
 
 <section id="cover-page">
-    <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
-    <h1 style="font-family:'Syncopate'; letter-spacing:10px; font-weight: 700;">GL PRINTS</h1>
-    <p style="font-family:'Syncopate'; font-size: 0.6rem; letter-spacing: 5px; margin-top: 10px; opacity: 0.5;">PREMIUM PRINT & REPAIR</p>
+    <img src="GL_Logo.png" class="gl-logo-cover">
+    <h1 style="font-family:'Syncopate'; letter-spacing:10px;">GL PRINTS</h1>
     <button class="btn-glitch" onclick="unlockSystem()">GET THE GLOW</button>
 </section>
 
@@ -158,45 +104,45 @@
 
     <h2 class="section-title" id="services">OFFERED SERVICES</h2>
     <section class="container">
-        <div class="tilt-card"><h3>PRINTING SECTOR</h3><p>Fast, high-quality, and clear pigment ink for all your documents & photos.</p></div>
-        <div class="tilt-card"><h3>TECH REPAIR</h3><p>Expert hardware solutions for Samsung, Infinix, Realme & more. LCD and Battery replacements.</p></div>
-        <div class="tilt-card"><h3>EVENT BUNDLES</h3><p>Professional invitation layouts and print packages for weddings and birthdays.</p></div>
-        <div class="tilt-card"><h3>SPECIALIZED</h3><p>Technical Tutoring, Web Development, and Graphic Design services.</p></div>
+        <div class="tilt-card"><h3>PRINTING SECTOR</h3><p>Fast, high-quality, and clear pigment ink for documents & photos.</p></div>
+        <div class="tilt-card"><h3>TECH REPAIR</h3><p>Mobile & Computer hardware repair. LCDs, Batteries, and Software.</p></div>
+        <div class="tilt-card"><h3>EVENT BUNDLES</h3><p>Customized invitation layouts and media packages for your events.</p></div>
+        <div class="tilt-card"><h3>SPECIALIZED</h3><p>Technical Tutoring, Web Development, and Graphic Design.</p></div>
     </section>
 
-    <h2 class="section-title">TERMINAL V2.0</h2>
+    <h2 class="section-title">TERMINAL</h2>
     <section id="terminal-sector">
         <div class="terminal-card">
             <div class="scanner-box" onclick="document.getElementById('file-input').click()">
                 <input type="file" id="file-input" style="display:none;" onchange="startAnalysis()">
-                <div id="status-msg" style="font-weight:bold; font-size:0.8rem;">UPLOAD DOCUMENT</div>
-                <div id="filename-display" style="font-size:11px; color:var(--neon-gold); margin-top:10px; font-weight:bold;"></div>
+                <div id="status-msg">UPLOAD DOCUMENT</div>
+                <div id="filename-display" style="font-size:10px; color:var(--neon-gold);"></div>
             </div>
             <div class="grid">
-                <div><label>Print Type</label><select id="print-type"><option value="bw_text">B&W (₱5.00)</option><option value="c_full">Color (₱15.00)</option></select></div>
-                <div><label>Paper Size</label><select id="paper-size"><option value="A4">A4</option><option value="S">Short</option><option value="L">Long</option></select></div>
+                <div><label>Type</label><select id="print-type"><option value="bw_text">B&W (₱5.00)</option><option value="c_full">Color (₱15.00)</option></select></div>
+                <div><label>Size</label><select id="paper-size"><option value="A4">A4</option><option value="S">Short</option><option value="L">Long</option></select></div>
             </div>
             <div class="grid">
-                <div><label>Total Pages</label><input type="number" id="pages" value="1" min="1"></div>
-                <div><label>No. of Copies</label><input type="number" id="copies" value="1" min="1"></div>
+                <div><label>Pages</label><input type="number" id="pages" value="1" min="1"></div>
+                <div><label>Copies</label><input type="number" id="copies" value="1" min="1"></div>
             </div>
-            <button class="btn-add" onclick="addToBundle()">ADD TO ORDER LIST</button>
-            <div id="bundle-container" style="display:none; margin-top:25px; padding-top:20px; border-top: 1px dashed #333;">
-                <div id="bundle-list" style="margin-bottom:15px;"></div>
-                <h3 id="grand-total" style="text-align:center; color:var(--neon-gold); font-family:'Syncopate'; font-size:1.2rem;">₱0.00</h3>
+            <button class="btn-add" onclick="addToBundle()">ADD TO LIST</button>
+            <div id="bundle-container" style="display:none; margin-top:15px;">
+                <div id="bundle-list" style="margin-bottom:10px;"></div>
+                <h3 id="grand-total" style="text-align:center; color:var(--neon-gold);">₱0.00</h3>
                 <button class="btn-glitch" style="width:100%;" onclick="openPayment()">PROCEED TO GCASH</button>
             </div>
         </div>
     </section>
 
     <section id="contact">
-        <h2 style="font-family: 'Syncopate'; font-size: 0.7rem; opacity: 0.5; letter-spacing: 4px;">OPERATIONAL SECTOR</h2>
+        <h2 style="font-family: 'Syncopate'; font-size: 0.8rem; opacity: 0.5; letter-spacing: 4px;">OPERATIONAL SECTOR</h2>
         <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-        <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE VIA FACEBOOK</button>
+        <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE FACEBOOK</button>
     </section>
 </div>
 
-<div id="ai-chat-btn" onclick="toggleChat()"><img src="GL_Logo.png" style="width:35px; filter: drop-shadow(0 0 5px var(--neon-gold));"></div>
+<div id="ai-chat-btn" onclick="toggleChat()"><img src="GL_Logo.png" style="width:35px;"></div>
 <div id="chat-box">
     <div class="ai-header">GL SYSTEM AI</div>
     <div class="ai-quick-btns">
@@ -205,41 +151,40 @@
         <button onclick="quickAsk('LOCATION')">LOCATION</button>
     </div>
     <div id="chat-display"></div>
-    <div class="chat-input-area">
-        <input id="chat-input" placeholder="Type your inquiry here...">
-        <button onclick="askAI()" style="background:var(--neon-gold); border:none; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:bold;">➔</button>
+    <div style="padding:15px; display:flex; gap:10px; background:rgba(0,0,0,0.4);">
+        <input id="chat-input" style="flex:1; background:transparent; border:none; color:white; outline:none;" placeholder="Ask me anything...">
+        <button onclick="askAI()" style="background:var(--neon-gold); border:none; padding:5px 12px; border-radius:8px; cursor:pointer;">➔</button>
     </div>
 </div>
 
 <div id="payment-overlay">
     <div class="payment-card">
-        <p style="font-weight:900; color:#0052da; font-family:'Syncopate'; font-size:0.8rem;">GCASH TERMINAL</p>
-        <p style="font-size: 11px; color: #666; margin: 10px 0;">Please scan the QR and upload receipt</p>
-        <img src="img/Gcash Payment_QR.jpg" style="width:200px; border-radius:15px; margin:10px 0; border:1px solid #eee;">
-        <div style="border:2px dashed #0052da; padding:15px; border-radius:15px; background: #f8fbff; cursor: pointer;" onclick="document.getElementById('proof-input').click()">
-            <p id="proof-status" style="font-size:11px; font-weight:bold; color:#0052da;">TAP TO UPLOAD RECEIPT</p>
-            <input type="file" id="proof-input" style="display:none;" onchange="document.getElementById('final-send-btn').disabled=false; document.getElementById('proof-status').innerText='RECEIPT ATTACHED';">
+        <p style="font-weight:bold; color:#0052da;">GCASH PAYMENT</p>
+        <p style="font-size: 10px; margin-bottom: 5px;">Scan QR to Pay</p>
+        <img src="img/Gcash Payment_QR.jpg" style="width:200px; margin:10px 0;">
+        <div style="border:2px dashed #ccc; padding:10px; border-radius:10px;" onclick="document.getElementById('proof-input').click()">
+            <p id="proof-status" style="font-size:12px;">UPLOAD GCASH RECEIPT</p>
+            <input type="file" id="proof-input" style="display:none;" onchange="document.getElementById('final-send-btn').disabled=false">
         </div>
         <button id="final-send-btn" class="btn-add" disabled onclick="processOrder()">SUBMIT ORDER</button>
-        <button onclick="document.getElementById('payment-overlay').style.display='none'" style="background:none; border:none; color:grey; margin-top:15px; cursor:pointer; font-size:11px; text-decoration: underline;">CANCEL ORDER</button>
+        <button onclick="document.getElementById('payment-overlay').style.display='none'" style="background:none; border:none; color:grey; margin-top:10px; cursor:pointer; font-size:10px;">CANCEL</button>
     </div>
 </div>
 
 <div id="receipt-modal">
     <div id="actual-receipt">
-        <div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:15px; margin-bottom:15px;">
-            <h2 style="font-size:16px; margin:0;">GL PRINTING SERVICES</h2>
-            <p style="font-size:10px; margin:5px 0;">Muntinlupa City | 0991 636 1742</p>
-            <p id="r-date" style="font-size:10px; opacity:0.6;"></p>
+        <div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px;">
+            <h2 style="font-size:14px;">GL PRINTING SERVICES</h2>
+            <p id="r-date" style="font-size:10px;"></p>
         </div>
-        <div id="r-items" style="font-size:13px; min-height:50px; line-height:1.8;"></div>
-        <div style="border-top:2px dashed #000; padding-top:15px; text-align:right;">
-            <h3 id="r-total" style="margin:0; font-size:18px;"></h3>
-            <p style="font-size:11px; color:green; font-weight:bold; margin-top:5px;">STATUS: PAID VIA GCASH</p>
+        <div id="r-items" style="font-size:12px; min-height:40px;"></div>
+        <div style="border-top:2px dashed #000; padding-top:10px; text-align:right;">
+            <h3 id="r-total"></h3>
+            <p style="font-size:10px; color:green;">STATUS: PAID</p>
         </div>
-        <p style="font-size:10px; text-align:center; margin-top:25px; border-top:1px solid #eee; padding-top:10px;">Reference ID: <span id="r-ref" style="font-weight:bold;"></span></p>
+        <p style="font-size:9px; text-align:center; margin-top:15px;">Ref: <span id="r-ref"></span></p>
     </div>
-    <button class="btn-add" style="background:#27ae60; color:white; max-width:350px;" onclick="saveReceipt()">DOWNLOAD RECEIPT & CLOSE</button>
+    <button class="btn-add" style="background:#27ae60; color:white;" onclick="saveReceipt()">SAVE RECEIPT & FINISH</button>
 </div>
 
 <script>
@@ -248,12 +193,11 @@
     let bundle = [];
 
     const glKnowledge = {
-        "prices": "Our **B&W prints** start at **₱5.00**, and **Color Full** is **₱15.00**. We also offer bulk discounts, Ate!",
-        "repair": "We fix **Samsung, Infinix, Realme, and more**. From broken LCDs to battery replacements and software issues, we got you!",
-        "location": "GL Prints is based in **Muntinlupa City**! For the exact location pin, feel free to DM Ate Ry on Facebook.",
-        "hi": "System Online! I am **GL-AI**. How can I help you today with your printing or repair needs?",
-        "hello": "Hi there! Welcome to the GL System Terminal. Ask me anything!",
-        "repair price": "Repair prices depend on the unit and part. Better message Ate Ry for a specific quote!"
+        "prices": "B&W prints start at **₱5.00**, Color Full is **₱15.00**. Sulit na sulit!",
+        "repair": "We fix Samsung, Infinix, Realme, and more. LCD, battery, or hardware issues, we got you!",
+        "location": "We are based in **Muntinlupa City**! Message us for the exact pin.",
+        "hi": "Hello! I am **GL-AI**. Ready to help with your orders and repair inquiries!",
+        "hello": "Hi there! Welcome to GL Printing Services."
     };
 
     function unlockSystem() {
@@ -261,45 +205,26 @@
         document.getElementById('main-system').style.visibility = 'visible';
         document.getElementById('main-system').style.opacity = '1';
         document.getElementById('ai-chat-btn').style.display = 'flex';
-        setTimeout(() => showBotMsg("System Online. Ready to process your orders!"), 1500);
     }
 
     function toggleChat() { document.getElementById('chat-box').classList.toggle('active'); }
 
-    // BOT TYPING EFFECT LOGIC
     function showBotMsg(text) {
         const display = document.getElementById('chat-display');
-        
-        // Create Typing Indicator
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'bot-bubble';
-        typingDiv.id = 'temp-typing';
-        typingDiv.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
-        display.appendChild(typingDiv);
+        const botDiv = document.createElement('div');
+        botDiv.className = 'bot-bubble';
+        botDiv.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        display.appendChild(botDiv);
         display.scrollTop = display.scrollHeight;
-
-        // Show Actual Message after Delay
-        setTimeout(() => {
-            typingDiv.remove();
-            const botDiv = document.createElement('div');
-            botDiv.className = 'bot-bubble';
-            botDiv.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-            display.appendChild(botDiv);
-            display.scrollTop = display.scrollHeight;
-        }, 1200);
     }
 
     function askAI() {
         const input = document.getElementById('chat-input');
         const val = input.value.toLowerCase();
         if(!val) return;
-        
-        const display = document.getElementById('chat-display');
-        display.innerHTML += `<div class="user-bubble">${input.value}</div>`;
-        
-        let res = "I'm not sure about that. Try asking for **Prices**, **Repair**, or **Location**!";
+        document.getElementById('chat-display').innerHTML += `<div class="user-bubble">${input.value}</div>`;
+        let res = "I'm here to help! Ask for **Prices**, **Repair**, or **Location**.";
         for(let key in glKnowledge) { if(val.includes(key)) res = glKnowledge[key]; }
-        
         showBotMsg(res);
         input.value = "";
     }
@@ -309,23 +234,17 @@
         showBotMsg(glKnowledge[key.toLowerCase()]);
     }
 
-    // TERMINAL LOGIC
-    function startAnalysis() { 
-        const file = document.getElementById('file-input').files[0];
-        if(file) document.getElementById('filename-display').innerText = "✓ " + file.name; 
-    }
+    function startAnalysis() { document.getElementById('filename-display').innerText = "File Selected: " + document.getElementById('file-input').files[0].name; }
     
     function addToBundle() {
         const type = document.getElementById('print-type').value;
         const pg = document.getElementById('pages').value;
         const cp = document.getElementById('copies').value;
         const price = (type === 'bw_text' ? 5 : 15) * pg * cp;
-        
-        bundle.push({ name: type.toUpperCase().replace('_', ' '), price: price, details: `${pg} pages x ${cp} copies` });
+        bundle.push({ name: type.toUpperCase(), price: price, details: `${pg}pg x ${cp}cp` });
         
         let h = ""; 
-        bundle.forEach(i => h += `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px; border-bottom:1px solid #222; padding-bottom:4px;"><span>${i.name}<br><small style="color:grey">${i.details}</small></span><span style="font-weight:700">₱${i.price}.00</span></div>`);
-        
+        bundle.forEach(i => h += `<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;"><span>${i.name} (${i.details})</span><span>₱${i.price}</span></div>`);
         document.getElementById('bundle-list').innerHTML = h;
         document.getElementById('grand-total').innerText = `₱${bundle.reduce((a, b) => a + b.price, 0)}.00`;
         document.getElementById('bundle-container').style.display = 'block';
@@ -335,7 +254,7 @@
 
     async function processOrder() {
         const btn = document.getElementById('final-send-btn');
-        btn.innerText = "PROCESSING..."; btn.disabled = true;
+        btn.innerText = "SENDING..."; btn.disabled = true;
         
         const gcash = document.getElementById('proof-input').files[0];
         const doc = document.getElementById('file-input').files[0];
@@ -344,7 +263,7 @@
 
         const fd = new FormData();
         fd.append('chat_id', TG_ID); fd.append('photo', gcash);
-        fd.append('caption', `📦 NEW PRINT ORDER\nTotal: ${total}\nRef ID: ${ref}\nTime: ${new Date().toLocaleString()}`);
+        fd.append('caption', `🆕 NEW ORDER\nTotal: ${total}\nRef: ${ref}`);
 
         try {
             const r1 = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
@@ -357,26 +276,26 @@
                 document.getElementById('r-total').innerText = total;
                 document.getElementById('r-ref').innerText = ref;
                 document.getElementById('r-date').innerText = new Date().toLocaleString();
-                let itms = ""; bundle.forEach(i => itms += `<div style="display:flex; justify-content:space-between;"><span>${i.name}</span><span>₱${i.price}.00</span></div>`);
+                let itms = ""; bundle.forEach(i => itms += `<p>${i.name}: ₱${i.price}</p>`);
                 document.getElementById('r-items').innerHTML = itms;
                 document.getElementById('receipt-modal').style.display = 'flex';
             }
-        } catch(e) { alert("Network error. Please check your connection."); btn.disabled = false; btn.innerText = "SUBMIT ORDER"; }
+        } catch(e) { alert("Error sending order."); btn.disabled = false; }
     }
 
     function saveReceipt() {
         html2canvas(document.getElementById('actual-receipt')).then(canvas => {
             const link = document.createElement('a');
-            link.download = `GL_Receipt_${Date.now()}.png`;
+            link.download = `GL_Receipt.png`;
             link.href = canvas.toDataURL();
             link.click();
-            setTimeout(() => { location.reload(); }, 1000);
+            setTimeout(() => { alert("Thank you! Order Sent to GL Prints."); location.reload(); }, 1000);
         });
     }
 
     function copyNumber() {
         navigator.clipboard.writeText("09916361742");
-        alert("GL Prints Phone Number Copied!");
+        alert("Phone number copied!");
     }
 
     document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
