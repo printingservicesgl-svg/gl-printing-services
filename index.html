@@ -7,7 +7,6 @@
     <link rel="icon" type="image/png" href="GL_Logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -80,8 +79,6 @@
         .user-msg { align-self: flex-end; background: var(--gold-gradient); color: #000; padding: 10px 16px; border-radius: 18px 18px 5px 18px; font-size: 14px; font-weight: 600; max-width: 85%; }
         .typing-indicator { display: flex; gap: 4px; padding: 5px; }
         .typing-indicator span { width: 6px; height: 6px; background: var(--neon-gold); border-radius: 50%; animation: blink 1.4s infinite both; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
         .chat-input-area { padding: 15px; display: flex; gap: 10px; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,204,0,0.2); }
         #chat-input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 14px; }
@@ -189,9 +186,9 @@
 
     const glKnowledge = {
         "hi": "Hello! I am **GL-AI**, your digital assistant. How can I help you today?",
-        "prices": "Documents start at **₱4.00**. Photo prints range from **₱10.00** to **₱50.00**. Check our Terminal to compute!",
-        "repair": "We repair **Samsung, Infinix, Realme, and iPhones**. LCD replacement starts at ₱1,200 depending on the model.",
-        "location": "We are based in **Muntinlupa City**. We serve local clients and offer shipping for bulk prints!",
+        "prices": "Our documents start at **₱4.00**. Photo prints range from **₱10.00** up to **₱50.00**. Check our Terminal to compute exactly!",
+        "repair": "We repair **Samsung, Infinix, Realme, and iPhones**. LCD replacements and battery health solutions available.",
+        "location": "Based in **Muntinlupa City**. We serve local walk-ins and delivery for bulk orders!",
         "owner": "GL Printing Services is owned by **Ate Ry (Lria)**, our lead BSIT technician."
     };
 
@@ -276,9 +273,36 @@
     function generateSecureReceipt() { document.getElementById('payment-overlay').style.display = 'flex'; }
     function checkProof() { document.getElementById('final-send-btn').disabled = false; document.getElementById('final-send-btn').style.opacity = 1; }
     
+    // TELEGRAM INTEGRATION FIXED
     async function processOrder() {
-        alert("Sending to Ate Ry's Telegram...");
-        location.reload();
+        const btn = document.getElementById('final-send-btn');
+        btn.innerText = "SENDING..."; btn.disabled = true;
+
+        const fileToPrint = document.getElementById('file-input').files[0];
+        const gcashProof = document.getElementById('proof-input').files[0];
+        const total = document.getElementById('grand-total').innerText;
+
+        const fd = new FormData();
+        fd.append('chat_id', TG_ID);
+        fd.append('photo', gcashProof);
+        fd.append('caption', `🆕 NEW ORDER!\nTotal: ${total}\nRef: GL-${Date.now().toString().slice(-4)}`);
+
+        try {
+            const res1 = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            if(fileToPrint && res1.ok) {
+                const fd2 = new FormData();
+                fd2.append('chat_id', TG_ID);
+                fd2.append('document', fileToPrint);
+                await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendDocument`, { method: 'POST', body: fd2 });
+            }
+            if(res1.ok) {
+                alert("Order sent to Ate Ry! Thank you.");
+                location.reload();
+            }
+        } catch(e) {
+            alert("Error sending order. Try again.");
+            btn.disabled = false;
+        }
     }
 
     document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
