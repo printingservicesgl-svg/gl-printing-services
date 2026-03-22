@@ -377,7 +377,7 @@
     if (isClosed) {
         if(overlay) {
             overlay.style.display = 'flex';
-            overlay.querySelector('p').innerHTML = "SHOP OPENS AT 8:00 AM<br>CLOSES AT 12:00 AM";
+            overlay.querySelector('p').innerHTML = "WE OPENS AT 8:00 AM<br>CLOSES AT 12:00 AM";
         }
         document.getElementById('main-system').style.pointerEvents = 'none';
     } else {
@@ -669,71 +669,104 @@ window.onload = lockSystem;
         }
     }
 
-    async function sendToTelegram() {
-        const btn = document.getElementById('submit-btn');
-        const grandTotal = document.getElementById('grand-total').innerText;
-        btn.innerText = "PROCESSING..."; 
-        btn.disabled = true;
-        
-        // Generate Reference Number
-        const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
+   async function sendToTelegram() {
+    const btn = document.getElementById('submit-btn');
+    const grandTotal = document.getElementById('grand-total').innerText;
+    const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
+    
+    // --- TAMANG USERNAME NG GL PRINTING ---
+    const FB_PAGE_USER_ID = "GLprinting.services"; 
 
-        try {
-            // --- 1. SEND TO ADMIN (TELEGRAM) ---
-            let receiptText = `🧾 *OFFICIAL RECEIPT*\nRef No: \`${ref}\`\n--------------------------\n`;
-            cart.forEach((item, i) => { 
-                receiptText += `${i+1}. *${item.name}*\n   Specs: ${item.size} | ${item.type}\n   Price: ₱${item.price.toFixed(2)}\n\n`; 
-            });
-            receiptText += `*TOTAL AMOUNT: ${grandTotal}*`;
+    btn.innerText = "SENDING TO ADMIN..."; 
+    btn.disabled = true;
 
-            // Text Receipt to Admin
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: receiptText, parse_mode: 'Markdown' })
-            });
+    try {
+        // 1. KALKULAHIN ANG ETA
+        let totalPages = 0;
+        let additionalTime = 0;
+        cart.forEach(item => {
+            const pages = parseInt(item.meta) || 1;
+            totalPages += pages;
+            if(item.type.includes('full') || item.type.includes('color')) additionalTime += 2; 
+        });
+        let etaMins = 5 + (totalPages * 1) + additionalTime;
+        let etaDisplay = etaMins > 60 ? "1-2 Hours" : `${etaMins}-${etaMins + 5} Mins`;
 
-            // Proof to Admin
-            const proofFd = new FormData();
-            proofFd.append('chat_id', CONFIG.CHAT_ID);
-            proofFd.append('photo', document.getElementById('proof-input').files[0]);
-            proofFd.append('caption', `💰 *GCASH PROOF*\nRef: ${ref}\nPaid: ${grandTotal}`);
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method:'POST', body:proofFd});
+        // 2. ADMIN SUMMARY (SA TELEGRAM MO)
+        let adminMsg = `<b>🆔 NEW ORDER: ${ref}</b>\n`;
+        adminMsg += `━━━━━━━━━━━━━━━━━━\n`;
+        adminMsg += `💰 <b>TOTAL:</b> ${grandTotal}\n`;
+        adminMsg += `⏳ <b>ETA GIVEN:</b> ${etaDisplay}\n`;
+        adminMsg += `━━━━━━━━━━━━━━━━━━\n\n`;
 
-            // Files to Admin
-            for(let item of cart) {
-                const fileFd = new FormData();
-                fileFd.append('chat_id', CONFIG.CHAT_ID);
-                const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
-                fileFd.append(isImg ? 'photo' : 'document', item.file);
-                fileFd.append('caption', `📂 *FILE*: ${item.name}\nRef: ${ref}`);
-                await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg?'sendPhoto':'sendDocument'}`, {method:'POST', body:fileFd});
-            }
+        cart.forEach((item, i) => {
+            adminMsg += `<b>${i+1}. ${item.name}</b>\n`;
+            adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n\n`;
+        });
 
-            // --- 2. SHOW RECEIPT TO CUSTOMER (SCREEN) ---
-            
-            // Ilagay ang Reference Number
-            document.getElementById('final-ref').innerText = ref;
+        // Send Text Receipt to Telegram
+        await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: adminMsg, parse_mode: 'HTML' })
+        });
 
-            // I-list ang items sa screen ng customer
-            let summaryHTML = `<b style="color:var(--neon-gold)">Summary (${grandTotal})</b><hr style="border:0; border-top:1px solid #333; margin:10px 0;">`;
-            cart.forEach(item => {
-                summaryHTML += `<div style="margin-bottom:8px;">• ${item.name}<br><span style="opacity:0.5; font-size:9px;">${item.size} | ${item.meta}</span></div>`;
-            });
-            document.getElementById('customer-receipt-summary').innerHTML = summaryHTML;
+        // 3. SEND PROOF NG BAYAD
+        const proofFd = new FormData();
+        proofFd.append('chat_id', CONFIG.CHAT_ID);
+        proofFd.append('photo', document.getElementById('proof-input').files[0]);
+        proofFd.append('caption', `💰 PAYMENT PROOF [Ref: ${ref}]`);
+        await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method: 'POST', body: proofFd});
 
-            // Isara ang payment window, buksan ang resibo
-            closeModal('payment-modal');
-            document.getElementById('success-modal').style.display = 'flex';
-
-            // NOTE: Tinanggal ang location.reload() dito para mabasa muna ng customer ang resibo.
-
-        } catch (e) { 
-            console.error(e);
-            alert("Error sending order. Please check your connection."); 
-            btn.innerText = "RETRY"; 
-            btn.disabled = false; 
+        // 4. SEND CUSTOMER FILES
+        for(let item of cart) {
+            const fileFd = new FormData();
+            fileFd.append('chat_id', CONFIG.CHAT_ID);
+            const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
+            fileFd.append(isImg ? 'photo' : 'document', item.file);
+            fileFd.append('caption', `📂 FILE: ${item.name}\nRef: ${ref}`);
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg?'sendPhoto':'sendDocument'}`, {method: 'POST', body: fileFd});
         }
+
+        // 5. UPDATE SUCCESS SCREEN (CUSTOMER SIDE)
+        document.getElementById('final-ref').innerText = ref;
+        
+        // --- ITO ANG MAGIC LINK PARA SA MESSENGER ---
+        // PALITAN MO YUNG DATI NITONG VERSION:
+let messengerLink = `https://www.facebook.com/messages/t/GLprinting.services`;
+
+        let etaBoxHTML = `
+            <div style="margin: 15px 0; padding: 25px; border: 2px solid var(--neon-gold); border-radius: 20px; background: #000; text-align:center;">
+                <p style="font-size: 10px; opacity: 0.6; color:white; letter-spacing: 2px;">ORDER ISSUED SUCCESSFULLY</p>
+                <h1 style="color: var(--neon-gold); font-family: 'Syncopate'; margin: 10px 0; font-size: 2.2rem;">${ref}</h1>
+                <p style="font-size: 11px; color: white; margin-bottom: 20px;">Ready in: <b>${etaDisplay}</b></p>
+                
+                <a href="${messengerLink}" target="_blank" 
+                   style="display:block; background:#0084FF; color:white; padding:18px; border-radius:12px; text-decoration:none; font-size:13px; font-weight:bold; border: 1px solid #fff;">
+                   💬 SEND TO MESSENGER
+                </a>
+                <p style="font-size: 8px; color: grey; margin-top: 10px;">Click the button to confirm your order details.</p>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        `;
+
+        let summaryHTML = `<b style="color:var(--neon-gold)">Summary (${grandTotal})</b><br>`;
+        cart.forEach(item => {
+            summaryHTML += `<div style="margin-top:8px; font-size:10px; color:white;">• ${item.name} (${item.meta})</div>`;
+        });
+
+        document.getElementById('customer-receipt-summary').innerHTML = etaBoxHTML + summaryHTML;
+
+        closeModal('payment-modal');
+        document.getElementById('success-modal').style.display = 'flex';
+
+    } catch (e) { 
+        console.error("Order Error:", e);
+        alert("System Busy. Please try again."); 
+        btn.innerText = "RETRY"; 
+        btn.disabled = false; 
     }
+}
     
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
