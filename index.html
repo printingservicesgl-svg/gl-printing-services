@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="GL_Logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -17,288 +18,431 @@
             --glass: rgba(255, 255, 255, 0.07);
             --glass-border: rgba(255, 204, 0, 0.3);
             --panel-3d: linear-gradient(165deg, rgba(25,25,25,0.95) 0%, rgba(10,10,10,0.98) 100%);
+            --success: #2ecc71;
         }
 
+        /* GLOBAL STYLES */
         * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
         body { background: var(--deep); color: white; font-family: 'Space Grotesk'; overflow-x: hidden; }
 
-        /* 1. COVER PAGE */
+        /* COVER PAGE */
         #cover-page {
-            height: 100vh; width: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; background: radial-gradient(circle at center, rgba(255,204,0,0.08) 0%, rgba(0,0,0,1) 85%);
-            position: fixed; top: 0; left: 0; z-index: 9999;
-            transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+            position: fixed; top: 0; left: 0; z-index: 9999; transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
         }
         #cover-page.exit { transform: translateY(-100%); }
         .gl-logo-cover { width: clamp(130px, 20vw, 160px); filter: drop-shadow(0 0 30px var(--neon-gold)); margin-bottom: 20px; animation: pulse 3s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 40px var(--neon-gold)); } }
 
-        /* 2. NAVIGATION */
+        /* NAVIGATION */
         nav {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.85); padding: 12px 25px; border-radius: 50px;
-            display: flex; justify-content: center; gap: 15px; backdrop-filter: blur(20px); z-index: 2000;
+            display: flex; gap: 15px; backdrop-filter: blur(20px); z-index: 2000;
             border: 1px solid rgba(255,204,0,0.2);
         }
         nav a { color: white; text-decoration: none; font-family: 'Syncopate'; font-size: 0.65rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
-        nav a:hover { color: var(--neon-gold); }
+        nav a:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); }
 
-        /* 3. MAIN SYSTEM & SERVICES */
+        /* MAIN LAYOUT */
         #main-system { opacity: 0; transition: opacity 1s ease; visibility: hidden; padding-bottom: 100px; }
-        .section-title { font-family: 'Syncopate'; color: var(--neon-gold); text-align: center; margin: 80px 0 30px; font-size: 1.2rem; letter-spacing: 5px; }
+        .container { padding: 100px 5% 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+        .tilt-card { background: var(--glass); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1rem; margin-bottom: 15px; }
+
+        /* TERMINAL SECTOR */
+        #terminal-sector { padding: 80px 5%; max-width: 550px; margin: 0 auto; }
+        .terminal-card { background: #111; border: 1px solid var(--glass-border); padding: 30px; border-radius: 28px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .scanner-box { border: 2px dashed #333; padding: 40px 20px; text-align: center; border-radius: 20px; background: #080808; margin-bottom: 20px; cursor: pointer; }
+        .scanner-box.active { border-color: var(--neon-gold); background: rgba(255,204,0,0.03); }
         
-        .container { padding: 20px 5% 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
-        .tilt-card { background: var(--glass); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: 0.4s; }
-        .tilt-card:hover { border-color: var(--neon-gold); transform: translateY(-10px); background: rgba(255, 204, 0, 0.03); }
-        .tilt-card h3 { font-family: 'Syncopate'; color: var(--neon-gold); margin-bottom: 15px; font-size: 0.9rem; }
+        label { font-size: 0.6rem; color: #666; display: block; margin: 20px 0 8px; font-weight: 700; text-transform: uppercase; }
+        select, input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #222; background: #000; color: #fff; outline: none; font-family: 'Space Grotesk'; }
+        
+        .btn-add { background: var(--neon-gold); color: #000; width: 100%; padding: 20px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 25px; font-family: 'Syncopate'; font-size: 0.65rem; }
 
-        /* 4. TERMINAL */
-        #terminal-sector { padding: 40px 5%; max-width: 600px; margin: 0 auto; }
-        .terminal-card { background: #111; border: 1px solid var(--glass-border); padding: 30px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .scanner-box { border: 2px dashed #333; padding: 40px 20px; text-align: center; border-radius: 15px; background: #080808; margin-bottom: 20px; cursor: pointer; }
-        label { font-size: 0.6rem; color: #777; display: block; margin: 15px 0 5px; font-weight: bold; text-transform: uppercase; }
-        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: #fff; outline: none; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-add { background: var(--neon-gold); color: #000; width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 25px; font-family: 'Syncopate'; font-size: 0.7rem; }
-        .btn-glitch { margin-top: 20px; padding: 18px 45px; background: transparent; border: 1px solid var(--neon-gold); color: var(--neon-gold); font-family: 'Syncopate'; font-size: 0.75rem; cursor: pointer; }
-
-        /* 5. CONTACT SECTOR */
-        #contact { text-align: center; padding: 100px 5%; border-top: 1px solid rgba(255,255,255,0.05); }
-        #phone-num { font-size: 2rem; color: var(--neon-gold); cursor: pointer; letter-spacing: 4px; margin: 25px 0; font-weight: 700; transition: 0.3s; }
-        #phone-num:hover { text-shadow: 0 0 15px var(--neon-gold); }
-
-        /* 6. GL AI INTERFACE */
-        #ai-chat-btn { position: fixed; bottom: 95px; right: 25px; width: 65px; height: 65px; background: #000; border: 2px solid var(--neon-gold); border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 5000; box-shadow: 0 0 20px rgba(255,204,0,0.3); }
-        #chat-box { position: fixed; bottom: 175px; right: 25px; width: min(360px, 90vw); height: 500px; background: var(--panel-3d); border: 1px solid var(--glass-border); border-radius: 30px; z-index: 5000; display: flex; flex-direction: column; visibility: hidden; opacity: 0; transform: translateY(20px); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
-        #chat-box.active { visibility: visible; opacity: 1; transform: translateY(0); }
-        .ai-header { background: var(--gold-gradient); color: #000; padding: 15px; font-family: 'Syncopate'; font-size: 10px; text-align: center; font-weight: bold; }
-        .ai-quick-btns { display: flex; gap: 5px; padding: 10px; background: rgba(0,0,0,0.2); }
-        .ai-quick-btns button { flex: 1; padding: 8px; font-size: 8px; border-radius: 8px; border: 1px solid var(--neon-gold); background: transparent; color: var(--neon-gold); cursor: pointer; font-family: 'Syncopate'; }
-        #chat-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
-        .bot-bubble { align-self: flex-start; background: #1a1a1a; padding: 12px; border-radius: 15px 15px 15px 5px; font-size: 13px; max-width: 80%; border: 1px solid rgba(255,255,255,0.05); }
-        .user-bubble { align-self: flex-end; background: var(--gold-gradient); color: #000; padding: 10px; border-radius: 15px 15px 5px 15px; font-size: 13px; max-width: 80%; font-weight: 500; }
+        /* CART & RECEIPT */
+        .cart-item { background: var(--glass); padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--neon-gold); position: relative; }
+        .remove-btn { position: absolute; right: 15px; top: 15px; background: #ff4444; color: white; border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 10px; }
 
         /* MODALS */
-        #payment-overlay, #receipt-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.98); }
-        .payment-card { background: white; padding: 25px; border-radius: 25px; text-align: center; color: black; width: 100%; max-width: 350px; }
-        #actual-receipt { background: white; color: black; padding: 30px; border-radius: 5px; width: 100%; max-width: 350px; font-family: 'Courier New', monospace; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:9999; padding:20px; }
+        .modal-content { background: #161616; border: 1px solid var(--neon-gold); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; }
+
+        /* --- GL AI GLOW & 3D CSS --- */
+        #ai-chat-btn { 
+            position: fixed; bottom: 90px; right: 25px; width: 65px; height: 65px; 
+            background: #000; border: 2px solid var(--neon-gold); border-radius: 50%; 
+            display: none; justify-content: center; align-items: center; cursor: pointer; 
+            z-index: 5000; 
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4); /* Glow effect */
+            transition: transform 0.3s;
+        }
+        #ai-chat-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--neon-gold); }
+
+        #chat-box { 
+            position: fixed; bottom: 170px; right: 25px; width: min(350px, 85vw); height: 500px; 
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 25px; z-index: 5000; 
+            overflow: hidden; display: none; flex-direction: column;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 204, 0, 0.1); /* 3D & Inner Glow */
+        }
+        #chat-box.active { display: flex; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        #chat-display { flex: 1; padding: 20px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+        .bot-bubble { 
+            background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 18px 18px 18px 0; 
+            border: 1px solid rgba(255, 204, 0, 0.2); align-self: flex-start; max-width: 85%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .user-msg { 
+            background: var(--neon-gold); color: black; padding: 12px; border-radius: 18px 18px 0 18px; 
+            align-self: flex-end; font-weight: 600; max-width: 85%;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+        }
+
+        .btn-glitch { margin-top: 20px; padding: 18px 45px; background: transparent; border: 1px solid var(--neon-gold); color: var(--neon-gold); font-family: 'Syncopate'; font-size: 0.75rem; letter-spacing: 5px; cursor: pointer; transition: 0.4s; }
+        .btn-glitch:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 30px var(--neon-gold); }
     </style>
 </head>
 
 <body>
 
 <section id="cover-page">
-    <img src="GL_Logo.png" class="gl-logo-cover">
-    <h1 style="font-family:'Syncopate'; letter-spacing:10px;">GL PRINTS</h1>
+    <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
+    <h1 style="font-family:'Syncopate'; letter-spacing:10px; font-size: clamp(2.2rem, 6vw, 3.5rem);">GL PRINTS</h1>
+    <p style="letter-spacing: 6px; opacity: 0.4; font-size: 0.7rem; margin-top: 10px;">EST. 2025 | MUNTINLUPA CITY </p>
     <button class="btn-glitch" onclick="unlockSystem()">GET THE GLOW</button>
 </section>
 
 <div id="main-system">
     <nav>
-        <a href="#">Home</a>
+        <a onclick="goHome()">Home</a>
         <a href="#services">Services</a>
         <a href="#terminal-sector">Terminal</a>
         <a href="#contact">Contact</a>
     </nav>
 
-    <h2 class="section-title" id="services">OFFERED SERVICES</h2>
-    <section class="container">
-        <div class="tilt-card"><h3>PRINTING SECTOR</h3><p>Fast, high-quality, and clear pigment ink for documents & photos.</p></div>
-        <div class="tilt-card"><h3>TECH REPAIR</h3><p>Mobile & Computer hardware repair. LCDs, Batteries, and Software.</p></div>
-        <div class="tilt-card"><h3>EVENT BUNDLES</h3><p>Customized invitation layouts and media packages for your events.</p></div>
-        <div class="tilt-card"><h3>SPECIALIZED</h3><p>Technical Tutoring, Web Development, and Graphic Design.</p></div>
+    <section id="services" class="container">
+        <div class="tilt-card"><h3>EVENT & MEDIA</h3><p>Premium bundles for Birthdays, Christenings, and Weddings. High-gloss finish.</p></div>
+        <div class="tilt-card"><h3>DIGITAL DESIGN</h3><p>Professional layouts for business branding and social media projects.</p></div>
+        <div class="tilt-card"><h3>TECH SOLUTIONS</h3><p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p></div>
     </section>
 
-    <h2 class="section-title">TERMINAL</h2>
     <section id="terminal-sector">
         <div class="terminal-card">
-            <div class="scanner-box" onclick="document.getElementById('file-input').click()">
-                <input type="file" id="file-input" style="display:none;" onchange="startAnalysis()">
-                <div id="status-msg">UPLOAD DOCUMENT</div>
-                <div id="filename-display" style="font-size:10px; color:var(--neon-gold);"></div>
+            <div class="terminal-header" style="text-align:center; margin-bottom:20px;">
+                <h2 style="font-family:'Syncopate'; color:var(--neon-gold); font-size:1.1rem;">AI TERMINAL v2.0</h2>
+                <p style="font-size:10px; opacity:0.5;">AUTO-SCANNING PRICING ENGINE</p>
             </div>
-            <div class="grid">
-                <div><label>Type</label><select id="print-type"><option value="bw_text">B&W (₱5.00)</option><option value="c_full">Color (₱15.00)</option></select></div>
-                <div><label>Size</label><select id="paper-size"><option value="A4">A4</option><option value="S">Short</option><option value="L">Long</option></select></div>
+
+            <div class="scanner-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <input type="file" id="file-input" style="display:none;" onchange="handleProcess()">
+                <div id="status-text" style="font-weight:700; font-size:0.75rem;">TAP TO UPLOAD DOCUMENT</div>
+                <div id="filename-display" style="font-size:10px; color:var(--neon-gold); margin-top:8px; opacity:0.8;"></div>
             </div>
-            <div class="grid">
-                <div><label>Pages</label><input type="number" id="pages" value="1" min="1"></div>
-                <div><label>Copies</label><input type="number" id="copies" value="1" min="1"></div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div>
+                    <label>Paper Size</label>
+                    <select id="paper-size" onchange="updatePrice()">
+                        <option value="short">Short</option>
+                        <option value="a4" selected>A4</option>
+                        <option value="long">Long</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Print Type</label>
+                    <select id="print-type" onchange="updatePrice()">
+                        <option value="bw_text">B&W Text</option>
+                        <option value="color_text">Color Text</option>
+                        <option value="bw_partial">B&W Minimal</option>
+                        <option value="color_partial">Color Partial</option>
+                        <option value="bw_full">B&W Full Page</option>
+                        <option value="color_full">Color Full/Photo</option>
+                    </select>
+                </div>
             </div>
-            <button class="btn-add" onclick="addToBundle()">ADD TO LIST</button>
-            <div id="bundle-container" style="display:none; margin-top:15px;">
-                <div id="bundle-list" style="margin-bottom:10px;"></div>
-                <h3 id="grand-total" style="text-align:center; color:var(--neon-gold);">₱0.00</h3>
-                <button class="btn-glitch" style="width:100%;" onclick="openPayment()">PROCEED TO GCASH</button>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Pages</label><input type="number" id="pages" value="1" min="1" oninput="updatePrice()"></div>
+                <div><label>Copies</label><input type="number" id="copies" value="1" min="1" oninput="updatePrice()"></div>
+            </div>
+
+            <button class="btn-add" onclick="addItem()">ADD TO CART (₱<span id="live-price">0.00</span>)</button>
+
+            <div id="cart-section" style="display:none; margin-top:30px; border-top:1px solid #222; padding-top:20px;">
+                <label style="color:var(--neon-gold);">CART SUMMARY</label>
+                <div id="cart-list"></div>
+                <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                    <span>TOTAL:</span>
+                    <h2 id="grand-total" style="color:var(--neon-gold);">₱0.00</h2>
+                </div>
+                <button class="btn-add" style="background:white; color:black;" onclick="showConfirm()">CHECKOUT VIA GCASH</button>
             </div>
         </div>
     </section>
 
-    <section id="contact">
-        <h2 style="font-family: 'Syncopate'; font-size: 0.8rem; opacity: 0.5; letter-spacing: 4px;">OPERATIONAL SECTOR</h2>
+    <section id="contact" style="text-align:center;">
         <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-        <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE FACEBOOK</button>
+        <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE US</button>
     </section>
+</div>
+
+<canvas id="scan-canvas" style="display:none;"></canvas>
+
+<div id="payment-modal" class="modal">
+    <div class="modal-content" style="background:white; color:black;">
+        <p style="font-weight:900; color:#0052da; font-family:'Syncopate';">GCASH PAYMENT</p>
+        <img src="img/Gcash Payment_QR.jpg" style="width:160px; margin:15px 0;">
+        <p style="font-weight:bold;">Total: <span id="pay-amount">₱0.00</span></p>
+        <div style="border:2px dashed #0052da; padding:15px; border-radius:15px; margin-top:10px; cursor:pointer;" onclick="document.getElementById('proof-input').click()">
+            <p id="proof-status" style="font-size:11px; color:#0052da; font-weight:bold;">UPLOAD SCREENSHOT OF RECEIPT</p>
+            <input type="file" id="proof-input" style="display:none;" onchange="checkProof()">
+        </div>
+        <button id="submit-btn" class="btn-add" disabled style="background:#0052da; color:white;" onclick="sendToTelegram()">SEND ORDER</button>
+        <button onclick="closeModal('payment-modal')" style="background:none; border:none; margin-top:10px; font-size:10px; color:grey;">CANCEL</button>
+    </div>
 </div>
 
 <div id="ai-chat-btn" onclick="toggleChat()"><img src="GL_Logo.png" style="width:35px;"></div>
 <div id="chat-box">
-    <div class="ai-header">GL SYSTEM AI</div>
-    <div class="ai-quick-btns">
-        <button onclick="quickAsk('PRICES')">PRICES</button>
-        <button onclick="quickAsk('REPAIR')">REPAIR</button>
-        <button onclick="quickAsk('LOCATION')">LOCATION</button>
+    <div style="background:var(--gold-gradient); color:black; padding:18px; font-family:'Syncopate'; font-size:10px; display:flex; justify-content:space-between; align-items:center;">
+        <span>GL SYSTEM AI</span>
+        <span onclick="toggleChat()" style="cursor:pointer; font-weight:bold;">✕</span>
     </div>
     <div id="chat-display"></div>
-    <div style="padding:15px; display:flex; gap:10px; background:rgba(0,0,0,0.4);">
-        <input id="chat-input" style="flex:1; background:transparent; border:none; color:white; outline:none;" placeholder="Ask me anything...">
-        <button onclick="askAI()" style="background:var(--neon-gold); border:none; padding:5px 12px; border-radius:8px; cursor:pointer;">➔</button>
+    <div style="padding:15px; display:flex; gap:10px; background:rgba(0,0,0,0.5);">
+        <input id="chat-input" placeholder="Query..." style="flex:1; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:12px;">
+        <button onclick="askAI()" style="background:var(--neon-gold); border:none; border-radius:12px; padding:0 20px; font-weight:bold;">></button>
     </div>
-</div>
-
-<div id="payment-overlay">
-    <div class="payment-card">
-        <p style="font-weight:bold; color:#0052da;">GCASH PAYMENT</p>
-        <p style="font-size: 10px; margin-bottom: 5px;">Scan QR to Pay</p>
-        <img src="img/Gcash Payment_QR.jpg" style="width:200px; margin:10px 0;">
-        <div style="border:2px dashed #ccc; padding:10px; border-radius:10px;" onclick="document.getElementById('proof-input').click()">
-            <p id="proof-status" style="font-size:12px;">UPLOAD GCASH RECEIPT</p>
-            <input type="file" id="proof-input" style="display:none;" onchange="document.getElementById('final-send-btn').disabled=false">
-        </div>
-        <button id="final-send-btn" class="btn-add" disabled onclick="processOrder()">SUBMIT ORDER</button>
-        <button onclick="document.getElementById('payment-overlay').style.display='none'" style="background:none; border:none; color:grey; margin-top:10px; cursor:pointer; font-size:10px;">CANCEL</button>
-    </div>
-</div>
-
-<div id="receipt-modal">
-    <div id="actual-receipt">
-        <div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px;">
-            <h2 style="font-size:14px;">GL PRINTING SERVICES</h2>
-            <p id="r-date" style="font-size:10px;"></p>
-        </div>
-        <div id="r-items" style="font-size:12px; min-height:40px;"></div>
-        <div style="border-top:2px dashed #000; padding-top:10px; text-align:right;">
-            <h3 id="r-total"></h3>
-            <p style="font-size:10px; color:green;">STATUS: PAID</p>
-        </div>
-        <p style="font-size:9px; text-align:center; margin-top:15px;">Ref: <span id="r-ref"></span></p>
-    </div>
-    <button class="btn-add" style="background:#27ae60; color:white;" onclick="saveReceipt()">SAVE RECEIPT & FINISH</button>
 </div>
 
 <script>
-    const TG_TOKEN = '8621389622:AAFFAGg6bTitSp9VtVHdcXCd2GegOTy4gNk';
-    const TG_ID = '7541789801';
-    let bundle = [];
-
-    const glKnowledge = {
-        "prices": "B&W prints start at **₱5.00**, Color Full is **₱15.00**. Sulit na sulit!",
-        "repair": "We fix Samsung, Infinix, Realme, and more. LCD, battery, or hardware issues, we got you!",
-        "location": "We are based in **Muntinlupa City**! Message us for the exact pin.",
-        "hi": "Hello! I am **GL-AI**. Ready to help with your orders and repair inquiries!",
-        "hello": "Hi there! Welcome to GL Printing Services."
+    const CONFIG = { TOKEN: '8621389622:AAFFAGg6bTitSp9VtVHdcXCd2GegOTy4gNk', CHAT_ID: '7541789801' };
+    const PRICING = {
+        "bw_text": {short:4, a4:5, long:6}, "color_text": {short:7, a4:8, long:9},
+        "bw_partial": {short:5, a4:6, long:7}, "color_partial": {short:6, a4:7, long:8},
+        "bw_full": {short:5, a4:6, long:7}, "color_full": {short:8, a4:10, long:15}
     };
+
+    let cart = [];
+    let pendingFile = null;
+    let hasGreeted = false; // Flag for auto-greeting
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
     function unlockSystem() {
         document.getElementById('cover-page').classList.add('exit');
-        document.getElementById('main-system').style.visibility = 'visible';
-        document.getElementById('main-system').style.opacity = '1';
+        const main = document.getElementById('main-system');
+        main.style.visibility = 'visible'; main.style.opacity = '1';
         document.getElementById('ai-chat-btn').style.display = 'flex';
     }
 
-    function toggleChat() { document.getElementById('chat-box').classList.toggle('active'); }
+    function goHome() { document.getElementById('cover-page').classList.remove('exit'); }
 
-    function showBotMsg(text) {
-        const display = document.getElementById('chat-display');
-        const botDiv = document.createElement('div');
-        botDiv.className = 'bot-bubble';
-        botDiv.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        display.appendChild(botDiv);
-        display.scrollTop = display.scrollHeight;
+    // --- ENHANCED AI FUNCTIONS ---
+    function toggleChat() {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.classList.toggle('active');
+        
+        // AUTO-GREETING PAGBUKAS
+        if (chatBox.classList.contains('active') && !hasGreeted) {
+            setTimeout(() => {
+                startTyping("Glow day! ✨ Ako ang GL AI. Paano kita matutulungan sa iyong printing needs ngayon?");
+                hasGreeted = true;
+            }, 500);
+        }
     }
 
-    function askAI() {
+    async function askAI() {
         const input = document.getElementById('chat-input');
-        const val = input.value.toLowerCase();
-        if(!val) return;
-        document.getElementById('chat-display').innerHTML += `<div class="user-bubble">${input.value}</div>`;
-        let res = "I'm here to help! Ask for **Prices**, **Repair**, or **Location**.";
-        for(let key in glKnowledge) { if(val.includes(key)) res = glKnowledge[key]; }
-        showBotMsg(res);
+        const display = document.getElementById('chat-display');
+        const query = input.value.trim().toLowerCase();
+        
+        if(!query) return;
+
+        display.innerHTML += `<div class="user-msg">${input.value}</div>`;
         input.value = "";
+        display.scrollTop = display.scrollHeight;
+
+        // Response logic
+        let response = "Pasensya na, maaari ninyo kaming i-message sa Facebook (GL Printing Services) para sa mas detalyadong katanungan.";
+
+        if (query.includes("price") || query.includes("magkano") || query.includes("rates")) {
+            response = "Ang aming rates ay:\n• B&W Text: ₱4 - ₱6\n• Color Text: ₱7 - ₱9\n• Full Photo: ₱10 - ₱15.";
+        } else if (query.includes("location") || query.includes("saan")) {
+            response = "Kami ay matatagpuan sa Muntinlupa City. Pwede rin kaming mag-deliver via Lalamove.";
+        } else if (query.includes("oras") || query.includes("open")) {
+            response = "Bukas kami mula 8:00 AM hanggang 6:00 PM, Lunes hanggang Sabado.";
+        }
+
+        setTimeout(() => startTyping(response), 600);
     }
 
-    function quickAsk(key) {
-        document.getElementById('chat-display').innerHTML += `<div class="user-bubble">${key}</div>`;
-        showBotMsg(glKnowledge[key.toLowerCase()]);
+    function startTyping(text) {
+        const display = document.getElementById('chat-display');
+        const bubbleId = "bot-" + Date.now();
+        display.innerHTML += `<div id="${bubbleId}" class="bot-bubble"></div>`;
+        
+        const bubble = document.getElementById(bubbleId);
+        let i = 0;
+        const speed = 30;
+
+        function type() {
+            if (i < text.length) {
+                bubble.innerHTML += text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+                i++;
+                display.scrollTop = display.scrollHeight;
+                setTimeout(type, speed);
+            }
+        }
+        type();
     }
 
-    function startAnalysis() { document.getElementById('filename-display').innerText = "File Selected: " + document.getElementById('file-input').files[0].name; }
-    
-    function addToBundle() {
+    // --- REMAINDER OF YOUR ORIGINAL LOGIC (TELEGRAM/TERMINAL) ---
+    async function handleProcess() {
+        const file = document.getElementById('file-input').files[0];
+        if(!file) return;
+        pendingFile = file;
+        document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
+        document.getElementById('filename-display').innerText = file.name;
+
+        if (file.type === "application/pdf") {
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+                document.getElementById('pages').value = pdf.numPages;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({scale: 0.3});
+                const canvas = document.getElementById('scan-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = viewport.width; canvas.height = viewport.height;
+                await page.render({canvasContext: ctx, viewport: viewport}).promise;
+                analyzePixels(canvas, viewport.width / viewport.height);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                const canvas = document.getElementById('scan-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 100; canvas.height = 100;
+                ctx.drawImage(img, 0, 0, 100, 100);
+                document.getElementById('pages').value = 1;
+                analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
+            };
+        }
+    }
+
+    function analyzePixels(canvas, ratio) {
+        const ctx = canvas.getContext('2d');
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let colorCount = 0; let inkCount = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+            const r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+            const diff = Math.max(r, g, b) - Math.min(r, g, b);
+            if (diff > 30) colorCount++;
+            if ((r + g + b) / 3 < 220) inkCount++;
+        }
+        const colorFactor = (colorCount / (canvas.width * canvas.height)) * 100;
+        const inkFactor = (inkCount / (canvas.width * canvas.height)) * 100;
+        let type = "bw_text";
+        if (colorFactor > 1.5) { type = inkFactor > 40 ? "color_full" : "color_partial"; } 
+        else { type = inkFactor > 40 ? "bw_full" : (inkFactor > 5 ? "bw_partial" : "bw_text"); }
+        let size = ratio > 0.8 ? "long" : (ratio < 0.75 ? "short" : "a4");
+        document.getElementById('print-type').value = type;
+        document.getElementById('paper-size').value = size;
+        document.getElementById('status-text').innerText = "SCAN COMPLETE ✓";
+        updatePrice();
+    }
+
+    function updatePrice() {
         const type = document.getElementById('print-type').value;
-        const pg = document.getElementById('pages').value;
-        const cp = document.getElementById('copies').value;
-        const price = (type === 'bw_text' ? 5 : 15) * pg * cp;
-        bundle.push({ name: type.toUpperCase(), price: price, details: `${pg}pg x ${cp}cp` });
-        
-        let h = ""; 
-        bundle.forEach(i => h += `<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;"><span>${i.name} (${i.details})</span><span>₱${i.price}</span></div>`);
-        document.getElementById('bundle-list').innerHTML = h;
-        document.getElementById('grand-total').innerText = `₱${bundle.reduce((a, b) => a + b.price, 0)}.00`;
-        document.getElementById('bundle-container').style.display = 'block';
+        const size = document.getElementById('paper-size').value;
+        const total = (PRICING[type][size] || 0) * document.getElementById('pages').value * document.getElementById('copies').value;
+        document.getElementById('live-price').innerText = total.toFixed(2);
     }
 
-    function openPayment() { document.getElementById('payment-overlay').style.display = 'flex'; }
+    function addItem() {
+        if(!pendingFile) return;
+        cart.push({
+            file: pendingFile, name: pendingFile.name,
+            type: document.getElementById('print-type').value,
+            size: document.getElementById('paper-size').value.toUpperCase(),
+            meta: `${document.getElementById('pages').value}pg x ${document.getElementById('copies').value}cp`,
+            price: parseFloat(document.getElementById('live-price').innerText)
+        });
+        renderCart();
+        pendingFile = null;
+        document.getElementById('status-text').innerText = "UPLOAD ANOTHER?";
+        document.getElementById('filename-display').innerText = "";
+    }
 
-    async function processOrder() {
-        const btn = document.getElementById('final-send-btn');
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        list.innerHTML = cart.map((item, idx) => `
+            <div class="cart-item">
+                <button class="remove-btn" onclick="removeItem(${idx})">✕</button>
+                <div style="font-size:11px; font-weight:bold; color:var(--neon-gold);">${item.name}</div>
+                <div style="font-size:9px; color:#777;">${item.type} | ${item.size} | ${item.meta}</div>
+                <div style="font-weight:bold; margin-top:5px;">₱${item.price.toFixed(2)}</div>
+            </div>`).join('');
+        const total = cart.reduce((a,b) => a + b.price, 0);
+        document.getElementById('grand-total').innerText = `₱${total.toFixed(2)}`;
+        document.getElementById('cart-section').style.display = cart.length > 0 ? 'block' : 'none';
+    }
+
+    function removeItem(idx) { cart.splice(idx, 1); renderCart(); }
+    function showConfirm() { 
+        document.getElementById('pay-amount').innerText = document.getElementById('grand-total').innerText;
+        document.getElementById('payment-modal').style.display = 'flex'; 
+    }
+    function checkProof() { 
+        if(document.getElementById('proof-input').files[0]) {
+            document.getElementById('proof-status').innerText = "✅ PROOF ATTACHED";
+            document.getElementById('submit-btn').disabled = false;
+        }
+    }
+
+    async function sendToTelegram() {
+        const btn = document.getElementById('submit-btn');
+        const grandTotal = document.getElementById('grand-total').innerText;
         btn.innerText = "SENDING..."; btn.disabled = true;
-        
-        const gcash = document.getElementById('proof-input').files[0];
-        const doc = document.getElementById('file-input').files[0];
-        const total = document.getElementById('grand-total').innerText;
         const ref = `GL-${Date.now().toString().slice(-4)}`;
 
-        const fd = new FormData();
-        fd.append('chat_id', TG_ID); fd.append('photo', gcash);
-        fd.append('caption', `🆕 NEW ORDER\nTotal: ${total}\nRef: ${ref}`);
-
         try {
-            const r1 = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            if(doc && r1.ok) {
-                const fd2 = new FormData(); fd2.append('chat_id', TG_ID); fd2.append('document', doc);
-                await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendDocument`, { method: 'POST', body: fd2 });
+            let receiptText = `🧾 *OFFICIAL RECEIPT*\nRef No: \`${ref}\`\n--------------------------\n`;
+            cart.forEach((item, i) => { receiptText += `${i+1}. *${item.name}*\n   Price: ₱${item.price.toFixed(2)}\n\n`; });
+            receiptText += `*TOTAL AMOUNT: ${grandTotal}*`;
+
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: receiptText, parse_mode: 'Markdown' })
+            });
+
+            const proofFd = new FormData();
+            proofFd.append('chat_id', CONFIG.CHAT_ID);
+            proofFd.append('photo', document.getElementById('proof-input').files[0]);
+            proofFd.append('caption', `💰 *GCASH PROOF*\nRef: ${ref}\nPaid: ${grandTotal}`);
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method:'POST', body:proofFd});
+
+            for(let item of cart) {
+                const fileFd = new FormData();
+                fileFd.append('chat_id', CONFIG.CHAT_ID);
+                const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
+                fileFd.append(isImg ? 'photo' : 'document', item.file);
+                fileFd.append('caption', `📂 *PRINT FILE*: ${item.name}\nRef: ${ref}`);
+                await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg?'sendPhoto':'sendDocument'}`, {method:'POST', body:fileFd});
             }
-            if(r1.ok) {
-                document.getElementById('payment-overlay').style.display = 'none';
-                document.getElementById('r-total').innerText = total;
-                document.getElementById('r-ref').innerText = ref;
-                document.getElementById('r-date').innerText = new Date().toLocaleString();
-                let itms = ""; bundle.forEach(i => itms += `<p>${i.name}: ₱${i.price}</p>`);
-                document.getElementById('r-items').innerHTML = itms;
-                document.getElementById('receipt-modal').style.display = 'flex';
-            }
-        } catch(e) { alert("Error sending order."); btn.disabled = false; }
+            alert("Order sent! We will process it shortly.");
+            location.reload();
+        } catch (e) { alert("Error sending order."); btn.innerText = "RETRY"; btn.disabled = false; }
     }
-
-    function saveReceipt() {
-        html2canvas(document.getElementById('actual-receipt')).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `GL_Receipt.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            setTimeout(() => { alert("Thank you! Order Sent to GL Prints."); location.reload(); }, 1000);
-        });
-    }
-
-    function copyNumber() {
-        navigator.clipboard.writeText("09916361742");
-        alert("Phone number copied!");
-    }
-
-    document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
 
 </body>
