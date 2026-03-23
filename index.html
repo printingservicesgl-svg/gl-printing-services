@@ -207,16 +207,10 @@
 
 <body>
     
-    <div id="freeze-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(15px); z-index:9998; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-    <img src="GL_Logo.png" 
-     class="gl-logo-cover" 
-     alt="GL Logo" 
-     onclick="adminSecretTap()" 
-     style="cursor: pointer; pointer-events: all !important; z-index: 10000;">
-    <h2 style="font-family:'Syncopate'; color:#ff4444; letter-spacing:8px; font-size:1.2rem;">COME BACK AT 8 AM</h2>
-    <p style="font-size:0.7rem; opacity:0.5; margin-top:10px; letter-spacing:3px;">GL PRINTS: CLOSED FOR MAINTENANCE</p>
+    <div id="freeze-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column; text-align:center;">
+    <h1 id="freeze-time" style="font-family: 'Syncopate'; color: white;">SYSTEM RESTING...</h1>
+    <p style="color: gray; font-size: 12px;">GL PRINTING SERVICES | 8AM - 12AM</p>
 </div>
-
 <section id="cover-page">
     <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
     <h1 style="font-family:'Syncopate'; letter-spacing:10px; font-size: clamp(2.2rem, 6vw, 3.5rem);">GL PRINTS</h1>
@@ -365,119 +359,58 @@
 
 <script>
 
-    function checkSystemStatus() {
+
+   function applySystemLock() {
     const now = new Date();
-    const hour = now.getHours();
-    const overlay = document.getElementById('freeze-overlay');
+    const hour = now.getHours(); // 16 (4 PM)
+    const mins = now.getMinutes();
+    
+    // Convert current time to total minutes for precision
+    const currentTime = (hour * 60) + mins;
+    
+    // --- TESTING WINDOW ---
+    // 4:45 PM is (16 * 60) + 45 = 1005 minutes
+    // 4:50 PM is (16 * 60) + 50 = 1010 minutes
+    const lockStart = (16 * 60) + 45; 
+    const lockEnd = (16 * 60) + 50;   
+
     const isAdmin = sessionStorage.getItem('gl_admin_access') === 'true';
+    const overlay = document.getElementById('freeze-overlay');
+    const mainSystem = document.getElementById('main-system');
+    const freezeTime = document.getElementById('freeze-time');
 
-    // OPEN: 8:00 AM (8) hanggang 12:00 AM (0)
-    // LOCKED: 12:01 AM (0) hanggang 7:59 AM (7)
-    const isClosed = (hour >= 0 && hour < 8);
+    // LOGIC: Mag-la-lock lang kung ang oras ay NASA LOOB ng 4:45 - 4:50
+    const isLocked = (currentTime >= lockStart && currentTime < lockEnd);
 
-    if (isAdmin) {
-        if(overlay) overlay.style.display = 'none';
-        document.getElementById('main-system').style.pointerEvents = 'all';
-        return;
-    }
-
-    if (isClosed) {
-        if(overlay) {
-            overlay.style.display = 'flex';
-            overlay.querySelector('p').innerHTML = "WE OPENS AT 8:00 AM<br>CLOSES AT 12:00 AM";
+    if (!isLocked || isAdmin) {
+        // --- OPEN STATUS (Dito papasok kapag wala pa sa 4:45 o lagpas na ng 4:50) ---
+        if (overlay) overlay.style.display = 'none';
+        if (mainSystem) {
+            mainSystem.style.pointerEvents = 'all';
+            mainSystem.style.opacity = '1';
         }
-        document.getElementById('main-system').style.pointerEvents = 'none';
     } else {
-        if(overlay) overlay.style.display = 'none';
-        document.getElementById('main-system').style.pointerEvents = 'all';
-    }
-}
+        // --- LOCKED STATUS (Lalabas ito pagpatak ng 4:45) ---
+        if (overlay) overlay.style.display = 'flex';
+        if (mainSystem) mainSystem.style.pointerEvents = 'none';
 
-// Tawagin ang function pagka-load ng page
-window.addEventListener('load', checkSystemStatus);
-// Check bawat minuto para kusa mag-lock pagpatak ng 12 AM
-setInterval(checkSystemStatus, 60000);
-
-    let tapCount = 0;
-let tapTimer;
-
-function adminSecretTap() {
-    tapCount++;
-    
-    // I-reset ang count kung matagal ang pagitan ng tap
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => { tapCount = 0; }, 1000);
-
-    // Kapag naka-3 taps ka na sa logo
-    if (tapCount === 3) {
-        const pass = prompt("GL SYSTEM ACCESS: ENTER PASSWORD");
-        
-        if (pass === "L121024_") {
-            sessionStorage.setItem('gl_admin_access', 'true');
-            forceUnlockSystem();
-        } else if (pass !== null) {
-            alert("ACCESS DENIED.");
+        if (freezeTime) {
+            // Countdown logic para sa overlay
+            let minsLeft = lockEnd - currentTime;
+            freezeTime.innerHTML = `
+                <span style="color: var(--neon-gold);">TESTING LOCK MODE</span><br>
+                <small style="font-size: 14px; opacity: 0.8;">REOPENING IN ${minsLeft} MINS (at 4:50 PM)</small>
+            `;
         }
-        tapCount = 0;
     }
 }
 
-function forceUnlockSystem() {
-    // 1. Alisin ang lahat ng harang
-    const cover = document.getElementById('cover-page');
-    const main = document.getElementById('main-system');
-    const aiBtn = document.getElementById('ai-chat-btn');
+// IMPORTANTE: Gawin nating 1 second ang check para hindi ma-miss ang 4:45
+setInterval(applySystemLock, 1000);
+applySystemLock();
 
-    if(cover) {
-        cover.style.display = 'none';
-        cover.classList.add('exit');
-    }
-    
-    // 2. I-show ang system
-    if(main) {
-        main.style.visibility = 'visible';
-        main.style.opacity = '1';
-        main.style.pointerEvents = 'all';
-    }
-
-    // 3. I-show ang AI button
-    if(aiBtn) aiBtn.style.display = 'flex';
-
-    alert("WELCOME BACK, BOSS Ry! ✨ System Unlocked.");
-}
-
-    // 1. Gawin nating naka-LOCK ang system sa simula
-function lockSystem() {
-    const isAdmin = sessionStorage.getItem('gl_admin_access') === 'true';
-    const overlay = document.getElementById('freeze-overlay');
-
-    if (!isAdmin) {
-        overlay.style.display = 'flex'; // I-lock ang screen
-        document.getElementById('main-system').style.pointerEvents = 'none'; // Bawal pindutin ang system
-    }
-}
-
-// 2. Ang Code mo na pambukas
-let adminBuffer = "";
-const secretCode = "L121024_";
-
-document.addEventListener('keydown', (e) => {
-    adminBuffer += e.key;
-    if (adminBuffer.length > secretCode.length) {
-        adminBuffer = adminBuffer.substring(adminBuffer.length - secretCode.length);
-    }
-
-    if (adminBuffer === secretCode) {
-        sessionStorage.setItem('gl_admin_access', 'true');
-        document.getElementById('freeze-overlay').style.display = 'none';
-        document.getElementById('main-system').style.pointerEvents = 'all';
-        alert("ADMIN BYPASS ACTIVE. System Unlocked.");
-        adminBuffer = "";
-    }
-});
-
-// Patakbuhin ang lock pagka-load ng website
-window.onload = lockSystem;
+// Run immediately on load
+document.addEventListener('DOMContentLoaded', applySystemLock);
 
     const CONFIG = { TOKEN: '8621389622:AAFFAGg6bTitSp9VtVHdcXCd2GegOTy4gNk', CHAT_ID: '7541789801' };
     const PRICING = {
