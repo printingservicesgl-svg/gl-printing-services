@@ -243,9 +243,10 @@
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
+
+
     </style>
 </head>     
-
 <body>
     
     <div id="freeze-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column; text-align:center;">
@@ -822,6 +823,88 @@ function downloadReceipt(refNo) {
 
     synth.speak(firstSpeak);
 }
+</script>
+<script>
+(function() {
+    // 1. CONFIGURATION
+    const adminPasscode = "L102024_";
+    let taps = 0;
+    let tapTimer = null;
+
+    // 2. HANAPIN ANG LOGO (Siguraduhin na tama ang class name mo)
+    const glLogo = document.querySelector('.gl-logo-cover');
+
+    if (glLogo) {
+        glLogo.addEventListener('click', (e) => {
+            taps++;
+            clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => { taps = 0; }, 1000); // 1 sec window
+
+            if (taps === 3) {
+                const input = prompt("🔐 GL ADMIN ACCESS:");
+                
+                if (input === adminPasscode) {
+                    // I-SAVE LANG SA CURRENT TAB (Mawawala pag ni-refresh)
+                    sessionStorage.setItem('is_admin_active', 'true');
+                    
+                    alert("🔓 ACCESS GRANTED. UNLOCKING...");
+                    
+                    // FORCE THE UNLOCK
+                    executeMasterUnlock();
+                } else if (input !== null) {
+                    alert("⛔ WRONG KEY.");
+                }
+                taps = 0;
+            }
+        });
+    }
+
+    // 3. ANG "NUCLEAR" UNLOCK FUNCTION
+    function executeMasterUnlock() {
+        // Alisin ang overlay at harang
+        const freeze = document.getElementById('freeze-overlay');
+        const main = document.getElementById('main-system');
+        const cover = document.getElementById('cover-page');
+
+        if (freeze) freeze.style.display = 'none';
+        if (cover) cover.style.display = 'none';
+        
+        if (main) {
+            main.style.display = 'block';
+            main.style.opacity = '1';
+            main.style.pointerEvents = 'all';
+            main.style.visibility = 'visible';
+        }
+
+        // PATAYIN LAHAT NG EXISTING TIMERS (Ito ang sikreto para hindi na bumalik ang lock)
+        let highestId = window.setTimeout(() => {}, 0);
+        for (let i = 0; i <= highestId; i++) {
+            window.clearTimeout(i);
+            window.clearInterval(i);
+        }
+        
+        // RE-START ONLY THE ADMIN KEEPER
+        setInterval(keepAdminOpen, 500);
+    }
+
+    // 4. KEEPER: Siguraduhin na hindi na babalik ang lock habang naka-session
+    function keepAdminOpen() {
+        if (sessionStorage.getItem('is_admin_active') === 'true') {
+            const freeze = document.getElementById('freeze-overlay');
+            if (freeze) freeze.style.display = 'none';
+            
+            const main = document.getElementById('main-system');
+            if (main) {
+                main.style.opacity = '1';
+                main.style.pointerEvents = 'all';
+                main.style.visibility = 'visible';
+            }
+        }
+    }
+
+    // Sa simula, i-check kung authorized (Dapat laging wala ito pag refresh)
+    // Kung gusto mo na hihingi lagi ng pass, siguraduhin na 'sessionStorage' ang gamit.
+})();
 </script>
 </body>
 </html>
