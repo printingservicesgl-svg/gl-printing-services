@@ -9,7 +9,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
 
@@ -249,6 +249,7 @@
 </head>     
 <body>
     
+    
     <div id="freeze-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column; text-align:center;">
     <h1 id="freeze-time" style="font-family: 'Syncopate'; color: white;">SYSTEM RESTING...</h1>
     <p style="color: gray; font-size: 12px;">GL PRINTING SERVICES | 8AM - 12AM</p>
@@ -281,6 +282,21 @@
         <div class="tilt-card"><h3>S6</h3><p>Still updating.</p></div>
     </section>
     </section>
+
+    <div class="section-header" id="terminal">
+    <h2>GL PRINTS LIVE QUEUE </h2>
+    <p>Real-Time Prints Updates</p>
+</div>
+
+<div id="gl-queue-container" style="max-width: 450px; margin: 20px auto; font-family: 'Segoe UI', sans-serif; background: #fff; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); overflow: hidden; border: 1px solid #eee;">
+    <div style="background: #1a1a1a; color: #fff; padding: 18px; text-align: center; border-bottom: 3px solid #f39c12;">
+        <h3 style="margin: 0; font-size: 18px; letter-spacing: 1.5px;">GL PRINTS LIVE QUEUE</h3>
+        <small style="opacity: 0.9; font-size: 11px;">REAL-TIME UPDATES ENABLED</small>
+    </div>
+    <div id="queue-list" style="min-height: 120px; max-height: 450px; overflow-y: auto; background: #fafafa;">
+        <p style="text-align: center; padding: 30px; color: #999;">Connecting to GL Database...</p>
+    </div>
+</div>
 
     <div class="section-header" id="terminal">
     <h2>AI TERMINAL</h2>
@@ -905,6 +921,63 @@ function downloadReceipt(refNo) {
     // Sa simula, i-check kung authorized (Dapat laging wala ito pag refresh)
     // Kung gusto mo na hihingi lagi ng pass, siguraduhin na 'sessionStorage' ang gamit.
 })();
+
+
+</script>
+<script>
+// --- CONFIGURATION ---
+const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdmhhY2pqYXZsYWdwbWxtbXFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyODg4MTksImV4cCI6MjA4OTg2NDgxOX0.VRCTfEBPoZ2cavnJtVxlI0x52E6XbpS464Ll3hK-UlQ";
+
+const gl_db = supabase.createClient(SB_URL, SB_KEY);
+
+// --- FETCH ORDERS FUNCTION ---
+async function loadGLQueue() {
+    const { data: orders, error } = await gl_db
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("SQL Error:", error);
+        return;
+    }
+
+    const listElement = document.getElementById('queue-list');
+    if (!listElement) return; // Guard para hindi mag-error kung wala pang div
+    
+    if (orders.length === 0) {
+        listElement.innerHTML = "<p style='text-align:center; padding:30px; color:#aaa;'>No active orders. Rest day muna!</p>";
+        return;
+    }
+
+    let itemsHTML = "";
+    orders.forEach(order => {
+        let statusColor = "#f39c12"; // Pending
+        if (order.status.toUpperCase() === "PRINTING") statusColor = "#3498db"; 
+        if (order.status.toUpperCase() === "READY") statusColor = "#2ecc71"; 
+
+        itemsHTML += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; background: white;">
+                <div>
+                    <strong style="color: #2c3e50; font-size: 15px;">#${order.ref_no}</strong><br>
+                    <span style="color: #7f8c8d; font-size: 12px;">${order.customer_name}</span>
+                </div>
+                <div style="background: ${statusColor}; color: white; padding: 5px 14px; border-radius: 25px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+                    ${order.status}
+                </div>
+            </div>`;
+    });
+    listElement.innerHTML = itemsHTML;
+}
+
+// --- REAL-TIME MAGIC ---
+gl_db.channel('public:orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+    loadGLQueue();
+}).subscribe();
+
+// INITIAL LOAD
+loadGLQueue();
 </script>
 </body>
 </html>
