@@ -399,7 +399,7 @@
             let minsLeft = lockEnd - currentTime;
             freezeTime.innerHTML = `
                 <span style="color: var(--neon-gold);">TESTING LOCK MODE</span><br>
-                <small style="font-size: 14px; opacity: 0.8;">REOPENING IN ${minsLeft} MINS (at 4:50 PM)</small>
+                <small style="font-size: 14px; opacity: 0.8;">REOPENING IN ${minsLeft} MIN/S (at 4:50 PM)</small>
             `;
         }
     }
@@ -703,6 +703,34 @@ document.addEventListener('DOMContentLoaded', applySystemLock);
         btn.innerText = "RETRY"; 
         btn.disabled = false; 
     }
+    // --- AI VOICE THANK YOU (2 TIMES ONLY) ---
+function playDoubleThanks() {
+    const synth = window.speechSynthesis;
+    const text = "Thank you for choosing G L Printing Services. Please wait for our confirmation.";
+    
+    // Unang Salita
+    const firstSpeak = new SpeechSynthesisUtterance(text);
+    firstSpeak.pitch = 1.1; // Medyo classy tone
+    firstSpeak.rate = 0.9;  // Chill lang ang bilis
+    
+    // Pangalawang Salita (magsasalita pagkatapos ng una)
+    const secondSpeak = new SpeechSynthesisUtterance(text);
+    secondSpeak.pitch = 1.1;
+    secondSpeak.rate = 0.9;
+
+    // Trigger: Pagkatapos ng unang salita, maghintay ng 1 second bago ang pangalawa
+    firstSpeak.onend = () => {
+        setTimeout(() => {
+            synth.speak(secondSpeak);
+        }, 1000); // 1 second na gap para hindi mabulol
+    };
+
+    // Start na ng pagsasalita
+    synth.speak(firstSpeak);
+}
+
+// ITAWAG ITO SA SUCCESS PART NG sendToTelegram
+playDoubleThanks();
 }    
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
