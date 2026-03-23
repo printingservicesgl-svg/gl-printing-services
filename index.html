@@ -393,55 +393,61 @@
 
    function applySystemLock() {
     const now = new Date();
-    const hour = now.getHours(); // 16 (4 PM)
+    const hour = now.getHours(); 
     const mins = now.getMinutes();
     
-    // Convert current time to total minutes for precision
+    // Convert current time to total minutes
     const currentTime = (hour * 60) + mins;
     
-    // --- TESTING WINDOW ---
-    // 4:45 PM is (16 * 60) + 45 = 1005 minutes
-    // 4:50 PM is (16 * 60) + 50 = 1010 minutes
-    const lockStart = (16 * 60) + 45; 
-    const lockEnd = (16 * 60) + 50;   
+    // --- OPEN HOURS: 8:00 AM to 12:00 AM ---
+    // Ang LOCK PERIOD ay 12:00 AM hanggang 7:59 AM
+    // 12:00 AM is (0 * 60) + 0 = 0 minutes
+    // 8:00 AM is (8 * 60) + 0 = 480 minutes
+    const lockStart = 0; 
+    const lockEnd = 480;   
 
     const isAdmin = sessionStorage.getItem('gl_admin_access') === 'true';
     const overlay = document.getElementById('freeze-overlay');
     const mainSystem = document.getElementById('main-system');
     const freezeTime = document.getElementById('freeze-time');
 
-    // LOGIC: Mag-la-lock lang kung ang oras ay NASA LOOB ng 4:45 - 4:50
+    // LOGIC: Mag-la-lock lang mula 12:00 AM hanggang bago mag 8:00 AM
     const isLocked = (currentTime >= lockStart && currentTime < lockEnd);
 
     if (!isLocked || isAdmin) {
-        // --- OPEN STATUS (Dito papasok kapag wala pa sa 4:45 o lagpas na ng 4:50) ---
+        // --- OPEN STATUS (8:00 AM onwards) ---
         if (overlay) overlay.style.display = 'none';
         if (mainSystem) {
             mainSystem.style.pointerEvents = 'all';
             mainSystem.style.opacity = '1';
         }
     } else {
-        // --- LOCKED STATUS (Lalabas ito pagpatak ng 4:45) ---
+        // --- LOCKED STATUS (12:00 AM to 7:59 AM) ---
         if (overlay) overlay.style.display = 'flex';
-        if (mainSystem) mainSystem.style.pointerEvents = 'none';
+        if (mainSystem) {
+            mainSystem.style.pointerEvents = 'none';
+            mainSystem.style.opacity = '0.3'; // Para blurred/faded yung background
+        }
 
         if (freezeTime) {
-            // Countdown logic para sa overlay
-            let minsLeft = lockEnd - currentTime;
+            // Countdown logic para malaman kung ilang oras/minuto na lang bago mag-8 AM
+            let totalMinsLeft = lockEnd - currentTime;
+            let hoursLeft = Math.floor(totalMinsLeft / 60);
+            let minsLeft = totalMinsLeft % 60;
+
             freezeTime.innerHTML = `
-                <span style="color: var(--neon-gold);">TESTING LOCK MODE</span><br>
-                <small style="font-size: 14px; opacity: 0.8;">REOPENING IN ${minsLeft} MIN/S (at 4:50 PM)</small>
+                <span style="color: var(--error); font-family: 'Syncopate'; letter-spacing: 5px;">SYSTEM LOCKED</span><br>
+                <small style="font-size: 14px; opacity: 0.8; letter-spacing: 2px;">
+                    REOPENING IN ${hoursLeft}H ${minsLeft}M (at 8:00 AM)
+                </small>
             `;
         }
     }
 }
 
-// IMPORTANTE: Gawin nating 1 second ang check para hindi ma-miss ang 4:45
+// Check every second
 setInterval(applySystemLock, 1000);
 applySystemLock();
-
-// Run immediately on load
-document.addEventListener('DOMContentLoaded', applySystemLock);
 
     const CONFIG = { TOKEN: '8621389622:AAFFAGg6bTitSp9VtVHdcXCd2GegOTy4gNk', CHAT_ID: '7541789801' };
     const PRICING = {
