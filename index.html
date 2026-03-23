@@ -11,6 +11,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+
+    /* ... mga dati mong CSS ... */
+
+    /* I-PASTE ITO SA ILALIM NG STYLE TAG */
+    .input-wrapper {
+        margin: 20px 0;
+        text-align: left;
+    }
+
+    .classy-label {
+        font-family: 'Syncopate', sans-serif;
+        font-size: 10px;
+        color: #ffcc00; /* Gold color */
+        letter-spacing: 2px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    #cust-name {
+        width: 100%;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 204, 0, 0.3);
+        border-radius: 12px;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: 0.3s;
+        text-transform: uppercase;
+        box-sizing: border-box; /* Mahalaga para hindi lumagpas sa screen */
+    }
+
+    #cust-name:focus {
+        border-color: #ffcc00;
+        box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+        
         
         :root {
             --neon-gold: #ffcc00;
@@ -21,6 +60,7 @@
             --panel-3d: linear-gradient(165deg, rgba(25,25,25,0.95) 0%, rgba(10,10,10,0.98) 100%);
             --success: #2ecc71;
         }
+        
 
         /* SECTION HEADERS STYLE */
 .section-header {
@@ -311,15 +351,12 @@
 <canvas id="scan-canvas" style="display:none;"></canvas>
 
     <div id="payment-modal" class="modal">
-        <div class="modal-content" style="background:white; color:black;">
-        <div style="text-align:left; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid #333;">
-        <label style="color:var(--neon-gold); font-size:10px; font-weight:bold; letter-spacing:1px;">CUSTOMER NAME</label>
-        <input type="text" id="cust-name" placeholder="Full Name (e.g. Juan DC)" 
-            style="width:100%; padding:12px; margin-top:5px; border-radius:8px; border:1px solid #444; background:#111; color:white; font-family:'Syncopate'; font-size:11px;">
-        <p style="font-size:8px; color:#888; margin-top:8px; line-height:1.4;">
-            * Ginagamit po ang pangalan niyo para sa <b>Order Label</b> at para hindi magkamali sa pag-abot ng inyong prints. ✨
-        </p>
-    </div>
+    <div class="modal-content">
+        
+        <div class="input-wrapper">
+            <label class="classy-label">CUSTOMER NAME <span style="color:red;">*</span></label>
+            <input type="text" id="cust-name" placeholder="ENTER YOUR FULL NAME" required autocomplete="off">
+        </div>
         <img src="img/Gcash Payment_QR.jpg" style="width:160px; margin:15px 0;">
         <p style="font-weight:bold;">Total: <span id="pay-amount">₱0.00</span></p>
         <div style="border:2px dashed #0052da; padding:15px; border-radius:15px; margin-top:10px; cursor:pointer;" onclick="document.getElementById('proof-input').click()">
@@ -613,6 +650,18 @@ document.addEventListener('DOMContentLoaded', applySystemLock);
     const btn = document.getElementById('submit-btn');
     const grandTotal = document.getElementById('grand-total').innerText;
     const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
+    // 1. KUHANIN ANG PANGALAN
+    const custName = document.getElementById('cust-name').value.trim();
+    const receiptDate = new Date().toLocaleString('en-US', { 
+    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+});
+
+    // 2. CHECK KUNG MAY LAMAN (Required Logic)
+    if (!custName) {
+        alert("⚠️ PLEASE ENTER YOUR NAME TO PROCEED.");
+        document.getElementById('cust-name').focus();
+        return; // Hihinto ang script dito, hindi magse-send sa Telegram
+    }
     
     btn.innerText = "SENDING TO ADMIN..."; 
     btn.disabled = true;
@@ -685,17 +734,68 @@ document.addEventListener('DOMContentLoaded', applySystemLock);
         document.getElementById('final-ref').innerText = ref;
         let messengerLink = `https://m.me/GLprinting.services`; // Simple link lang para iwas Privacy Error
 
-        let etaBoxHTML = `
-            <div style="margin: 15px 0; padding: 25px; border: 2px solid var(--neon-gold); border-radius: 20px; background: #000; text-align:center;">
-                <h1 style="color: var(--neon-gold); font-family: 'Syncopate'; margin: 10px 0;">${ref}</h1>
-                <p style="font-size: 11px; color: white; margin-bottom: 20px;">Ready in: <b>${etaDisplay}</b></p>
-                <a href="${messengerLink}" target="_blank" style="display:block; background:#0084FF; color:white; padding:18px; border-radius:12px; text-decoration:none; font-size:13px; font-weight:bold;">💬 OPEN MESSENGER</a>
-            </div>
-        `;
+        // Ito ang Literal na Issued Receipt Design
+let etaBoxHTML = `
+    <div id="issued-receipt" style="background: #fff; color: #000; padding: 25px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 10px auto; width: 90%; text-align: left; border-top: 8px solid var(--neon-gold);">
+        
+        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="margin: 0; font-family: 'Syncopate'; font-size: 14px; letter-spacing: 1px;">GL PRINTING SERVICES</h2>
+            <p style="font-size: 9px; margin: 3px 0;">Muntinlupa City, Philippines</p>
+            <p style="font-size: 10px; font-weight: bold; margin-top: 5px;">OFFICIAL DIGITAL RECEIPT</p>
+        </div>
 
-        document.getElementById('customer-receipt-summary').innerHTML = etaBoxHTML;
-        closeModal('payment-modal');
-        document.getElementById('success-modal').style.display = 'flex';
+        <div style="font-size: 11px; margin-bottom: 15px; line-height: 1.4;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>DATE:</span> <span>${receiptDate}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>REF NO:</span> <span style="font-weight: bold;">${ref}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>ISSUED TO:</span> <span style="text-transform: uppercase; font-weight: bold;">${custName}</span>
+            </div>
+        </div>
+
+        <div style="border-bottom: 1px dashed #000; margin-bottom: 10px; padding-bottom: 5px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+                <span>DESCRIPTION</span>
+                <span>QTY/TYPE</span>
+            </div>
+            <div style="font-size: 10px; max-height: 120px; overflow: hidden;">
+                ${cart.map(item => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">• ${item.name}</span>
+                        <span>${item.type}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <div style="text-align: right; line-height: 1.5;">
+            <p style="margin: 0; font-size: 11px;">SUBTOTAL: ₱${grandTotal}</p>
+            <h3 style="margin: 5px 0; font-size: 18px; font-weight: bold; border-top: 1px solid #000; display: inline-block; padding-top: 5px;">TOTAL PAID: ₱${grandTotal}</h3>
+            <p style="font-size: 10px; color: #333;">ETA: ${etaDisplay}</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px;">
+            <p style="font-size: 9px; font-style: italic;">"Your trust, our quality service."</p>
+            <div style="margin-top: 5px; font-size: 20px; font-weight: bold; opacity: 0.1; letter-spacing: 5px; transform: rotate(-10deg);">GL-VERIFIED</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+        <a href="${messengerLink}" target="_blank" style="background: #0084FF; color: white; padding: 15px; border-radius: 12px; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; box-shadow: 0 4px 15px rgba(0,132,255,0.2);">
+             SEND TO MESSENGER FOR CONFIRMATION
+        </a>
+        <p style="color: #aaa; font-size: 10px; text-align: center;">Take a screenshot for your records.</p>
+    </div>
+`;
+
+// Update the UI
+document.getElementById('customer-receipt-summary').innerHTML = etaBoxHTML;
+closeModal('payment-modal');
+document.getElementById('success-modal').style.display = 'flex';
+// --- END OF NEW RECEIPT CODE ---lex';
 
     } catch (e) { 
         console.error("Order Error:", e);
