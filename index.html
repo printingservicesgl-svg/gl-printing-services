@@ -927,92 +927,60 @@ function downloadReceipt(refNo) {
 
 </script>
 <script>
-// --- CONFIGURATION ---
+// 1. ISANG BESES LANG NA CONFIG
 const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdmhhY2pqYXZsYWdwbWxtbXFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyODg4MTksImV4cCI6MjA4OTg2NDgxOX0.VRCTfEBPoZ2cavnJtVxlI0x52E6XbpS464Ll3hK-UlQ";
-
 const gl_db = supabase.createClient(SB_URL, SB_KEY);
 
-// --- FETCH ORDERS FUNCTION ---
+// 2. MAIN QUEUE DISPLAY FUNCTION
 async function loadGLQueue() {
-    const { data: orders, error } = await gl_db
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("SQL Error:", error);
-        return;
-    }
-
     const listElement = document.getElementById('queue-list');
-    if (!listElement) return; // Guard para hindi mag-error kung wala pang div
-    
-    if (orders.length === 0) {
-        listElement.innerHTML = "<p style='text-align:center; padding:30px; color:#aaa;'>No active orders. Rest day muna!</p>";
-        return;
+    if (!listElement) return;
+
+    try {
+        const { data: orders, error } = await gl_db
+            .from('orders')
+            .select('*')
+            .neq('status', 'COMPLETED') 
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!orders || orders.length === 0) {
+            listElement.innerHTML = "<p style='text-align:center; padding:30px; color:#aaa;'>No active orders. Rest day muna!</p>";
+            return;
+        }
+
+        let itemsHTML = orders.map(order => {
+            let statusColor = "#f39c12"; // PENDING
+            if (order.status.toUpperCase() === "PRINTING") statusColor = "#3498db"; 
+            if (order.status.toUpperCase() === "READY") statusColor = "#2ecc71"; 
+
+            return `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; background: white;">
+                    <div>
+                        <strong style="color: #2c3e50; font-size: 15px;">#${order.ref_no}</strong><br>
+                        <span style="color: #7f8c8d; font-size: 12px; text-transform: uppercase;">${order.customer_name}</span>
+                    </div>
+                    <div style="background: ${statusColor}; color: white; padding: 5px 14px; border-radius: 25px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+                        ${order.status}
+                    </div>
+                </div>`;
+        }).join('');
+        listElement.innerHTML = itemsHTML;
+
+    } catch (err) {
+        console.error("Queue Sync Error:", err);
     }
-
-    let itemsHTML = "";
-    orders.forEach(order => {
-        let statusColor = "#f39c12"; // Pending
-        if (order.status.toUpperCase() === "PRINTING") statusColor = "#3498db"; 
-        if (order.status.toUpperCase() === "READY") statusColor = "#2ecc71"; 
-
-        itemsHTML += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; background: white;">
-                <div>
-                    <strong style="color: #2c3e50; font-size: 15px;">#${order.ref_no}</strong><br>
-                    <span style="color: #7f8c8d; font-size: 12px;">${order.customer_name}</span>
-                </div>
-                <div style="background: ${statusColor}; color: white; padding: 5px 14px; border-radius: 25px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
-                    ${order.status}
-                </div>
-            </div>`;
-    });
-    listElement.innerHTML = itemsHTML;
 }
 
-// --- REAL-TIME MAGIC ---
+// 3. REAL-TIME LISTENER
 gl_db.channel('public:orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
     loadGLQueue();
 }).subscribe();
 
-// INITIAL LOAD
+// 4. INITIAL LOAD
 loadGLQueue();
-
-// HANAPIN MO ITONG LINE SA CODE MO:
-const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
-
-// --- I-PASTE ITO SA ILALIM NIYAN (SUPABASE PUSH) ---
-try {
-    await gl_db.from('orders').insert([
-        { 
-            ref_no: ref, 
-            customer_name: custName.toUpperCase(), 
-            status: 'PENDING' 
-        }
-    ]);
-    console.log("Order synced to Live Queue!");
-} catch (dbErr) {
-    console.error("Queue Sync Failed:", dbErr);
-}
-// --- END OF SUPABASE PUSH ---
-
-// INITIAL LOAD WITH ERROR LOGGING
-async function init() {
-    console.log("Initializing GL Queue...");
-    try {
-        await loadGLQueue();
-        console.log("Initial load successful!");
-    } catch (err) {
-        console.error("Connection error:", err.message);
-        document.getElementById('queue-list').innerHTML = 
-            `<p style='color:red;'>Connection Failed: ${err.message}</p>`;
-    }
-}
-
-init();
 </script>
 </body>
 </html>
