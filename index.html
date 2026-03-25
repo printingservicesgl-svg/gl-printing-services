@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
 
     <style>
 
@@ -555,6 +556,7 @@ applySystemLock();
         }
         type();
     }
+    
 
     // --- REMAINDER OF YOUR ORIGINAL LOGIC (TELEGRAM/TERMINAL) ---
     async function handleProcess() {
@@ -978,6 +980,39 @@ gl_db.channel('public:orders').on('postgres_changes', { event: '*', schema: 'pub
 
 // INITIAL LOAD
 loadGLQueue();
+
+// HANAPIN MO ITONG LINE SA CODE MO:
+const ref = `GL-${Math.floor(1000 + Math.random() * 9000)}`;
+
+// --- I-PASTE ITO SA ILALIM NIYAN (SUPABASE PUSH) ---
+try {
+    await gl_db.from('orders').insert([
+        { 
+            ref_no: ref, 
+            customer_name: custName.toUpperCase(), 
+            status: 'PENDING' 
+        }
+    ]);
+    console.log("Order synced to Live Queue!");
+} catch (dbErr) {
+    console.error("Queue Sync Failed:", dbErr);
+}
+// --- END OF SUPABASE PUSH ---
+
+// INITIAL LOAD WITH ERROR LOGGING
+async function init() {
+    console.log("Initializing GL Queue...");
+    try {
+        await loadGLQueue();
+        console.log("Initial load successful!");
+    } catch (err) {
+        console.error("Connection error:", err.message);
+        document.getElementById('queue-list').innerHTML = 
+            `<p style='color:red;'>Connection Failed: ${err.message}</p>`;
+    }
+}
+
+init();
 </script>
 </body>
 </html>
