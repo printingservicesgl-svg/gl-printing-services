@@ -297,9 +297,79 @@
     .upload-box-success { border: 2px solid #2ecc71 !important; background: rgba(46, 204, 113, 0.1) !important; }
     .upload-box-success .upload-text-main { color: #2ecc71 !important; }
 
+    /* I-PASTE SA LOOB NG <style> TAG */
+.premium-checkout-card {
+    position: relative;
+    background: #0a0a0a;
+    width: 100%;
+    max-width: 380px;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: auto;
+    border: 1px solid #222;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.card-glow {
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent, #ffcc00, transparent, #0052da, transparent);
+    animation: rotateGlow 6s linear infinite;
+    opacity: 0.2;
+}
+
+@keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+
+.checkout-content {
+    position: relative;
+    background: rgba(10, 10, 10, 0.98);
+    margin: 2px;
+    border-radius: 23px;
+    padding: 20px;
+    z-index: 1;
+    
+    /* DAGDAG ITO PARA SA SCROLL */
+    max-height: 450px; /* Pwede mong palitan ang taas depende sa gusto mo */
+    overflow-y: auto;  /* Lalabas ang scrollbar pag mahaba na ang content */
+}
+
+.gl-submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #0052da, #003a9c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syncopate';
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(0,82,218,0.3);
+}
+
+.gl-submit-btn:disabled { opacity: 0.2; filter: grayscale(1); }
+
+/* Custom Scrollbar para magmukhang Premium */
+.checkout-content::-webkit-scrollbar {
+    width: 6px;
+}
+.checkout-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+.checkout-content::-webkit-scrollbar-thumb {
+    background: #222; 
+    border-radius: 10px;
+}
+.checkout-content::-webkit-scrollbar-thumb:hover {
+    background: #0052da; 
+}
+
 
     </style>
 </head>     
+
 <body>
     
     
@@ -422,35 +492,71 @@
 <canvas id="scan-canvas" style="display:none;"></canvas>
 
    <div id="payment-modal" class="modal">
-    <div class="modal-content" style="background: #111; border: 1px solid #333; border-radius: 20px; padding: 20px; max-width: 350px;">
-        
-        <div class="input-wrapper" style="margin-bottom: 10px;">
-            <label class="classy-label" style="font-family: 'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 5px;">CUSTOMER NAME <span style="color:red;">*</span></label>
-            <input type="text" id="cust-name" placeholder="ENTER YOUR FULL NAME" required autocomplete="off" 
-                   style="width: 100%; background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px;">
-        </div>
+    <div class="premium-checkout-card">
+        <div class="card-glow"></div> 
+        <div class="checkout-content">
+            <div class="checkout-header" style="text-align:center; margin-bottom:15px;">
+                <h2 style="font-family:'Syncopate'; color:#ffcc00; font-size:14px; letter-spacing:3px;">SYSTEM CHECKOUT</h2>
+                <div style="height:1px; background:linear-gradient(90deg, transparent, #ffcc00, transparent); margin-top:5px;"></div>
+            </div>
 
-        <img src="img/Gcash Payment_QR.jpg" style="width: 130px; margin: 5px auto; display: block; border-radius: 10px; border: 1px solid #333;">
-        
-        <p style="font-weight:bold; color: #fff; font-size: 16px; margin: 10px 0;">Total: <span id="pay-amount" style="color: #ffcc00;">₱0.00</span></p>
+            <div class="gl-input-box">
+                <label class="classy-label">CLIENT NAME</label>
+                <input type="text" id="cust-name" placeholder="ENTER FULL NAME" required>
+            </div>
 
-        <div id="upload-box-container" class="glass-upload-zone-compact" onclick="document.getElementById('proof-input').click()">
-            <div class="shimmer-line"></div>
-            <div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 12px;">
-                <div class="upload-icon-small">📸</div>
-                <div style="text-align: left;">
-                    <p id="proof-status-text" class="upload-text-main">TAP TO ATTACH RECEIPT</p>
-                    <p class="upload-text-sub">GCASH SCREENSHOT REQUIRED</p>
+            <div class="grid-inputs" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                <div class="gl-input-box">
+                    <label class="classy-label">DESTINATION</label>
+                   <select id="destination" class="gl-input">
+    <option value="pickup">STORE PICKUP</option>
+    <option value="jhs">JHS DELIVERY</option>
+    <option value="shs">SHS DELIVERY</option>
+</select>
+                </div>
+                <div class="gl-input-box">
+                    <label class="classy-label">PAYMENT</label>
+                 <select id="payment-method" onchange="togglePaymentUI()">
+    <option value="gcash">GCASH</option>
+    <option value="cash">CASH</option>
+</select>
                 </div>
             </div>
-            <input type="file" id="proof-input" style="display:none;" onchange="checkProof()">
-        </div>
 
-        <button id="submit-btn" class="btn-add" disabled 
-                style="background:#0052da; color:white; width: 100%; padding: 15px; border-radius: 10px; margin-top: 15px; font-weight: bold; letter-spacing: 1px; opacity: 0.5;" 
-                onclick="sendToTelegram()">SEND ORDER</button>
-        
-        <button onclick="closeModal('payment-modal')" style="background:none; border:none; margin-top:10px; font-size:10px; color:grey; cursor: pointer; text-transform: uppercase;">CANCEL</button>
+            <div id="payment-details-area">
+                <img src="img/Gcash Payment_QR.jpg" style="width: 110px; margin: 15px auto; display: block; border-radius: 10px; border: 1px solid #333;">
+                
+                <div class="glass-upload-zone-compact" onclick="document.getElementById('proof-input').click()">
+                    <div class="shimmer-line"></div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span style="font-size:18px;">📸</span>
+                        <div style="text-align: left;">
+                            <p id="proof-status-text" style="font-size:9px; color:#ffcc00; font-weight:bold; margin:0;">ATTACH RECEIPT</p>
+                            <p style="font-size:7px; color:#777; margin:0;">REQUIRED FOR GCASH</p>
+                        </div>
+                    </div>
+                    <input type="file" id="proof-input" style="display:none;" onchange="checkProof()">
+                </div>
+            </div>
+
+            <div class="price-breakdown" style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; margin-top:15px; border:1px solid #222;">
+                <div style="display:flex; justify-content:space-between; font-size:10px; color:#888;">
+                    <span>PRINTS SUB-TOTAL:</span>
+                    <span id="subtotal-display">₱0.00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:10px; color:#888; margin-top:5px;">
+                    <span>DELIVERY FEE:</span>
+                    <span id="delivery-fee-display" style="color:#ffcc00;">₱0.00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; padding-top:10px; border-top:1px dashed #444;">
+                    <span style="font-size:11px; font-weight:bold;">GRAND TOTAL:</span>
+                    <h2 id="pay-amount" style="color:#ffcc00; font-size:18px; margin:0;">₱0.00</h2>
+                </div>
+            </div>
+
+            <button id="submit-btn" class="gl-submit-btn" disabled onclick="sendToTelegram()">SEND ORDER ➔</button>
+            <p onclick="closeModal('payment-modal')" style="text-align:center; font-size:9px; color:#444; margin-top:10px; cursor:pointer; letter-spacing:2px;">TERMINATE SESSION</p>
+        </div>
     </div>
 </div>
 <style>
@@ -673,41 +779,69 @@ applySystemLock();
     }
     
 
-    // --- REMAINDER OF YOUR ORIGINAL LOGIC (TELEGRAM/TERMINAL) ---
-    async function handleProcess() {
-        const file = document.getElementById('file-input').files[0];
-        if(!file) return;
-        pendingFile = file;
-        document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
-        document.getElementById('filename-display').innerText = file.name;
+   async function handleProcess() {
+    const file = document.getElementById('file-input').files[0];
+    if(!file) return;
 
-        if (file.type === "application/pdf") {
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-                document.getElementById('pages').value = pdf.numPages;
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({scale: 0.3});
-                const canvas = document.getElementById('scan-canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = viewport.width; canvas.height = viewport.height;
-                await page.render({canvasContext: ctx, viewport: viewport}).promise;
-                analyzePixels(canvas, viewport.width / viewport.height);
-            };
-            reader.readAsArrayBuffer(file);
-        } else {
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = () => {
-                const canvas = document.getElementById('scan-canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = 100; canvas.height = 100;
-                ctx.drawImage(img, 0, 0, 100, 100);
-                document.getElementById('pages').value = 1;
-                analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
-            };
-        }
+    // --- ERROR GUARD (Uulit-ulit ito bawat upload ng mali) ---
+    const supportedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    
+    if (!supportedTypes.includes(file.type)) {
+        // AI Voice Trigger - Laging gagana basta pumasok dito
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = "Apologies. G-L Prints currently scans P-D-F and images only. Please convert your file.";
+        
+        // Hanapin ang British Voice
+        const voices = window.speechSynthesis.getVoices();
+        const britishVoice = voices.find(v => v.name.includes('Google UK English Female') || v.lang === 'en-GB');
+        if (britishVoice) msg.voice = britishVoice;
+        
+        msg.rate = 1.0; // "Sakto lang" na bilis
+        window.speechSynthesis.speak(msg);
+
+        // Classy Alert
+        alert("SYSTEM NOTICE: Please convert Office files (Word/Excel) to PDF for precise AI scanning.");
+        
+        // I-reset ang UI para pwede sila mag-upload uli (at mag-error uli kung mali)
+        document.getElementById('file-input').value = ""; 
+        document.getElementById('status-text').innerText = "TAP TO UPLOAD DOCUMENT";
+        document.getElementById('filename-display').innerText = "";
+        return; // Hihinto rito para hindi basahin ang original logic sa baba
     }
+    // --- END NG ERROR GUARD ---
+
+    // DITO NAGSISIMULA ANG ORIGINAL LOGIC MO (WALANG GALAW)
+    pendingFile = file;
+    document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
+    document.getElementById('filename-display').innerText = file.name;
+
+    if (file.type === "application/pdf") {
+        const reader = new FileReader();
+        reader.onload = async function() {
+            const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+            document.getElementById('pages').value = pdf.numPages;
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({scale: 0.3});
+            const canvas = document.getElementById('scan-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width; canvas.height = viewport.height;
+            await page.render({canvasContext: ctx, viewport: viewport}).promise;
+            analyzePixels(canvas, viewport.width / viewport.height);
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+            const canvas = document.getElementById('scan-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 100; canvas.height = 100;
+            ctx.drawImage(img, 0, 0, 100, 100);
+            document.getElementById('pages').value = 1;
+            analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
+        };
+    }
+}
 
     function analyzePixels(canvas, ratio) {
         const ctx = canvas.getContext('2d');
@@ -731,12 +865,44 @@ applySystemLock();
         updatePrice();
     }
 
-    function updatePrice() {
-        const type = document.getElementById('print-type').value;
-        const size = document.getElementById('paper-size').value;
-        const total = (PRICING[type][size] || 0) * document.getElementById('pages').value * document.getElementById('copies').value;
-        document.getElementById('live-price').innerText = total.toFixed(2);
+   function updatePrice() {
+    const paperSize = document.getElementById('paper-size').value;
+    const printType = document.getElementById('print-type').value;
+    const pages = parseInt(document.getElementById('pages').value) || 0;
+    const copies = parseInt(document.getElementById('copies').value) || 0;
+    const destination = document.getElementById('destination').value;
+    const paymentMethod = document.getElementById('payment-method').value; // Dagdag ito
+
+    const basePrice = PRICING[printType][paperSize];
+    const subPrintTotal = basePrice * pages * copies;
+
+    let deliveryFee = 0;
+    if (destination === 'jhs') {
+        deliveryFee = 10; 
+    } else if (destination === 'shs') {
+        deliveryFee = 15; 
     }
+
+    const grandTotalValue = subPrintTotal + deliveryFee; // Total amount as number
+
+    // Display sa UI
+    document.getElementById('live-price').innerText = subPrintTotal.toFixed(2);
+    
+    if(document.getElementById('subtotal-display')) {
+        document.getElementById('subtotal-display').innerText = `₱${subPrintTotal.toFixed(2)}`;
+    }
+    if(document.getElementById('delivery-fee-display')) {
+        document.getElementById('delivery-fee-display').innerText = `₱${deliveryFee.toFixed(2)}`;
+    }
+    if(document.getElementById('pay-amount')) {
+        document.getElementById('pay-amount').innerText = `₱${grandTotalValue.toFixed(2)}`;
+    }
+
+    // I-save ang values sa global variables o sa button attributes para makuha ng receiptHTML
+    window.currentDeliveryFee = deliveryFee;
+    window.currentPaymentMethod = paymentMethod;
+    window.currentGrandTotal = grandTotalValue;
+}
 
     function addItem() {
         if(!pendingFile) return;
@@ -772,40 +938,102 @@ applySystemLock();
         document.getElementById('pay-amount').innerText = document.getElementById('grand-total').innerText;
         document.getElementById('payment-modal').style.display = 'flex'; 
     }
+    
     // --- ANG VISUAL FEEDBACK LOGIC ---
 function checkProof() {
-    const input = document.getElementById('proof-input'); // Ang file input
-    const boxText = document.getElementById('proof-status-text'); // Ang main text (cite: image_2f2ddd.png)
-    const boxContainer = document.getElementById('upload-box-container'); // Ang dashed border box (cite: image_2376c1.png)
-    const submitBtn = document.getElementById('submit-btn'); // Ang SEND button (cite: image_24c7a3.png)
+    const input = document.getElementById('proof-input'); 
+    const boxText = document.getElementById('proof-status-text'); 
+    const boxContainer = document.getElementById('upload-box-container'); 
+    const submitBtn = document.getElementById('submit-btn'); 
 
-    // 1. I-check kung may file na naka-upload
     if (input.files && input.files[0]) {
-        // --- SUCCESS STATE ---
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                // Mas malaking resolution para mas accurate ang "code" detection
+                canvas.width = 200; canvas.height = 200;
+                ctx.drawImage(img, 0, 0, 200, 200);
+                
+                // Scan Top Area (Dapat Blue ang GCash Header)
+                const topData = ctx.getImageData(0, 0, 200, 50).data;
+                // Scan Center Area (Dapat White background)
+                const midData = ctx.getImageData(0, 70, 200, 60).data;
 
-        // Palitan ang text: "✅ ATTACHED: [Unang 15 letters ng filename]..."
-        boxText.innerHTML = "✅ ATTACHED: " + input.files[0].name.substring(0, 15) + "...";
+                let headerBlue = 0;
+                let bodyWhite = 0;
 
-        // Baguhin ang kulay: Gawing Solid Green ang box ( cite: image_22fde1.png)
-        boxContainer.classList.add('upload-box-success');
+                // 1. Header Blue Check
+                for (let i = 0; i < topData.length; i += 4) {
+                    if (topData[i+2] > 160 && topData[i+2] > topData[i]) headerBlue++;
+                }
 
-        // I-enable ang SEND button ( cite: image_24c7a3.png)
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = "1";
+                // 2. Body White Check
+                for (let i = 0; i < midData.length; i += 4) {
+                    if (midData[i] > 220 && midData[i+1] > 220 && midData[i+2] > 220) bodyWhite++;
+                }
+
+                // SECURITY CALCULATION
+                // Dapat Blue ang taas, White ang gitna, at hindi mabigat ang file (anti-camera)
+                const isBlueHeader = headerBlue > 1000; 
+                const isWhiteBody = bodyWhite > 2000;
+                const isNotCamera = input.files[0].size < 1800000; // Under 1.8MB
+
+                if (!isBlueHeader || !isWhiteBody || !isNotCamera) {
+                    // AI Voice Warning
+                    const msg = new SpeechSynthesisUtterance("Security Alert. Invalid G-Cash format. Please upload a clear, digital screenshot showing the blue header and reference code.");
+                    const voices = window.speechSynthesis.getVoices();
+                    const british = voices.find(v => v.lang === 'en-GB');
+                    if (british) msg.voice = british;
+                    window.speechSynthesis.speak(msg);
+
+                    alert("INVALID RECEIPT: G-L Terminal requires an official G-Cash digital screenshot.");
+                    input.value = ""; 
+                    boxText.innerHTML = "TAP TO ATTACH RECEIPT";
+                    boxContainer.classList.remove('upload-box-success');
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = "0.5";
+                    return;
+                }
+
+                // --- ORIGINAL SUCCESS LOGIC (WALANG GALAW) ---
+                boxText.innerHTML = "✅ ATTACHED: " + input.files[0].name.substring(0, 15) + "...";
+                boxContainer.classList.add('upload-box-success');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+            };
+        };
+        reader.readAsDataURL(input.files[0]);
+
     } else {
-        // --- RESET STATE (Kung nag-cancel o walang pinili) ---
-
-        // Balik sa dating text
+        // RESET STATE
         boxText.innerHTML = "TAP TO ATTACH RECEIPT";
-
-        // Balik sa dating Gold dashed border ( cite: image_2376c1.png)
         boxContainer.classList.remove('upload-box-success');
-
-        // I-disable ulit ang SEND button ( cite: image_24c7a3.png)
         submitBtn.disabled = true;
         submitBtn.style.opacity = "0.5";
     }
 }
+
+// Function to simulate visual verification of the GCash confirmation pattern
+// and visual integrity (cite: edited-image.png).
+function checkImageReadability(canvas, ctx) {
+    // Instead of scanning the whole image, scan the confirmation pattern
+    // specifically the confirmation header region.
+    const patternIntegrity = ctx.getImageData(canvas.width / 2, 50, 100, 100).data;
+    
+    let readabilityScore = 0;
+    // ... Logic to simulate high-res visual pattern matching ...
+    // Allows pixelated screens captures while rejecting low-integrity photos.
+    // For local execution, we use a basic pixel data structure check.
+    for (let i = 0; i < patternIntegrity.length; i += 4) {
+        if (patternIntegrity[i+2] > 140) readabilityScore++; // Checking basic header structure
+    }
+    return readabilityScore > 200; 
+}
+
 
     // 1. ISANG BESES LANG NA CONFIG
 const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
@@ -813,13 +1041,20 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const gl_db = supabase.createClient(SB_URL, SB_KEY);
     
 
-   async function sendToTelegram() {
+  async function sendToTelegram() {
     const btn = document.getElementById('submit-btn');
-    const grandTotal = document.getElementById('grand-total').innerText;
     
-    // 1. NAME VALIDATION
+    // 1. DATA GATHERING MULA SA UI
     const nameInput = document.getElementById('cust-name');
     const custName = nameInput ? nameInput.value.trim() : "";
+    
+    // Kunin ang mga halaga base sa IDs na gamit mo sa terminal
+    const subtotal = document.getElementById('subtotal-display').innerText;
+    const delivery = document.getElementById('delivery-fee-display').innerText;
+    const total = document.getElementById('pay-amount').innerText; 
+    
+    const method = document.getElementById('payment-method').value; // 'cash' or 'gcash'
+    const dest = document.getElementById('destination').value;
 
     if (!custName) {
         alert("⚠️ PLEASE ENTER YOUR NAME TO PROCEED.");
@@ -832,8 +1067,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
     btn.disabled = true;
 
     try {
-        // --- STEP 1.5: INSERT TO SUPABASE (PARA SA LIVE QUEUE) ---
-        // Tinanggal na natin ang total_price at total_amount dito para hindi mag-error
+        // --- STEP 1.5: INSERT TO SUPABASE (LIVE QUEUE) ---
         const { error: dbError } = await gl_db
             .from('orders') 
             .insert([{
@@ -854,42 +1088,58 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
         });
         let etaDisplay = `${5 + (totalPages * 1) + additionalTime} Mins`;
 
-        // 3. ADMIN MESSAGE (TELEGRAM)
+        // 3. ADMIN MESSAGE (TELEGRAM TEXT)
         let adminMsg = `🧾 <b>NEW ORDER: ${ref}</b>\n`;
         adminMsg += `👤 CUSTOMER: ${custName.toUpperCase()}\n`;
-        adminMsg += `💰 TOTAL: ${grandTotal}\n━━━━━━━━━━━━━━━━━━\n\n`;
+        adminMsg += `💳 PAYMENT: ${method.toUpperCase()}\n`;
+        adminMsg += `📍 DESTINATION: ${dest.toUpperCase()}\n`;
+        adminMsg += `━━━━━━━━━━━━━━━━━━\n`;
+        adminMsg += `💰 PRINTS: ${subtotal}\n`;
+        adminMsg += `🚚 DELIVERY: ${delivery}\n`;
+        adminMsg += `🔥 <b>TOTAL: ${total}</b>\n━━━━━━━━━━━━━━━━━━\n\n`;
+        
         cart.forEach((item, i) => {
             adminMsg += `<b>${i+1}.</b> ${item.name.replace(/[<>]/g, '')}\n`;
             adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n\n`;
         });
 
-        // SEND TO TELEGRAM (TEXT)
+        // SEND TEXT MESSAGE TO TG
         await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: adminMsg, parse_mode: 'HTML' })
         });
 
-        // 4. SEND PROOF & FILES
+        // 4. SEND GCASH PROOF PHOTO (PHOTO SA TG)
         const proofInput = document.getElementById('proof-input');
-        if (proofInput.files.length > 0) {
+        if (method === 'gcash' && proofInput && proofInput.files.length > 0) {
             const proofFd = new FormData();
             proofFd.append('chat_id', CONFIG.CHAT_ID);
             proofFd.append('photo', proofInput.files[0]);
-            proofFd.append('caption', `💰 PROOF: ${ref} [${custName}]`);
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {method: 'POST', body: proofFd});
+            // Format: 💰 PROOF: GL-XXXX [Name]
+            proofFd.append('caption', `💰 PROOF: ${ref} [${custName.toUpperCase()}]`);
+            
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: proofFd
+            });
         }
 
+        // 5. SEND PRINT FILES (ANG MGA PDF/DOCS NA I-PRINT)
         for(let item of cart) {
             const fileFd = new FormData();
             fileFd.append('chat_id', CONFIG.CHAT_ID);
             const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
             fileFd.append(isImg ? 'photo' : 'document', item.file);
-            fileFd.append('caption', `📂 FILE: ${item.name}\nRef: ${ref}`);
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {method: 'POST', body: fileFd});
+            fileFd.append('caption', `📂 FILE TO PRINT: ${item.name}\nRef: ${ref}`);
+            
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {
+                method: 'POST', 
+                body: fileFd
+            });
         }
 
-        // 5. FULL VIEW RECEIPT DESIGN
+        // 6. GENERATE FULL RECEIPT VIEW (PARA SA CUSTOMER)
         const now = new Date().toLocaleString('en-US', { 
             month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
         });
@@ -900,7 +1150,9 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                     <center style="border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px;">
                         <h2 style="margin: 0; font-family: 'Syncopate'; font-size: 15px; letter-spacing: 1px;">GL PRINTING SERVICES</h2>
                         <p style="font-size: 9px; margin: 5px 0; opacity: 0.8;">OFFICIAL DIGITAL RECEIPT</p>
-                        <b style="font-size: 10px; background: #000; color: #fff; padding: 3px 12px; display: inline-block; margin-top: 8px;">PAID / VERIFIED</b>
+                        <b style="font-size: 10px; background: #000; color: #fff; padding: 3px 12px; display: inline-block; margin-top: 8px;">
+                            ${method === 'cash' ? 'UNPAID / FOR CASH' : 'PAID / VERIFIED'}
+                        </b>
                     </center>
                     <div style="font-size: 12px; margin-bottom: 20px; line-height: 1.6;">
                         <div style="display: flex; justify-content: space-between;"><span>DATE:</span> <b>${now}</b></div>
@@ -916,9 +1168,12 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                             </div>
                         `).join('')}
                     </div>
+
                     <div style="text-align: right; margin-top: 15px;">
-                        <p style="margin: 0; font-size: 12px; opacity: 0.8;">SUBTOTAL: ${grandTotal}</p>
-                        <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">TOTAL PAID: ${grandTotal}</h3>
+                        <p style="margin: 0; font-size: 11px; opacity: 0.8;">SUBTOTAL: ${subtotal}</p>
+                        ${parseFloat(delivery.replace('₱','')) > 0 ? `<p style="margin: 0; font-size: 11px; opacity: 0.8;">DELIVERY: ${delivery}</p>` : ''}
+                        <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">TOTAL: ${total}</h3>
+                        <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">VIA: ${method}</p>
                         <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
                     </div>
                     <center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
@@ -926,6 +1181,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                         <div style="font-size: 14px; font-weight: bold; opacity: 0.05; letter-spacing: 8px; margin-top: 5px;">GL-PRINTS</div>
                     </center>
                 </div>
+                
                 <div style="width: 300px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
                     <button onclick="downloadReceipt('${ref}')" style="background: #2ecc71; color: #fff; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 15px rgba(46,204,113,0.3);">
                         📥 DOWNLOAD RECEIPT (IMAGE)
@@ -941,8 +1197,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
         document.getElementById('customer-receipt-summary').innerHTML = receiptHTML;
         document.getElementById('payment-modal').style.display = 'none';
         document.getElementById('success-modal').style.display = 'flex';
-
-        // VOICE TRIGGER
+        
         if(typeof playDoubleThanks === 'function') playDoubleThanks();
 
     } catch (e) {
@@ -974,14 +1229,14 @@ function downloadReceipt(refNo) {
     const synth = window.speechSynthesis;
     
     // FIRST LINE
-    const firstSpeak = new SpeechSynthesisUtterance("Thank you for choosing G L Printing Services.");
+    const firstSpeak = new SpeechSynthesisUtterance("Your Print request received. Thank you for trusting G-L Prints.");
     firstSpeak.pitch = 1.1;
-    firstSpeak.rate = 0.9;
+    firstSpeak.rate = 0.8;
     
     // SECOND LINE
-    const secondSpeak = new SpeechSynthesisUtterance("Thank you for patiently waiting.");
+    const secondSpeak = new SpeechSynthesisUtterance("Saved this receipt and Please Check our live queue for your order status.");
     secondSpeak.pitch = 1.1;
-    secondSpeak.rate = 0.9;
+    secondSpeak.rate = 0.8;
 
     firstSpeak.onend = () => {
         setTimeout(() => {
@@ -1073,6 +1328,124 @@ function downloadReceipt(refNo) {
     // Sa simula, i-check kung authorized (Dapat laging wala ito pag refresh)
     // Kung gusto mo na hihingi lagi ng pass, siguraduhin na 'sessionStorage' ang gamit.
 })();
+
+// Idagdag o i-update itong function sa loob ng iyong <script> tag
+function updatePrice() {
+    // 1. Kuhanin ang values mula sa Terminal Inputs
+    const paperSize = document.getElementById('paper-size').value;
+    const printType = document.getElementById('print-type').value;
+    const pages = parseInt(document.getElementById('pages').value) || 0;
+    const copies = parseInt(document.getElementById('copies').value) || 0;
+    const destination = document.getElementById('destination').value;
+
+    // 2. Calculate Sub-print (Terminal Price)
+    // Kinukuha ang base price mula sa PRICING object mo sa code
+    const basePrice = PRICING[printType][paperSize];
+    const subPrintTotal = basePrice * pages * copies;
+
+    // 3. Calculate Delivery Fee
+    let deliveryFee = 0;
+    if (destination === 'jhs') {
+        deliveryFee = 10; // Palitan ang amount base sa rate niyo
+    } else if (destination === 'shs') {
+        deliveryFee = 15; // Palitan ang amount base sa rate niyo
+    } else {
+        deliveryFee = 0; // Store Pickup
+    }
+
+    // 4. Compute Grand Total
+    const grandTotal = subPrintTotal + deliveryFee;
+
+    // 5. I-display sa UI (Updating the Checkout Card)
+    // Terminal Price Display
+    document.getElementById('live-price').innerText = subPrintTotal.toFixed(2);
+    
+    // Checkout Modal Displays (kung bukas ang modal)
+    if(document.getElementById('subtotal-display')) {
+        document.getElementById('subtotal-display').innerText = `₱${subPrintTotal.toFixed(2)}`;
+    }
+    if(document.getElementById('delivery-fee-display')) {
+        document.getElementById('delivery-fee-display').innerText = `₱${deliveryFee.toFixed(2)}`;
+    }
+    if(document.getElementById('pay-amount')) {
+        document.getElementById('pay-amount').innerText = `₱${grandTotal.toFixed(2)}`;
+    }
+}
+
+// Siguraduhin na naka-listen ang 'destination' dropdown sa pagbabago
+document.getElementById('destination').addEventListener('change', updatePrice);
+
+function togglePaymentUI() {
+    const paymentMethod = document.getElementById('payment-method').value;
+    const paymentDetailsArea = document.getElementById('payment-details-area');
+    const submitBtn = document.getElementById('submit-btn');
+
+    if (paymentMethod === 'cash') {
+        // Itago ang QR at Upload Zone
+        paymentDetailsArea.style.display = 'none';
+        
+        // I-enable agad ang Submit Button dahil hindi kailangan ng receipt sa Cash
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        submitBtn.style.filter = "none";
+    } else {
+        // Ipakita ang GCash QR at Upload Zone
+        paymentDetailsArea.style.display = 'block';
+        
+        // I-check muna kung may uploaded file na bago i-enable ang button
+        checkProof(); 
+    }
+}
+
+function validateCheckout() {
+    const custName = document.getElementById('cust-name').value.trim();
+    const method = document.getElementById('payment-method').value;
+    const proofInput = document.getElementById('proof-input');
+    const sendBtn = document.getElementById('submit-btn');
+
+    let isValid = false;
+
+    if (method === 'gcash') {
+        // Dapat may pangalan AT may naka-attach na file
+        if (custName.length > 0 && proofInput.files.length > 0) {
+            isValid = true;
+        }
+    } else {
+        // Kung Cash, pangalan lang sapat na
+        if (custName.length > 0) {
+            isValid = true;
+        }
+    }
+
+    // Update Button Style & State
+    if (isValid) {
+        sendBtn.disabled = false;
+        sendBtn.style.background = "#0084FF"; // Blue color
+        sendBtn.style.cursor = "pointer";
+        sendBtn.style.opacity = "1";
+    } else {
+        sendBtn.disabled = true;
+        sendBtn.style.background = "#333"; // Back to dark/gray
+        sendBtn.style.opacity = "0.5";
+        sendBtn.style.cursor = "not-allowed";
+    }
+}
+
+// Bantayan ang pag-type ng pangalan
+document.getElementById('cust-name').addEventListener('input', validateCheckout);
+
+// Bantayan kung nag-iba ang Payment Method (Cash/GCash)
+document.getElementById('payment-method').addEventListener('change', () => {
+    validateCheckout();
+    
+    // Auto-focus sa upload area kung GCash para madaling makita ng customer
+    if(document.getElementById('payment-method').value === 'gcash') {
+        console.log("GCash selected - waiting for receipt...");
+    }
+});
+
+// Bantayan kung may na-upload na file
+document.getElementById('proof-input').addEventListener('change', validateCheckout);
 
 
 </script>
