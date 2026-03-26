@@ -509,7 +509,7 @@
                 <div class="gl-input-box">
                     <label class="classy-label">DESTINATION</label>
                    <select id="destination" class="gl-input">
-    <option value="pickup">STORE PICKUP</option>
+    <option value="pickup">PICKUP</option>
     <option value="jhs">JHS DELIVERY</option>
     <option value="shs">SHS DELIVERY</option>
 </select>
@@ -878,9 +878,9 @@ applySystemLock();
 
     let deliveryFee = 0;
     if (destination === 'jhs') {
-        deliveryFee = 10; 
-    } else if (destination === 'shs') {
         deliveryFee = 15; 
+    } else if (destination === 'shs') {
+        deliveryFee = 20; 
     }
 
     const grandTotalValue = subPrintTotal + deliveryFee; // Total amount as number
@@ -1346,9 +1346,9 @@ function updatePrice() {
     // 3. Calculate Delivery Fee
     let deliveryFee = 0;
     if (destination === 'jhs') {
-        deliveryFee = 10; // Palitan ang amount base sa rate niyo
-    } else if (destination === 'shs') {
         deliveryFee = 15; // Palitan ang amount base sa rate niyo
+    } else if (destination === 'shs') {
+        deliveryFee = 20; // Palitan ang amount base sa rate niyo
     } else {
         deliveryFee = 0; // Store Pickup
     }
