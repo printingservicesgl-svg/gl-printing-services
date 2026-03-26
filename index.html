@@ -246,6 +246,57 @@
     text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
 
+.glass-upload-zone-compact {
+        position: relative;
+        padding: 15px;
+        background: rgba(255, 204, 0, 0.03);
+        border: 2px dashed rgba(255, 204, 0, 0.4);
+        border-radius: 15px;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .upload-icon-small {
+        background: rgba(255, 204, 0, 0.1);
+        width: 35px; height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        border: 1px solid rgba(255, 204, 0, 0.2);
+    }
+
+    .upload-text-main {
+        color: #ffcc00;
+        font-family: 'Syncopate', sans-serif;
+        font-size: 9px;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .upload-text-sub {
+        color: #777;
+        font-size: 8px;
+        margin: 2px 0 0 0;
+        text-transform: uppercase;
+    }
+
+    /* Shimmer remains the same */
+    .shimmer-line {
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.1), transparent);
+        animation: shimmer-flow 3s infinite;
+    }
+    @keyframes shimmer-flow { 0% { left: -100%; } 100% { left: 100%; } }
+
+    .upload-box-success { border: 2px solid #2ecc71 !important; background: rgba(46, 204, 113, 0.1) !important; }
+    .upload-box-success .upload-text-main { color: #2ecc71 !important; }
+
 
     </style>
 </head>     
@@ -370,21 +421,36 @@
 
 <canvas id="scan-canvas" style="display:none;"></canvas>
 
-    <div id="payment-modal" class="modal">
-    <div class="modal-content">
+   <div id="payment-modal" class="modal">
+    <div class="modal-content" style="background: #111; border: 1px solid #333; border-radius: 20px; padding: 20px; max-width: 350px;">
         
-        <div class="input-wrapper">
-            <label class="classy-label">CUSTOMER NAME <span style="color:red;">*</span></label>
-            <input type="text" id="cust-name" placeholder="ENTER YOUR FULL NAME" required autocomplete="off">
+        <div class="input-wrapper" style="margin-bottom: 10px;">
+            <label class="classy-label" style="font-family: 'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 5px;">CUSTOMER NAME <span style="color:red;">*</span></label>
+            <input type="text" id="cust-name" placeholder="ENTER YOUR FULL NAME" required autocomplete="off" 
+                   style="width: 100%; background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px;">
         </div>
-        <img src="img/Gcash Payment_QR.jpg" style="width:160px; margin:15px 0;">
-        <p style="font-weight:bold;">Total: <span id="pay-amount">₱0.00</span></p>
-        <div style="border:2px dashed #0052da; padding:15px; border-radius:15px; margin-top:10px; cursor:pointer;" onclick="document.getElementById('proof-input').click()">
-            <p id="proof-status" style="font-size:11px; color:#0052da; font-weight:bold;">UPLOAD SCREENSHOT OF RECEIPT</p>
+
+        <img src="img/Gcash Payment_QR.jpg" style="width: 130px; margin: 5px auto; display: block; border-radius: 10px; border: 1px solid #333;">
+        
+        <p style="font-weight:bold; color: #fff; font-size: 16px; margin: 10px 0;">Total: <span id="pay-amount" style="color: #ffcc00;">₱0.00</span></p>
+
+        <div id="upload-box-container" class="glass-upload-zone-compact" onclick="document.getElementById('proof-input').click()">
+            <div class="shimmer-line"></div>
+            <div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <div class="upload-icon-small">📸</div>
+                <div style="text-align: left;">
+                    <p id="proof-status-text" class="upload-text-main">TAP TO ATTACH RECEIPT</p>
+                    <p class="upload-text-sub">GCASH SCREENSHOT REQUIRED</p>
+                </div>
+            </div>
             <input type="file" id="proof-input" style="display:none;" onchange="checkProof()">
         </div>
-        <button id="submit-btn" class="btn-add" disabled style="background:#0052da; color:white;" onclick="sendToTelegram()">SEND ORDER</button>
-        <button onclick="closeModal('payment-modal')" style="background:none; border:none; margin-top:10px; font-size:10px; color:grey;">CANCEL</button>
+
+        <button id="submit-btn" class="btn-add" disabled 
+                style="background:#0052da; color:white; width: 100%; padding: 15px; border-radius: 10px; margin-top: 15px; font-weight: bold; letter-spacing: 1px; opacity: 0.5;" 
+                onclick="sendToTelegram()">SEND ORDER</button>
+        
+        <button onclick="closeModal('payment-modal')" style="background:none; border:none; margin-top:10px; font-size:10px; color:grey; cursor: pointer; text-transform: uppercase;">CANCEL</button>
     </div>
 </div>
 <style>
@@ -706,12 +772,40 @@ applySystemLock();
         document.getElementById('pay-amount').innerText = document.getElementById('grand-total').innerText;
         document.getElementById('payment-modal').style.display = 'flex'; 
     }
-    function checkProof() { 
-        if(document.getElementById('proof-input').files[0]) {
-            document.getElementById('proof-status').innerText = "✅ PROOF ATTACHED";
-            document.getElementById('submit-btn').disabled = false;
-        }
+    // --- ANG VISUAL FEEDBACK LOGIC ---
+function checkProof() {
+    const input = document.getElementById('proof-input'); // Ang file input
+    const boxText = document.getElementById('proof-status-text'); // Ang main text (cite: image_2f2ddd.png)
+    const boxContainer = document.getElementById('upload-box-container'); // Ang dashed border box (cite: image_2376c1.png)
+    const submitBtn = document.getElementById('submit-btn'); // Ang SEND button (cite: image_24c7a3.png)
+
+    // 1. I-check kung may file na naka-upload
+    if (input.files && input.files[0]) {
+        // --- SUCCESS STATE ---
+
+        // Palitan ang text: "✅ ATTACHED: [Unang 15 letters ng filename]..."
+        boxText.innerHTML = "✅ ATTACHED: " + input.files[0].name.substring(0, 15) + "...";
+
+        // Baguhin ang kulay: Gawing Solid Green ang box ( cite: image_22fde1.png)
+        boxContainer.classList.add('upload-box-success');
+
+        // I-enable ang SEND button ( cite: image_24c7a3.png)
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+    } else {
+        // --- RESET STATE (Kung nag-cancel o walang pinili) ---
+
+        // Balik sa dating text
+        boxText.innerHTML = "TAP TO ATTACH RECEIPT";
+
+        // Balik sa dating Gold dashed border ( cite: image_2376c1.png)
+        boxContainer.classList.remove('upload-box-success');
+
+        // I-disable ulit ang SEND button ( cite: image_24c7a3.png)
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.5";
     }
+}
 
     // 1. ISANG BESES LANG NA CONFIG
 const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
