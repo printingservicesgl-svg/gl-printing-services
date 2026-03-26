@@ -387,11 +387,59 @@
         <button onclick="closeModal('payment-modal')" style="background:none; border:none; margin-top:10px; font-size:10px; color:grey;">CANCEL</button>
     </div>
 </div>
+<style>
+    /* Styling para sa Exit Button (ALWAYS VISIBLE PILL SHAPE) */
+    .glow-exit-btn {
+        margin-top: 30px;
+        width: 250px;
+        background: transparent;
+        color: #ffcc00; /* LAGING GOLD ANG TEXT */
+        border: 2px solid #ffcc00; /* LAGING GOLD ANG BORDER */
+        padding: 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth transition */
+        font-family: 'Syncopate', sans-serif;
+        position: relative;
+        overflow: hidden;
+        box-shadow: none; /* WALANG GLOW SA IDLE STATE */
+    }
+
+    /* THE GLOW EFFECT ON HOVER (Cursor Hover) */
+    .glow-exit-btn:hover {
+        background: rgba(255, 204, 0, 0.05); /* Subtle tint sa loob */
+        box-shadow: 0 0 20px rgba(255, 204, 0, 0.6), 
+                    inset 0 0 10px rgba(255, 204, 0, 0.4); /* Neon Glow ON */
+        transform: translateY(-3px); /* Konting angat */
+    }
+
+    /* THE GLOW EFFECT ON CLICK (Active State) */
+    .glow-exit-btn:active {
+        background: #ffcc00; /* Solis Gold Background */
+        color: #000; /* Black Text */
+        box-shadow: 0 0 30px rgba(255, 204, 0, 0.8), 
+                    inset 0 0 15px rgba(255, 204, 0, 0.6); /* Maximum Glow ON */
+        transform: translateY(1px); /* Konting lubog */
+    }
+
+</style>
+
 <div id="success-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; overflow-y:auto; padding:20px 0;">
-    <div style="max-width:400px; margin:auto; text-align:center;">
-        <div id="customer-receipt-summary"></div> <button onclick="location.reload()" style="margin-top:20px; background:transparent; border:1px solid #444; color:#888; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:11px;">
+    <div style="max-width:400px; margin:auto; text-align:center; padding: 20px;">
+        
+        <div id="customer-receipt-summary"></div> 
+
+        <button onclick="location.reload()" class="glow-exit-btn">
             DONE / ORDER AGAIN
         </button>
+        
+        <p style="color: #444; font-size: 10px; margin-top: 15px; letter-spacing: 1px; font-family: sans-serif;">
+            CLICK TO EXIT
+        </p>
     </div>
 </div>
 <div id="ai-chat-btn" onclick="toggleChat()"><img src="GL_Logo.png" style="width:35px;"></div>
@@ -665,6 +713,12 @@ applySystemLock();
         }
     }
 
+    // 1. ISANG BESES LANG NA CONFIG
+const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdmhhY2pqYXZsYWdwbWxtbXFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyODg4MTksImV4cCI6MjA4OTg2NDgxOX0.VRCTfEBPoZ2cavnJtVxlI0x52E6XbpS464Ll3hK-UlQ";
+const gl_db = supabase.createClient(SB_URL, SB_KEY);
+    
+
    async function sendToTelegram() {
     const btn = document.getElementById('submit-btn');
     const grandTotal = document.getElementById('grand-total').innerText;
@@ -684,8 +738,19 @@ applySystemLock();
     btn.disabled = true;
 
     try {
-        
-        // ETA CALCULATION
+        // --- STEP 1.5: INSERT TO SUPABASE (PARA SA LIVE QUEUE) ---
+        // Tinanggal na natin ang total_price at total_amount dito para hindi mag-error
+        const { error: dbError } = await gl_db
+            .from('orders') 
+            .insert([{
+                ref_no: ref,
+                customer_name: custName.toUpperCase(),
+                status: 'PENDING'
+            }]);
+
+        if (dbError) throw dbError;
+
+        // 2. ETA CALCULATION
         let totalPages = 0;
         let additionalTime = 0;
         cart.forEach(item => {
@@ -695,7 +760,7 @@ applySystemLock();
         });
         let etaDisplay = `${5 + (totalPages * 1) + additionalTime} Mins`;
 
-        // 2. ADMIN MESSAGE (TELEGRAM)
+        // 3. ADMIN MESSAGE (TELEGRAM)
         let adminMsg = `🧾 <b>NEW ORDER: ${ref}</b>\n`;
         adminMsg += `👤 CUSTOMER: ${custName.toUpperCase()}\n`;
         adminMsg += `💰 TOTAL: ${grandTotal}\n━━━━━━━━━━━━━━━━━━\n\n`;
@@ -711,7 +776,7 @@ applySystemLock();
             body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: adminMsg, parse_mode: 'HTML' })
         });
 
-        // 3. SEND PROOF & FILES
+        // 4. SEND PROOF & FILES
         const proofInput = document.getElementById('proof-input');
         if (proofInput.files.length > 0) {
             const proofFd = new FormData();
@@ -730,28 +795,24 @@ applySystemLock();
             await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {method: 'POST', body: fileFd});
         }
 
-        // 4. FULL VIEW RECEIPT DESIGN
+        // 5. FULL VIEW RECEIPT DESIGN
         const now = new Date().toLocaleString('en-US', { 
             month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
         });
 
         let receiptHTML = `
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 20px;">
-                
                 <div id="capture-receipt" style="background: #fff; color: #000; padding: 35px 25px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; width: 300px; text-align: left; border-top: 10px solid #ffcc00; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-                    
                     <center style="border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px;">
                         <h2 style="margin: 0; font-family: 'Syncopate'; font-size: 15px; letter-spacing: 1px;">GL PRINTING SERVICES</h2>
                         <p style="font-size: 9px; margin: 5px 0; opacity: 0.8;">OFFICIAL DIGITAL RECEIPT</p>
                         <b style="font-size: 10px; background: #000; color: #fff; padding: 3px 12px; display: inline-block; margin-top: 8px;">PAID / VERIFIED</b>
                     </center>
-
                     <div style="font-size: 12px; margin-bottom: 20px; line-height: 1.6;">
                         <div style="display: flex; justify-content: space-between;"><span>DATE:</span> <b>${now}</b></div>
                         <div style="display: flex; justify-content: space-between;"><span>REF NO:</span> <b>${ref}</b></div>
                         <div style="display: flex; justify-content: space-between;"><span>CUSTOMER:</span> <b style="text-transform: uppercase;">${custName}</b></div>
                     </div>
-
                     <div style="border-bottom: 1px dashed #000; margin-bottom: 15px; padding-bottom: 10px;">
                         <p style="font-size: 10px; font-weight: bold; margin-bottom: 8px; text-decoration: underline;">ORDER BREAKDOWN:</p>
                         ${cart.map(item => `
@@ -761,23 +822,16 @@ applySystemLock();
                             </div>
                         `).join('')}
                     </div>
-
-<div style="text-align: right; margin-top: 15px;">
-    <p style="margin: 0; font-size: 12px; opacity: 0.8;">SUBTOTAL: ${grandTotal}</p>
-    
-    <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">
-        TOTAL PAID: ${grandTotal}
-    </h3>
-    
-    <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
-</div>
-
+                    <div style="text-align: right; margin-top: 15px;">
+                        <p style="margin: 0; font-size: 12px; opacity: 0.8;">SUBTOTAL: ${grandTotal}</p>
+                        <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">TOTAL PAID: ${grandTotal}</h3>
+                        <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
+                    </div>
                     <center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
                         <p style="font-size: 9px; font-style: italic; color: #777;">Thank you for your business!</p>
                         <div style="font-size: 14px; font-weight: bold; opacity: 0.05; letter-spacing: 8px; margin-top: 5px;">GL-PRINTS</div>
                     </center>
                 </div>
-
                 <div style="width: 300px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
                     <button onclick="downloadReceipt('${ref}')" style="background: #2ecc71; color: #fff; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 15px rgba(46,204,113,0.3);">
                         📥 DOWNLOAD RECEIPT (IMAGE)
@@ -794,7 +848,7 @@ applySystemLock();
         document.getElementById('payment-modal').style.display = 'none';
         document.getElementById('success-modal').style.display = 'flex';
 
-        // 5. VOICE TRIGGER
+        // VOICE TRIGGER
         if(typeof playDoubleThanks === 'function') playDoubleThanks();
 
     } catch (e) {
@@ -929,10 +983,6 @@ function downloadReceipt(refNo) {
 
 </script>
 <script>
-// 1. ISANG BESES LANG NA CONFIG
-const SB_URL = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdmhhY2pqYXZsYWdwbWxtbXFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyODg4MTksImV4cCI6MjA4OTg2NDgxOX0.VRCTfEBPoZ2cavnJtVxlI0x52E6XbpS464Ll3hK-UlQ";
-const gl_db = supabase.createClient(SB_URL, SB_KEY);
 
 // 2. MAIN QUEUE DISPLAY FUNCTION
 async function loadGLQueue() {
