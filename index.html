@@ -615,7 +615,7 @@ select:focus, input:focus {
     border-radius: 100px;
     font-family: 'Syncopate';
     font-size: 0.7rem;
-    font-weight: 900;
+    font-weight: 900; 
     letter-spacing: 3px;
     cursor: pointer;
     transition: 0.4s;
@@ -747,8 +747,23 @@ select:focus, input:focus {
     text-shadow: 0 0 10px #ffcc00;
     transform: scale(1.2);
 }
+/* Siguraduhin na ang input at button ay laging nasa ibabaw */
+#cust-name, .gl-submit-btn, select {
+    position: relative !important;
+    z-index: 10000 !important; 
+    pointer-events: auto !important;
+}
 
+/* Iwasan ang "Ghost Clicks" sa mobile */
+.card-glow {
+    pointer-events: none !important; /* Para hindi niya maharangan ang pindot sa button */
+}
 
+/* Mobile Friendly Button State */
+.gl-submit-btn:disabled {
+    pointer-events: none !important;
+    opacity: 0.3 !important;
+}
 
     </style>
 </head>     
@@ -1832,7 +1847,62 @@ function showConfirm() {
     calculateFinalTotal();
     validateCheckout(); // Re-validate
 }
+// ILAGAY ITO SA PINAKA-BABA NG IYONG SCRIPT
+document.addEventListener('DOMContentLoaded', () => {
+    const mainBtn = document.getElementById('main-action-btn');
+    const nameInput = document.getElementById('cust-name');
 
+    // 1. Siguraduhin na ang button ay nakikinig sa "TOUCHEVENT" para sa mobile
+    if (mainBtn) {
+        mainBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Iwas auto-reload
+            handleOrderStep();
+        });
+        
+        // Dagdag na listener para sa mobile tap
+        mainBtn.addEventListener('touchstart', () => {
+            mainBtn.style.transform = "scale(0.95)";
+        });
+        mainBtn.addEventListener('touchend', () => {
+            mainBtn.style.transform = "scale(1)";
+        });
+    }
+
+    // 2. LIVE VALIDATION na gumagana sa Android/iOS Keyboard
+    if (nameInput) {
+        nameInput.addEventListener('input', () => {
+            const val = nameInput.value.trim();
+            if (val.length >= 3) {
+                mainBtn.disabled = false;
+                mainBtn.style.opacity = "1";
+                mainBtn.style.pointerEvents = "auto"; // CRITICAL FIX
+                mainBtn.classList.add('ready-glow');
+                mainBtn.innerText = "PROCEED TO NEXT STEP";
+            } else {
+                mainBtn.disabled = true;
+                mainBtn.style.opacity = "0.2";
+                mainBtn.style.pointerEvents = "none"; // CRITICAL FIX
+                mainBtn.classList.remove('ready-glow');
+            }
+        });
+    }
+});
+
+let currentStep = 1;
+function handleOrderStep() {
+    console.log("Step Triggered:", currentStep); // Para makita mo sa inspect kung gumagana
+    
+    if (currentStep === 1) {
+        document.getElementById('step2').classList.add('active');
+        // Ipakita ang susunod na part ng form
+        currentStep = 2;
+        document.getElementById('main-action-btn').innerText = "CONFIRM DETAILS";
+    } else if (currentStep === 2) {
+        document.getElementById('step3').classList.add('active');
+        currentStep = 3;
+        document.getElementById('main-action-btn').innerText = "SEND TO GL PRINTS";
+    }
+}
 
 </script>
 <script>
