@@ -14,6 +14,73 @@
     
 
     <style>
+        
+        
+        /* 1. THE ELITE BASE - Parang Liquid Space */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #020205;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 204, 0, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 82, 218, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(106, 0, 255, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+}
+
+/* 2. THE FLOATING CONSTELLATION MAP */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 200%; height: 200%;
+    /* Mas detailed na star map lines */
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='800' height='800' viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='rgba(255,204,0,0.1)' stroke-width='0.5' fill='none'%3E%3Ccircle cx='400' cy='400' r='300' stroke='rgba(255,255,255,0.03)'/%3E%3Cpath d='M400 100 L450 250 L600 300 L450 350 L400 500 L350 350 L200 300 L350 250 Z'/%3E%3Ccircle cx='400' cy='100' r='2' fill='white' opacity='0.3'/%3E%3Ccircle cx='600' cy='300' r='2' fill='white' opacity='0.3'/%3E%3Ccircle cx='400' cy='500' r='2' fill='white' opacity='0.3'/%3E%3Ccircle cx='200' cy='300' r='2' fill='white' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 600px 600px;
+    animation: slow-rotate 100s linear infinite;
+    opacity: 0.5;
+    z-index: -1;
+}
+
+/* 3. TERMINAL CARD UPGRADE (Zodiac Symbol sa Likod) */
+.terminal-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(10, 10, 10, 0.7) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+.terminal-card::after {
+    content: "♒"; /* Aquarius symbol or any sign you like */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    font-size: 280px;
+    background: linear-gradient(to bottom, rgba(255, 204, 0, 0.05), transparent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    pointer-events: none;
+    z-index: -1; /* Nakatago sa likod ng inputs */
+}
+
+/* 4. PREMIUM SCROLLBAR */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #020205; }
+::-webkit-scrollbar-thumb { 
+    background: linear-gradient(var(--neon-gold), #0052da); 
+    border-radius: 10px;
+}
+
+/* Rotation Animation para sa Star Map */
+@keyframes slow-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
     /* ... mga dati mong CSS ... */
 
@@ -160,7 +227,75 @@
 
         /* TERMINAL SECTOR */
         #terminal-sector { padding: 80px 5%; max-width: 550px; margin: 0 auto; }
-        .terminal-card { background: #111; border: 1px solid var(--glass-border); padding: 30px; border-radius: 28px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+       /* Update these inside your <style> tag */
+
+.terminal-card {
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    border-radius: 30px;
+    padding: 35px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 
+                inset 0 0 20px rgba(255, 204, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Scanline animation para sa Terminal feel */
+.terminal-card::before {
+    content: " ";
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.scanner-box {
+    border: 2px dashed rgba(255, 204, 0, 0.3);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    padding: 50px 20px;
+}
+
+.scanner-box:hover {
+    border-color: var(--neon-gold);
+    background: rgba(255, 204, 0, 0.05);
+    transform: scale(0.98); /* Nagki-click effect pag ni-hover */
+}
+
+/* Hover effect for Select & Inputs */
+select, input {
+    background: #151515 !important;
+    border: 1px solid #333 !important;
+    border-radius: 12px !important;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+select:focus, input:focus {
+    border-color: var(--neon-gold) !important;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+}
+
+/* Premium Cart Items */
+.cart-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 204, 0, 0.1);
+    border-left: 5px solid var(--neon-gold);
+    backdrop-filter: blur(5px);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
         .scanner-box { border: 2px dashed #333; padding: 40px 20px; text-align: center; border-radius: 20px; background: #080808; margin-bottom: 20px; cursor: pointer; }
         .scanner-box.active { border-color: var(--neon-gold); background: rgba(255,204,0,0.03); }
         
@@ -365,6 +500,254 @@
 .checkout-content::-webkit-scrollbar-thumb:hover {
     background: #0052da; 
 }
+/* ULTRA-MODERN COVER PAGE UPGRADE */
+#cover-page {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background: #020205; /* Deep Space Black */
+    overflow: hidden;
+    transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+/* Moving Background Glows */
+.bg-glow-1, .bg-glow-2 {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.2;
+}
+
+.bg-glow-1 {
+    background: radial-gradient(circle, var(--neon-gold) 0%, transparent 70%);
+    top: -10%; left: -10%;
+    animation: floatGlow 20s infinite alternate;
+}
+
+.bg-glow-2 {
+    background: radial-gradient(circle, #0052da 0%, transparent 70%);
+    bottom: -10%; right: -10%;
+    animation: floatGlow 15s infinite alternate-reverse;
+}
+
+@keyframes floatGlow {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(100px, 50px) scale(1.2); }
+}
+
+/* The Glass Branding Box */
+.brand-box {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    padding: 60px 40px;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 204, 0, 0.15);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+}
+
+.brand-box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 40px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,204,0,0.3), transparent, rgba(0,82,218,0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.gl-logo-cover {
+    width: 140px !important;
+    margin-bottom: 25px;
+    filter: drop-shadow(0 0 30px rgba(255, 204, 0, 0.5));
+    animation: logoFloat 4s infinite ease-in-out;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.hero-title {
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    letter-spacing: 12px;
+    margin: 0;
+    background: linear-gradient(to bottom, #fff 50%, var(--neon-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+}
+
+.hero-sub {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 8px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+/* The Glitch Button Redesign */
+.btn-premium {
+    background: #ffcc00;
+    color: #000;
+    padding: 18px 45px;
+    border: none;
+    border-radius: 100px;
+    font-family: 'Syncopate';
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: 0.4s;
+    box-shadow: 0 10px 30px rgba(255, 204, 0, 0.3);
+}
+
+.btn-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(255, 204, 0, 0.5);
+    letter-spacing: 5px;
+}
+/* --- UI UPGRADE: SAVAGELY CLASSY --- */
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+.step-pill {
+    font-size: 8px;
+    font-family: 'Syncopate';
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    color: #444;
+    border: 1px solid transparent;
+    transition: all 0.4s ease;
+}
+
+.step-pill.active {
+    color: #ffcc00;
+    border-color: #ffcc00;
+    background: rgba(255, 204, 0, 0.05);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
+}
+
+/* Updated Button Styles */
+.gl-submit-btn {
+    background: #222 !important; /* Default Gray */
+    color: #555 !important;
+    cursor: not-allowed;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #333;
+}
+
+.gl-submit-btn.ready-glow {
+    background: linear-gradient(90deg, #0052da, #0084FF) !important;
+    color: white !important;
+    cursor: pointer !important;
+    box-shadow: 0 10px 30px rgba(0, 82, 218, 0.5);
+    transform: translateY(-2px);
+    border: none;
+}
+
+/* Shake animation for incomplete fields */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* --- UI UPGRADE: SAVAGELY CLASSY --- */
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+.step-pill {
+    font-size: 8px;
+    font-family: 'Syncopate';
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    color: #444;
+    border: 1px solid transparent;
+    transition: all 0.4s ease;
+}
+
+.step-pill.active {
+    color: #ffcc00;
+    border-color: #ffcc00;
+    background: rgba(255, 204, 0, 0.05);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
+}
+
+/* Updated Button Styles */
+.gl-submit-btn {
+    background: #222 !important; /* Default Gray */
+    color: #555 !important;
+    cursor: not-allowed;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #333;
+}
+
+.gl-submit-btn.ready-glow {
+    background: linear-gradient(90deg, #0052da, #0084FF) !important;
+    color: white !important;
+    cursor: pointer !important;
+    box-shadow: 0 10px 30px rgba(0, 82, 218, 0.5);
+    transform: translateY(-2px);
+    border: none;
+}
+
+/* Shake animation for incomplete fields */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+.terminal-exit-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: #444;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100;
+    transition: 0.3s;
+}
+
+.terminal-exit-btn:hover {
+    color: #ffcc00;
+    text-shadow: 0 0 10px #ffcc00;
+    transform: scale(1.2);
+}
+
 
 
     </style>
@@ -490,41 +873,46 @@
 </div>
 
 <canvas id="scan-canvas" style="display:none;"></canvas>
-
-   <div id="payment-modal" class="modal">
+<div id="payment-modal" class="modal">
     <div class="premium-checkout-card">
         <div class="card-glow"></div> 
+        
         <div class="checkout-content">
-            <div class="checkout-header" style="text-align:center; margin-bottom:15px;">
-                <h2 style="font-family:'Syncopate'; color:#ffcc00; font-size:14px; letter-spacing:3px;">SYSTEM CHECKOUT</h2>
-                <div style="height:1px; background:linear-gradient(90deg, transparent, #ffcc00, transparent); margin-top:5px;"></div>
+            <button type="button" class="terminal-exit-btn" onclick="closeModal('payment-modal')">
+                &times;
+            </button>
+
+            <div class="steps-container">
+                <span class="step-pill active" id="step1">1. INFO</span>
+                <span class="step-pill" id="step2">2. METHOD</span>
+                <span id="step3" class="step-pill">3. PROOF</span>
             </div>
 
             <div class="gl-input-box">
                 <label class="classy-label">CLIENT NAME</label>
-                <input type="text" id="cust-name" placeholder="ENTER FULL NAME" required>
+                <input type="text" id="cust-name" placeholder="ENTER FULL NAME" oninput="validateCheckout()" required>
             </div>
 
             <div class="grid-inputs" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
                 <div class="gl-input-box">
                     <label class="classy-label">DESTINATION</label>
-                   <select id="destination" class="gl-input">
-    <option value="pickup">PICKUP</option>
-    <option value="jhs">JHS DELIVERY</option>
-    <option value="shs">SHS DELIVERY</option>
-</select>
+                    <select id="destination" onchange="validateCheckout()">
+                        <option value="pickup">PICKUP</option>
+                        <option value="jhs">JHS DELIVERY</option>
+                        <option value="shs">SHS DELIVERY</option>
+                    </select>
                 </div>
                 <div class="gl-input-box">
                     <label class="classy-label">PAYMENT</label>
-                 <select id="payment-method" onchange="togglePaymentUI()">
-    <option value="gcash">GCASH</option>
-    <option value="cash">CASH</option>
-</select>
+                    <select id="payment-method" onchange="togglePaymentUI(); validateCheckout();">
+                        <option value="gcash">GCASH</option>
+                        <option value="cash">CASH</option>
+                    </select>
                 </div>
             </div>
 
             <div id="payment-details-area">
-                <img src="img/Gcash Payment_QR.jpg" style="width: 110px; margin: 15px auto; display: block; border-radius: 10px; border: 1px solid #333;">
+                <img src="img/Gcash Payment_QR.jpg" style="width: 100px; margin: 15px auto; display: block; border-radius: 10px; border: 1px solid #333;">
                 
                 <div class="glass-upload-zone-compact" onclick="document.getElementById('proof-input').click()">
                     <div class="shimmer-line"></div>
@@ -535,9 +923,10 @@
                             <p style="font-size:7px; color:#777; margin:0;">REQUIRED FOR GCASH</p>
                         </div>
                     </div>
-                    <input type="file" id="proof-input" style="display:none;" onchange="checkProof()">
                 </div>
             </div>
+
+            <input type="file" id="proof-input" style="display:none;" onchange="checkProof(); validateCheckout();">
 
             <div class="price-breakdown" style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; margin-top:15px; border:1px solid #222;">
                 <div style="display:flex; justify-content:space-between; font-size:10px; color:#888;">
@@ -554,11 +943,11 @@
                 </div>
             </div>
 
-            <button id="submit-btn" class="gl-submit-btn" disabled onclick="sendToTelegram()">SEND ORDER ➔</button>
-            <p onclick="closeModal('payment-modal')" style="text-align:center; font-size:9px; color:#444; margin-top:10px; cursor:pointer; letter-spacing:2px;">TERMINATE SESSION</p>
+            <button id="submit-btn" class="gl-submit-btn" disabled onclick="sendToTelegram()">COMPLETE ALL STEPS</button>
         </div>
     </div>
 </div>
+
 <style>
     /* Styling para sa Exit Button (ALWAYS VISIBLE PILL SHAPE) */
     .glow-exit-btn {
@@ -1398,54 +1787,51 @@ function togglePaymentUI() {
 }
 
 function validateCheckout() {
-    const custName = document.getElementById('cust-name').value.trim();
+    const name = document.getElementById('cust-name').value.trim();
     const method = document.getElementById('payment-method').value;
-    const proofInput = document.getElementById('proof-input');
-    const sendBtn = document.getElementById('submit-btn');
+    const proof = document.getElementById('proof-input').files.length;
+    const btn = document.getElementById('submit-btn');
 
-    let isValid = false;
+    // UI Pills Logic
+    if (name.length > 2) document.getElementById('step1').classList.add('active');
+    else document.getElementById('step1').classList.remove('active');
 
+    if (method) document.getElementById('step2').classList.add('active');
+
+    // FINAL VALIDATION
+    let isReady = false;
     if (method === 'gcash') {
-        // Dapat may pangalan AT may naka-attach na file
-        if (custName.length > 0 && proofInput.files.length > 0) {
-            isValid = true;
+        if (name.length > 2 && proof > 0) {
+            isReady = true;
+            document.getElementById('step3').classList.add('active');
+        } else {
+            document.getElementById('step3').classList.remove('active');
         }
     } else {
-        // Kung Cash, pangalan lang sapat na
-        if (custName.length > 0) {
-            isValid = true;
-        }
+        // Cash payment only needs name
+        if (name.length > 2) isReady = true;
     }
 
-    // Update Button Style & State
-    if (isValid) {
-        sendBtn.disabled = false;
-        sendBtn.style.background = "#0084FF"; // Blue color
-        sendBtn.style.cursor = "pointer";
-        sendBtn.style.opacity = "1";
+    // Button Morphing
+    if (isReady) {
+        btn.disabled = false;
+        btn.classList.add('ready-glow');
+        btn.innerHTML = "SEND ORDER NOW ➜";
     } else {
-        sendBtn.disabled = true;
-        sendBtn.style.background = "#333"; // Back to dark/gray
-        sendBtn.style.opacity = "0.5";
-        sendBtn.style.cursor = "not-allowed";
+        btn.disabled = true;
+        btn.classList.remove('ready-glow');
+        btn.innerHTML = "COMPLETE ALL STEPS";
     }
 }
 
-// Bantayan ang pag-type ng pangalan
-document.getElementById('cust-name').addEventListener('input', validateCheckout);
-
-// Bantayan kung nag-iba ang Payment Method (Cash/GCash)
-document.getElementById('payment-method').addEventListener('change', () => {
-    validateCheckout();
-    
-    // Auto-focus sa upload area kung GCash para madaling makita ng customer
-    if(document.getElementById('payment-method').value === 'gcash') {
-        console.log("GCash selected - waiting for receipt...");
-    }
-});
-
-// Bantayan kung may na-upload na file
-document.getElementById('proof-input').addEventListener('change', validateCheckout);
+// Para sigurado, tawagin ito pagkabukas ng modal
+function showConfirm() {
+    document.getElementById('payment-modal').style.display = 'flex';
+    // Update displays
+    document.getElementById('subtotal-display').innerText = document.getElementById('grand-total').innerText;
+    calculateFinalTotal();
+    validateCheckout(); // Re-validate
+}
 
 
 </script>
