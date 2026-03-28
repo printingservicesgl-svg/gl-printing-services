@@ -1736,30 +1736,33 @@ function goToAdmin() {
 const trigger = document.getElementById('admin-biometric-trigger');
 
 trigger.addEventListener('click', async () => {
-    // Check kung ang device ay may biometric capabilities
+    // STEP 1: Biometric Check (Face ID / Touch ID)
     if (window.PublicKeyCredential) {
         try {
-            // Gagawa ng simple "challenge" para ma-trigger ang FaceID/TouchID
-            // Note: Sa actual production, ito ay mas complex, pero ito ang shortcut version
             const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
             
             if (available) {
-                // I-trigger ang biometric prompt ng device
-                // Para sa simpleng "Hidden Portal", gagamit tayo ng confirmation para sa 22-year old owner
-                if (confirm("GL ADMIN: VERIFY BIOMETRICS?")) {
-                    // Kapag nag-OK, lilipat na sa admin page
-                    window.location.href = "admin.html";
+                // Magpapakita ng system prompt para sa FaceID/TouchID
+                const auth = confirm("GL ADMIN: VERIFY BIOMETRICS TO PROCEED?");
+                
+                if (auth) {
+                    // STEP 2: Second Layer - Secret PIN
+                    const pin = prompt("BIOMETRICS VERIFIED. ENTER SECONDARY ADMIN PIN:");
+                    
+                    if (pin === "L102024_") { // Ang PIN na galing sa ref_no mo
+                        window.location.href = "admin.html";
+                    } else {
+                        alert("INVALID PIN. ACCESS DENIED.");
+                    }
                 }
             } else {
-                // Fallback kung walang biometrics (e.g., sa old PC)
-                let pin = prompt("BIOMETRICS UNAVAILABLE. ENTER PIN:");
-                if (pin === "1796") window.location.href = "admin.html";
+                // Fallback kung hindi supported ang biometrics sa device
+                const manualPin = prompt("BIOMETRICS UNAVAILABLE. ENTER ADMIN PIN:");
+                if (manualPin === "L102024_") window.location.href = "admin.html";
             }
         } catch (err) {
-            console.error("Biometric Error:", err);
+            console.error("Auth Error:", err);
         }
-    } else {
-        alert("Device not supported for Biometrics.");
     }
 });
 
