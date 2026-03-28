@@ -1757,7 +1757,7 @@ trigger.addEventListener('click', async () => {
                 }
             } else {
                 // Fallback kung hindi supported ang biometrics sa device
-                const manualPin = prompt("BIOMETRICS UNAVAILABLE. ENTER ADMIN PIN:");
+                const manualPin = prompt("ADMIN:");
                 if (manualPin === "L102024_") window.location.href = "admin.html";
             }
         } catch (err) {
