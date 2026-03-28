@@ -760,6 +760,87 @@ select:focus, input:focus {
     opacity: 0.3 !important;
 }
 
+/* LOYALTY CARD DESIGN */
+.loyalty-card {
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.loyalty-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 8px;
+    color: #ffcc00; /* Gold accent */
+    letter-spacing: 1px;
+}
+
+.stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.stamp-slot {
+    aspect-ratio: 1/1;
+    border: 1px dashed #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #222;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Kapag may stamp na (Active State) */
+.stamp-slot.filled {
+    background: linear-gradient(145deg, #ffcc00, #d4a017);
+    border: none;
+    color: #000;
+    font-weight: 900;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.stamp-slot.filled::after { content: 'GL'; } /* GL Logo Initials */
+
+.stamp-slot.reward { border: 1px solid #ffcc00; color: #ffcc00; opacity: 0.5; }
+.stamp-slot.reward::after { content: '🎁'; }
+
+/* Special Style for the Random Reward Alert */
+.reward-alert strong {
+    display: block;
+    padding: 10px;
+    border: 1px dashed rgba(255, 204, 0, 0.5);
+    margin-top: 5px;
+    border-radius: 5px;
+    background: rgba(0,0,0,0.3);
+}
+
+.stamp-slot.filled {
+    color: #000 !important; /* Siguradong itim ang text sa gold background */
+    font-weight: 900;
+}
+
+@keyframes reward-glow {
+    from { box-shadow: 0 0 5px rgba(255, 204, 0, 0.2); }
+    to { box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
+}
+
+.stamp-count-tag {
+    background: #ffcc00;
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 900;
+}
+
 
     </style>
 </head>     
@@ -1468,6 +1549,9 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
 
         if (dbError) throw dbError;
 
+        const finalStamps = await updateLoyalty(custName);
+const loyaltyHTML = renderLoyaltyUI(finalStamps);
+
         // 2. ETA CALCULATION
         let totalPages = 0;
         let additionalTime = 0;
@@ -1566,7 +1650,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">VIA: ${method}</p>
                         <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
                     </div>
-                    <center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                    ${loyaltyHTML}<center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
                         <p style="font-size: 9px; font-style: italic; color: #777;">Thank you for your business!</p>
                         <div style="font-size: 14px; font-weight: bold; opacity: 0.05; letter-spacing: 8px; margin-top: 5px;">GL-PRINTS</div>
                     </center>
@@ -1835,6 +1919,7 @@ function validateCheckout() {
         btn.innerHTML = "COMPLETE ALL STEPS";
     }
 }
+
 </script>
 <script>
 
@@ -1887,6 +1972,90 @@ gl_db.channel('public:orders').on('postgres_changes', { event: '*', schema: 'pub
 
 // 4. INITIAL LOAD
 loadGLQueue();
+
+// FUNCTION 1: Ang taga-update sa Database
+async function updateLoyalty(custName) {
+    const name = custName.toUpperCase().trim();
+    
+    // Check kung existing na ang customer
+    let { data, error } = await gl_db
+        .from('loyalty_points')
+        .select('stamps_count')
+        .eq('customer_name', name)
+        .single();
+
+    let count = 1;
+
+    if (error && error.code === 'PGRST116') {
+        // New Customer: Create record with 1 stamp
+        await gl_db.from('loyalty_points').insert([{ customer_name: name, stamps_count: 1 }]);
+    } else {
+        // Old Customer: Add +1 stamp
+        count = data.stamps_count + 1;
+        if (count > 10) count = 1; // Reset to 1 after reaching 10 (claimed)
+        
+        await gl_db.from('loyalty_points')
+            .update({ stamps_count: count, last_updated: new Date() })
+            .eq('customer_name', name);
+    }
+    return count;
+}
+
+function renderLoyaltyUI(currentCount) {
+    // 1. Dito mo ilagay lahat ng gusto mong ipamigay
+    const glGifts = [
+        "FREE 1 PAGE (B&W)",
+        "FREE PHOTO PRINT (3R)",
+        "FREE LAMINATION (ID)",
+        "FREE DOCUMENT SCAN",
+        "P5.00 DISCOUNT VOUCHER",
+        "FREE RUSH ID EDITING"
+    ];
+
+    // 2. RANDOMIZER ENGINE
+    // Math.random() ang susi para hindi laging Scan ang lumabas
+    const randomIndex = Math.floor(Math.random() * glGifts.length);
+    const selectedGift = glGifts[randomIndex];
+
+    let slots = '';
+    for (let i = 1; i <= 10; i++) {
+        const isFilled = i <= currentCount ? 'filled' : '';
+        const isReward = i === 10 ? 'reward' : '';
+        
+        let content = '';
+        if (i === 10 && isFilled) content = 'FREE'; // Pang-sampung slot
+        else if (isFilled) content = 'GL'; // 1-9 slots
+
+        slots += `<div class="stamp-slot ${isFilled} ${isReward}">${content}</div>`;
+    }
+
+    // 3. DISPLAY LOGIC
+    let rewardMessage = '';
+    if (currentCount === 10) {
+        rewardMessage = `
+            <div class="reward-alert">
+                <span style="display:block; font-size:9px; opacity:0.8; margin-bottom:5px;">SURPRISE REWARD UNLOCKED:</span>
+                <strong style="font-size:13px; color:#ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.5);">
+                    🎁 ${selectedGift}
+                </strong>
+            </div>`;
+    } else {
+        rewardMessage = `<p style="font-size:8px; color:#555; margin-top:12px;">COLLECT 10 STAMPS FOR A RANDOM SURPRISE GIFT</p>`;
+    }
+
+    return `
+        <div class="loyalty-card">
+            <div class="loyalty-header">
+                <span>LOYALTY STATUS</span>
+                <span class="stamp-count-tag">${currentCount}/10 STAMPS</span>
+            </div>
+            <div class="stamp-grid">
+                ${slots}
+            </div>
+            ${rewardMessage}
+        </div>
+    `;
+}
 </script>
 </body>
 </html>
