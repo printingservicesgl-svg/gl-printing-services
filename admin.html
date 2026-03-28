@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL | ADMIN TERMINAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --neon-gold: #ffcc00;
+            --bg-deep: #050505;
+        }
+        body {
+            background: var(--bg-deep);
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .admin-box {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            padding: 40px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            text-align: center;
+        }
+        h1 { font-family: 'Syncopate'; font-size: 14px; color: var(--neon-gold); letter-spacing: 5px; }
+        .input-group { text-align: left; margin-top: 25px; }
+        label { font-size: 10px; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+        input, select {
+            width: 100%; padding: 15px; margin-top: 8px; margin-bottom: 20px;
+            background: #000; border: 1px solid #222; border-radius: 12px;
+            color: white; outline: none; transition: 0.3s; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--neon-gold); box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
+        .btn-update {
+            background: var(--neon-gold); color: black; border: none; width: 100%;
+            padding: 18px; border-radius: 15px; font-family: 'Syncopate'; font-size: 10px;
+            font-weight: 800; cursor: pointer; transition: 0.4s;
+        }
+        .btn-update:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 204, 0, 0.3); }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h1>ADMIN COMMAND</h1>
+    <p style="font-size: 10px; opacity: 0.4;">GL PRINTING SERVICES v5.0</p>
+    
+    <div class="input-group">
+        <label>Ref Number</label>
+        <input type="text" id="ref-id" placeholder="GL-XXXX">
+        
+        <label>Update Status</label>
+        <select id="status-val">
+            <option value="PENDING">PENDING</option>
+            <option value="PRINTING">PRINTING</option>
+            <option value="READY">READY FOR PICKUP</option>
+            <option value="COMPLETED">COMPLETED</option>
+        </select>
+    </div>
+
+    <button class="btn-update" onclick="updateOrder()">SYNC TO DATABASE</button>
+</div>
+
+<script>
+// INITIALIZATION
+const supabaseUrl = "https://ndvhacjjavlagpmlmmqn.supabase.co"; 
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdmhhY2pqYXZsYWdwbWxtbXFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyODg4MTksImV4cCI6MjA4OTg2NDgxOX0.VRCTfEBPoZ2cavnJtVxlI0x52E6XbpS464Ll3hK-UlQ";
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+async function updateOrder() {
+    const ref = document.getElementById('ref-id').value.trim();
+    const stat = document.getElementById('status-val').value;
+
+    if(!ref) return alert("Paki-lagay ang Reference Number.");
+
+    // DAPAT '.from('orders')' dahil ito ang table name mo sa screenshot
+    const { data, error } = await _supabase
+        .from('orders') 
+        .update({ status: stat }) 
+        .eq('ref_no', ref)
+        .select(); 
+
+    if (error) {
+        alert("Database Error: " + error.message);
+    } else if (data && data.length === 0) {
+        alert("Mali ang Ref Number! Walang '" + ref + "' sa database.");
+    } else {
+        alert("SUCCESS! Order " + ref + " is now " + stat);
+        document.getElementById('ref-id').value = ""; // Clear input
+    }
+}
+</script>
+</body>
+</html>

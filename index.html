@@ -842,6 +842,7 @@ select:focus, input:focus {
 }
 
 
+
     </style>
 </head>     
 
@@ -1719,6 +1720,15 @@ function downloadReceipt(refNo) {
     };
 
     synth.speak(firstSpeak);
+}
+
+let adminSecret = 0;
+function goToAdmin() {
+    adminSecret++;
+    if(adminSecret === 5) { // 5 clicks para mag-redirect
+        window.location.href = 'admin.html';
+    }
+    setTimeout(() => { adminSecret = 0; }, 2000);
 }
 </script>
 <script>
