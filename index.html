@@ -835,6 +835,23 @@ select:focus, input:focus {
     border-radius: 4px;
     font-weight: 900;
 }
+#print-preview-container {
+    width: 100%;
+    height: 350px; /* Fixed height para hindi gumalaw ang layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#print-preview-img {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    object-fit: cover;
+    border: 1px solid #444;
+}
 
 
 
@@ -907,8 +924,8 @@ select:focus, input:focus {
 
             <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222;">
     <div style="display:flex; align-items:center; gap:10px;">
-        <button onclick="closePreview()" style="background:#ff4444; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer;">&times;</button>
-        <span id="detected-type-label" style="font-family:'Syncopate'; font-size:9px; color:#ffcc00;">FULL PHOTO</span>
+        <button onclick="closePreview()" style="background:#22fa75; color:#22fa75; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer;">&times;</button>
+        <span id="detected-type-label" style="font-family:'Syncopate'; font-size:9px; color:#ffcc00;">LIVE</span>
     </div>
 
     <div style="display:flex; align-items:center; gap:8px; background: #000; padding: 5px 12px; border-radius: 20px; border: 1px solid #333;">
@@ -1918,10 +1935,33 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
     function updatePrice() {
         // 1. Kuhanin ang values mula sa Terminal Inputs
         const paperSize = document.getElementById('paper-size').value;
+        const canvas = document.getElementById('scan-canvas');
         const printType = document.getElementById('print-type').value;
         const pages = parseInt(document.getElementById('pages').value) || 0;
         const copies = parseInt(document.getElementById('copies').value) || 0;
         const destination = document.getElementById('destination').value;
+
+        // --- ⚡ VISUAL SCALING LOGIC ⚡ ---
+    if (canvas) {
+        // Smooth transition para classy ang galaw
+        canvas.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+        
+        if (paperSize === 'short' || paperSize === 'Short') {
+            // Short: 8.5 x 11 (Medyo Mataba/Square-ish)
+            canvas.style.width = "220px"; 
+            canvas.style.height = "280px";
+        } 
+        else if (paperSize === 'a4' || paperSize === 'A4') {
+            // A4: 8.27 x 11.69 (Standard Slim)
+            canvas.style.width = "205px";
+            canvas.style.height = "290px";
+        } 
+        else if (paperSize === 'long' || paperSize === 'Long') {
+            // Long: 8.5 x 13 (Pinakamahaba/Manipis tignan)
+            canvas.style.width = "200px";
+            canvas.style.height = "320px";
+        }
+    }
 
         // 2. Calculate Sub-print (Terminal Price)
         // Kinukuha ang base price mula sa PRICING object mo sa code
