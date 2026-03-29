@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL AI PHOTO STUDIO | Muntinlupa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --neon-gold: #ffcc00; --deep-blue: #0052da; --glass: rgba(255, 255, 255, 0.03); }
+        body { background-color: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        
+        .studio-card {
+            width: 100%; max-width: 500px; background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-family: 'Syncopate'; font-size: 14px; color: var(--neon-gold); text-align: center; letter-spacing: 3px; margin-bottom: 30px; }
+
+        .upload-zone {
+            border: 2px dashed #333; border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--neon-gold); background: rgba(255, 204, 0, 0.02); }
+
+        select, button {
+            width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: 'Space Grotesk'; font-size: 14px;
+        }
+
+        .btn-generate {
+            background: var(--neon-gold); color: #000; font-family: 'Syncopate'; font-weight: bold; font-size: 10px; border: none; cursor: pointer; margin-top: 25px; transition: 0.3s;
+        }
+        .btn-generate:disabled { background: #444; cursor: not-allowed; }
+
+        canvas { width: 100%; border-radius: 10px; margin-top: 20px; border: 1px solid #222; display: none; }
+
+        .status-badge { font-family: 'Syncopate'; font-size: 8px; color: var(--neon-gold); text-align: center; display: block; margin-top: 10px; }
+        
+        .payment-box { display: none; margin-top: 25px; border-top: 1px solid #222; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="studio-card">
+    <h1>GL AI STUDIO v1.0</h1>
+
+    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <span id="upload-text" style="color: #666; font-size: 12px;">TAP TO UPLOAD SELFIE</span>
+        <input type="file" id="file-input" style="display: none;" accept="image/*" onchange="handleUpload(this)">
+    </div>
+
+    <div id="controls" style="display: none;">
+        <select id="size-select">
+            <option value="1x1">1x1 ID Photo (₱50.00)</option>
+            <option value="2x2">2x2 ID Photo (₱60.00)</option>
+            <option value="passport">Passport Size (₱75.00)</option>
+        </select>
+
+        <select id="bg-select">
+            <option value="white">White Background</option>
+            <option value="blue">Blue Background</option>
+            <option value="red">Red Background</option>
+        </select>
+
+        <button class="btn-generate" id="gen-btn" onclick="processAI()">GENERATE PROTECTED PREVIEW</button>
+    </div>
+
+    <canvas id="studio-canvas"></canvas>
+    <span id="scan-status" class="status-badge" style="display: none;">AI SCAN COMPLETE ✓</span>
+
+    <div class="payment-box" id="payment-area">
+        <p style="font-size: 11px; color: #888; text-align: center;">PROTECTED COPY. Pay via GCash to receive the HD Non-Watermarked file.</p>
+        <button onclick="window.location.href='https://m.me/YOUR_MESSENGER_LINK'" style="background: var(--deep-blue); border: none;">MESSAGE GL PRINTS TO PAY</button>
+    </div>
+</div>
+
+<script>
+    const API_KEY = "jLB5yNzuAru3Mq3LQHiZnd66"; //
+    let uploadedFile = null;
+
+    function handleUpload(input) {
+        if (input.files && input.files[0]) {
+            uploadedFile = input.files[0];
+            document.getElementById('upload-text').innerText = "PHOTO LOADED: " + uploadedFile.name;
+            document.getElementById('upload-text').style.color = "#ffcc00";
+            document.getElementById('controls').style.display = "block";
+        }
+    }
+
+    async function processAI() {
+        const btn = document.getElementById('gen-btn');
+        const bgColor = document.getElementById('bg-select').value;
+        
+        btn.innerText = "AI IS EDITING...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('image_file', uploadedFile);
+        formData.append('size', 'auto');
+        formData.append('bg_color', bgColor);
+
+        try {
+            const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                method: 'POST',
+                headers: { 'X-API-Key': API_KEY },
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                drawPreview(url);
+            } else {
+                alert("AI Credit Error. Please contact Admin.");
+            }
+        } catch (err) {
+            alert("Connection Lost.");
+        } finally {
+            btn.innerText = "GENERATE PROTECTED PREVIEW";
+            btn.disabled = false;
+        }
+    }
+
+    function drawPreview(url) {
+        const canvas = document.getElementById('studio-canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+
+        img.onload = function() {
+            canvas.style.display = "block";
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            // GL PRINTS SECURITY WATERMARK
+            ctx.save();
+            ctx.fillStyle = "rgba(255, 204, 0, 0.4)";
+            ctx.font = `bold ${canvas.width / 12}px Syncopate`;
+            ctx.textAlign = "center";
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-45 * Math.PI / 180);
+            
+            for (let i = -canvas.height; i < canvas.height; i += (canvas.height / 4)) {
+                ctx.fillText("GL PRINTS - UNPAID", 0, i);
+            }
+            ctx.restore();
+
+            document.getElementById('scan-status').style.display = "block";
+            document.getElementById('payment-area').style.display = "block";
+            canvas.scrollIntoView({ behavior: 'smooth' });
+        };
+        img.src = url;
+    }
+</script>
+
+</body>
+</html>
