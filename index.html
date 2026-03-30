@@ -852,6 +852,124 @@ select:focus, input:focus {
     object-fit: cover;
     border: 1px solid #444;
 }
+/* Tech Solutions Specific Card Glow */
+.tech-card-upgrade {
+    border: 1px solid rgba(0, 82, 218, 0.3) !important;
+    background: linear-gradient(145deg, rgba(10, 10, 10, 0.9), rgba(0, 82, 218, 0.05)) !important;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tech-card-upgrade:hover {
+    box-shadow: 0 0 30px rgba(0, 82, 218, 0.4) !important;
+    border-color: #0052da !important;
+}
+
+/* Modal Glass Effect */
+.archive-modal-content {
+    background: rgba(5, 5, 5, 0.95) !important;
+    backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 204, 0, 0.2) !important;
+    box-shadow: 0 0 100px rgba(0,0,0,1), inset 0 0 20px rgba(255, 204, 0, 0.05);
+}
+
+/* Before/After Image Styling */
+.repair-comparison {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #222;
+    transition: 0.3s;
+}
+
+.repair-comparison:hover {
+    border-color: #ffcc00;
+    transform: scale(1.02);
+}
+
+.tag-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    font-family: 'Syncopate';
+    font-size: 7px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.tag-before { background: rgba(0,0,0,0.7); color: #666; }
+.tag-after { background: rgba(255, 204, 0, 0.8); color: #000; font-weight: bold; }
+/* UNIVERSAL CARD STYLING - SAVAGELY CLASSY */
+.tilt-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(15px) !important;
+    padding: 45px 30px !important;
+    border-radius: 30px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    overflow: hidden;
+}
+
+/* Glowing Border Effect on Hover */
+.tilt-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 30px;
+    padding: 1.5px; 
+    background: linear-gradient(135deg, transparent, rgba(255, 204, 0, 0.3), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.tilt-card:hover {
+    transform: translateY(-12px) scale(1.03) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.tilt-card:hover::before {
+    opacity: 1;
+}
+
+/* Specific Glow Colors for Each Service */
+.card-event { border-color: rgba(255, 0, 150, 0.2) !important; }
+.card-event:hover { box-shadow: 0 15px 45px rgba(255, 0, 150, 0.15) !important; }
+
+.card-design { border-color: rgba(0, 255, 150, 0.2) !important; }
+.card-design:hover { box-shadow: 0 15px 45px rgba(0, 255, 150, 0.15) !important; }
+
+.card-tech { border-color: rgba(0, 132, 255, 0.2) !important; }
+.card-tech:hover { box-shadow: 0 15px 45px rgba(0, 132, 255, 0.15) !important; }
+
+/* Icon & Text Styling */
+.card-icon { font-size: 35px; margin-bottom: 15px; display: block; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+.tilt-card h3 { 
+    font-family: 'Syncopate'; 
+    letter-spacing: 4px; 
+    font-size: 0.9rem; 
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+.tilt-card p { font-size: 0.7rem; opacity: 0.6; line-height: 1.6; letter-spacing: 1px; }
+
+/* Archive Trigger Text */
+.view-archive-btn {
+    margin-top: 20px;
+    font-family: 'Syncopate';
+    font-size: 8px;
+    letter-spacing: 2px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.4s;
+}
+.tilt-card:hover .view-archive-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 
 
@@ -886,31 +1004,46 @@ select:focus, input:focus {
     <h2>CORE SERVICES</h2>
     <p>Premium Digital & Print Solutions</p>
 </div>
-    <section id="services" class="container">
-        <div class="tilt-card"><h3>EVENT & MEDIA</h3><p>Premium bundles for Birthdays, Christenings, and Weddings. High-gloss finish.</p></div>
-        <div class="tilt-card"><h3>DIGITAL DESIGN</h3><p>Professional layouts for business branding and social media projects.</p></div>
-        <div class="tilt-card"><h3>TECH SOLUTIONS</h3><p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p></div>
-        <div class="tilt-card"><h3>S4</h3><p>Please wait for update.</p></div>
-        <div class="tilt-card"><h3>S5</h3><p>Thank you for patiently waiting.</p></div>
-        <div class="tilt-card"><h3>S6</h3><p>Still updating.</p></div>
-    </section>
-    </section>
-
-    <div class="section-header" id="terminal">
-    <h2>GL PRINTS LIVE QUEUE </h2>
-    <p>Real-Time Prints Updates</p>
-</div>
-
-<div id="gl-queue-container" style="max-width: 450px; margin: 20px auto; font-family: 'Segoe UI', sans-serif; background: #fff; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); overflow: hidden; border: 1px solid #eee;">
-    <div style="background: #1a1a1a; color: #fff; padding: 18px; text-align: center; border-bottom: 3px solid #f39c12;">
-        <h3 style="margin: 0; font-size: 18px; letter-spacing: 1.5px;">GL PRINTS LIVE QUEUE</h3>
-        <small style="opacity: 0.9; font-size: 11px;">REAL-TIME UPDATES ENABLED</small>
+      <section id="services" class="container">
+    <div class="tilt-card card-event" onclick="openEventArchive()">
+        <span class="card-icon">📸</span>
+        <h3 style="color: #ff0096;">EVENT & MEDIA</h3>
+        <p>Premium bundles for Birthdays, Christenings, and Weddings. High-gloss finish.</p>
+        <div class="view-archive-btn" style="color: #ff0096;">VIEW PORTFOLIO →</div>
     </div>
-    <div id="queue-list" style="min-height: 120px; max-height: 450px; overflow-y: auto; background: #fafafa;">
-        <p style="text-align: center; padding: 30px; color: #999;">Connecting to GL Database...</p>
-    </div>
-</div>
 
+    <div class="tilt-card card-design" onclick="openDesignArchive()">
+        <span class="card-icon">🎨</span>
+        <h3 style="color: #00ff96;">DIGITAL DESIGN</h3>
+        <p>Professional layouts for business branding and social media projects.</p>
+        <div class="view-archive-btn" style="color: #00ff96;">VIEW WORKS →</div>
+    </div>
+
+    <div class="tilt-card card-tech" onclick="openTechArchive()">
+        <span class="card-icon">🛠️</span>
+        <h3 style="color: #0084ff;">TECH SOLUTIONS</h3>
+        <p>Mobile/Laptop diagnostics, software troubleshooting, and hardware repair.</p>
+        <div class="view-archive-btn" style="color: #0084ff;">VIEW REPAIRS →</div>
+    </div>
+
+    <div class="tilt-card" style="opacity: 0.5;">
+        <span class="card-icon">⏳</span>
+        <h3>S4 SYSTEM</h3>
+        <p>Please wait for system update. Coming soon.</p>
+    </div>
+
+    <div class="tilt-card" style="opacity: 0.5;">
+        <span class="card-icon">⏳</span>
+        <h3>S5 SYSTEM</h3>
+        <p>Advanced modules loading. Thank you for waiting.</p>
+    </div>
+
+    <div class="tilt-card" style="opacity: 0.5;">
+        <span class="card-icon">⏳</span>
+        <h3>S6 SYSTEM</h3>
+        <p>System optimization in progress. Stay tuned.</p>
+    </div>
+</section>
     <div class="section-header" id="terminal">
     <h2>AI TERMINAL</h2>
     <p>Smart Auto-Pricing Engine v2.0</p>
@@ -1935,33 +2068,10 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
     function updatePrice() {
         // 1. Kuhanin ang values mula sa Terminal Inputs
         const paperSize = document.getElementById('paper-size').value;
-        const canvas = document.getElementById('scan-canvas');
         const printType = document.getElementById('print-type').value;
         const pages = parseInt(document.getElementById('pages').value) || 0;
         const copies = parseInt(document.getElementById('copies').value) || 0;
         const destination = document.getElementById('destination').value;
-
-        // --- ⚡ VISUAL SCALING LOGIC ⚡ ---
-    if (canvas) {
-        // Smooth transition para classy ang galaw
-        canvas.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-        
-        if (paperSize === 'short' || paperSize === 'Short') {
-            // Short: 8.5 x 11 (Medyo Mataba/Square-ish)
-            canvas.style.width = "220px"; 
-            canvas.style.height = "280px";
-        } 
-        else if (paperSize === 'a4' || paperSize === 'A4') {
-            // A4: 8.27 x 11.69 (Standard Slim)
-            canvas.style.width = "205px";
-            canvas.style.height = "290px";
-        } 
-        else if (paperSize === 'long' || paperSize === 'Long') {
-            // Long: 8.5 x 13 (Pinakamahaba/Manipis tignan)
-            canvas.style.width = "200px";
-            canvas.style.height = "320px";
-        }
-    }
 
         // 2. Calculate Sub-print (Terminal Price)
         // Kinukuha ang base price mula sa PRICING object mo sa code
@@ -2070,6 +2180,30 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
             btn.innerHTML = "COMPLETE ALL STEPS";
         }
     }
+    // FUNCTION PARA MAG-OPEN NG ARCHIVE
+function openTechArchive() {
+    document.getElementById('tech-archive-modal').style.display = 'flex';
+}
+
+// FUNCTION PARA MAG-CLOSE
+function closeTechArchive() {
+    document.getElementById('tech-archive-modal').style.display = 'none';
+}
+
+// FUNCTION PARA SA SEARCH FILTER
+function filterRepairs() {
+    let input = document.getElementById('phone-search').value.toUpperCase();
+    let items = document.getElementsByClassName('repair-item');
+
+    for (let i = 0; i < items.length; i++) {
+        let model = items[i].getAttribute('data-model').toUpperCase();
+        if (model.includes(input)) {
+            items[i].style.display = "block";
+        } else {
+            items[i].style.display = "none";
+        }
+    }
+}
 
 
     </script>
@@ -2209,5 +2343,64 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
         `;
     }
     </script>
+    <div id="tech-archive-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; align-items:center; justify-content:center; padding:20px;">
+    <div class="modal-content" style="max-width: 800px; width: 100%; background: #0a0a0a; border: 1px solid #ffcc00; position: relative; border-radius: 25px; padding: 30px;">
+        <button onclick="closeTechArchive()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: #ffcc00; font-size: 30px; cursor: pointer;">&times;</button>
+        
+        <h2 style="font-family:'Syncopate'; color:#ffcc00; font-size: 1.2rem; margin-bottom: 5px;">REPAIR ARCHIVE</h2>
+        <p style="font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 20px;">SEARCH MODEL TO SEE RESULTS</p>
+
+        <div class="input-wrapper" style="margin-bottom: 20px;">
+            <input type="text" id="phone-search" placeholder="SEARCH MODEL (e.g. iPhone 13, Samsung S21...)" onkeyup="filterRepairs()" style="text-align: center; border: 1px solid rgba(255,204,0,0.5); background: rgba(255,255,255,0.05); color: white; padding: 15px; width: 100%; border-radius: 12px; outline: none;">
+        </div>
+
+        <div id="archive-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding-right: 10px;">
+            <div class="repair-item" data-model="iPhone 13" style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid #222;">
+                <p style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; margin-bottom: 10px;">IPHONE 13 LCD REPLACEMENT</p>
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;"><img src="GL_Logo.png" style="width: 100%; border-radius: 5px; opacity: 0.6;"><br><span style="font-size:8px; color:#555;">BEFORE</span></div>
+                    <div style="flex: 1;"><img src="GL_Logo.png" style="width: 100%; border-radius: 5px; border: 1px solid #ffcc00;"><br><span style="font-size:8px; color:#ffcc00;">AFTER</span></div>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>
+
+<div id="tech-archive-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:99999; align-items:center; justify-content:center;">
+    <div class="modal-content archive-modal-content" style="max-width: 900px; width: 95%; border-radius: 35px; padding: 40px; position: relative;">
+        
+        <button onclick="closeTechArchive()" class="terminal-exit-btn">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-family:'Syncopate'; color:#ffcc00; letter-spacing: 8px; font-size: 1.4rem;">REPAIR ARCHIVE</h2>
+            <div style="width: 50px; height: 2px; background: #ffcc00; margin: 10px auto; opacity: 0.5;"></div>
+        </div>
+
+        <div style="position: relative; margin-bottom: 35px;">
+            <input type="text" id="phone-search" placeholder="ENTER DEVICE MODEL..." onkeyup="filterRepairs()" 
+                style="width: 100%; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 100px; color: white; text-align: center; font-family: 'Space Grotesk'; letter-spacing: 3px; outline: none; transition: 0.3s;">
+        </div>
+
+        <div id="archive-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-height: 500px; overflow-y: auto; padding-right: 15px; scrollbar-width: thin;">
+            
+            <div class="repair-item" data-model="iPhone 13">
+                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00;">IPHONE 13</span>
+                    <span style="font-size: 8px; color: #444;">LCD RESTORATION</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="repair-comparison" style="flex: 1;">
+                        <img src="BEFORE_IMAGE" style="width: 100%; display: block; filter: grayscale(100%);">
+                        <span class="tag-label tag-before">BEFORE</span>
+                    </div>
+                    <div class="repair-comparison" style="flex: 1;">
+                        <img src="AFTER_IMAGE" style="width: 100%; display: block;">
+                        <span class="tag-label tag-after">AFTER</span>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>
     </body>
     </html>
