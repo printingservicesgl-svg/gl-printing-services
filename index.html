@@ -1178,6 +1178,15 @@ select:focus, input:focus {
                 <p style="font-size:10px; opacity:0.5;">AUTO-SCANNING PRICING ENGINE</p>
             </div>
 
+            <div id="queue-container" style="max-width: 500px; margin: 20px auto; padding: 20px; background: #f9f9f9; border-radius: 15px; border: 1px solid #ddd;">
+    <h3 style="font-family: 'Syncopate', sans-serif; font-size: 14px; color: #2c3e50; text-align: center; margin-bottom: 15px;">
+        LIVE PRINT QUEUE
+    </h3>
+    <div id="queue-list" style="max-height: 400px; overflow-y: auto; border-radius: 10px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);">
+        <p style="text-align:center; padding:20px; color:#aaa;">Loading orders...</p>
+    </div>
+</div>
+
            <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222;">
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="closePreview()" style="background:#ff4d4d; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;">&times;</button>
@@ -2468,7 +2477,7 @@ function filterRepairs() {
             if (error) throw error;
 
             if (!orders || orders.length === 0) {
-                listElement.innerHTML = "<p style='text-align:center; padding:30px; color:#aaa;'>No active orders. Rest day muna!</p>";
+                listElement.innerHTML = "<p style='text-align:center; padding:30px; color:#aaa;'>Done with the hustle. Next order, please?</p>";
                 return;
             }
 
