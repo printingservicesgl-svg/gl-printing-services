@@ -1212,6 +1212,14 @@ select:focus, input:focus {
                 <div id="filename-display" style="font-size:10px; color:var(--neon-gold); margin-top:8px; opacity:0.8;"></div>
             </div>
 
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
+    <label style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 8px;">SPECIFIC PAGES (Optional)</label>
+    <input type="text" id="gl-page-range" placeholder="Ex: 3-5, 8, 10-12" 
+        oninput="processRangeSelection()"
+        style="width: 100%; padding: 10px; background: #000; border: 1px solid #444; border-radius: 8px; color: #ffcc00; text-align: center; font-weight: bold; outline: none;">
+    <p style="font-size: 8px; color: #555; margin-top: 5px; text-align: center;">Leave blank to print ALL pages</p>
+</div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <div>
                     <label>Paper Size</label>
@@ -1707,34 +1715,48 @@ if(document.getElementById('total-pages-view')) {
     window.currentGrandTotal = grandTotalValue;
 }
 
-    function addItem() {
-        if(!pendingFile) return;
-        cart.push({
-            file: pendingFile, name: pendingFile.name,
-            type: document.getElementById('print-type').value,
-            size: document.getElementById('paper-size').value.toUpperCase(),
-            meta: `${document.getElementById('pages').value}pg x ${document.getElementById('copies').value}cp`,
-            price: parseFloat(document.getElementById('live-price').innerText)
-        });
-        renderCart();
-        pendingFile = null;
-        document.getElementById('status-text').innerText = "UPLOAD ANOTHER?";
-        document.getElementById('filename-display').innerText = "";
-    }
+   function addItem() {
+    if(!pendingFile) return;
 
-    function renderCart() {
-        const list = document.getElementById('cart-list');
-        list.innerHTML = cart.map((item, idx) => `
-            <div class="cart-item">
-                <button class="remove-btn" onclick="removeItem(${idx})">✕</button>
-                <div style="font-size:11px; font-weight:bold; color:var(--neon-gold);">${item.name}</div>
-                <div style="font-size:9px; color:#777;">${item.type} | ${item.size} | ${item.meta}</div>
-                <div style="font-weight:bold; margin-top:5px;">₱${item.price.toFixed(2)}</div>
-            </div>`).join('');
-        const total = cart.reduce((a,b) => a + b.price, 0);
-        document.getElementById('grand-total').innerText = `₱${total.toFixed(2)}`;
-        document.getElementById('cart-section').style.display = cart.length > 0 ? 'block' : 'none';
-    }
+    // Kunin ang value mula sa range input field
+    const rangeInput = document.getElementById('gl-page-range').value.trim();
+    const rangeToPrint = rangeInput || "ALL PAGES"; 
+
+    cart.push({
+        file: pendingFile, 
+        name: pendingFile.name,
+        type: document.getElementById('print-type').value,
+        size: document.getElementById('paper-size').value.toUpperCase(),
+        // Mahalaga: Dito natin ise-save ang range
+        range: rangeToPrint, 
+        meta: `${document.getElementById('pages').value}pg x ${document.getElementById('copies').value}cp`,
+        price: parseFloat(document.getElementById('live-price').innerText)
+    });
+
+    renderCart();
+    pendingFile = null;
+    
+    // Reset inputs
+    document.getElementById('gl-page-range').value = ""; 
+    document.getElementById('status-text').innerText = "UPLOAD ANOTHER?";
+    document.getElementById('filename-display').innerText = "";
+}
+
+   function renderCart() {
+    const list = document.getElementById('cart-list');
+    list.innerHTML = cart.map((item, idx) => `
+        <div class="cart-item">
+            <button class="remove-btn" onclick="removeItem(${idx})">✕</button>
+            <div style="font-size:11px; font-weight:bold; color:var(--neon-gold);">${item.name}</div>
+            <div style="font-size:9px; color:#777;">${item.type} | ${item.size} | ${item.meta}</div>
+            <div style="font-size:9px; color:#ffcc00; margin-top:2px;">PRINT: ${item.range}</div>
+            <div style="font-weight:bold; margin-top:5px;">₱${item.price.toFixed(2)}</div>
+        </div>`).join('');
+        
+    const total = cart.reduce((a,b) => a + b.price, 0);
+    document.getElementById('grand-total').innerText = `₱${total.toFixed(2)}`;
+    document.getElementById('cart-section').style.display = cart.length > 0 ? 'block' : 'none';
+}
 
     function removeItem(idx) { cart.splice(idx, 1); renderCart(); }
     function showConfirm() { 
@@ -1834,19 +1856,18 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const gl_db = supabase.createClient(SB_URL, SB_KEY);
     
 
-  async function sendToTelegram() {
+ async function sendToTelegram() {
     const btn = document.getElementById('submit-btn');
     
     // 1. DATA GATHERING MULA SA UI
     const nameInput = document.getElementById('cust-name');
     const custName = nameInput ? nameInput.value.trim() : "";
     
-    // Kunin ang mga halaga base sa IDs na gamit mo sa terminal
     const subtotal = document.getElementById('subtotal-display').innerText;
     const delivery = document.getElementById('delivery-fee-display').innerText;
     const total = document.getElementById('pay-amount').innerText; 
     
-    const method = document.getElementById('payment-method').value; // 'cash' or 'gcash'
+    const method = document.getElementById('payment-method').value; 
     const dest = document.getElementById('destination').value;
 
     if (!custName) {
@@ -1872,7 +1893,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
         if (dbError) throw dbError;
 
         const finalStamps = await updateLoyalty(custName);
-const loyaltyHTML = renderLoyaltyUI(finalStamps);
+        const loyaltyHTML = renderLoyaltyUI(finalStamps);
 
         // 2. ETA CALCULATION
         let totalPages = 0;
@@ -1896,7 +1917,9 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
         
         cart.forEach((item, i) => {
             adminMsg += `<b>${i+1}.</b> ${item.name.replace(/[<>]/g, '')}\n`;
-            adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n\n`;
+            // INSERTS RANGE HERE:
+            adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n`;
+            adminMsg += `▫️ <b>PRINT: ${item.range}</b>\n\n`; 
         });
 
         // SEND TEXT MESSAGE TO TG
@@ -1906,13 +1929,12 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
             body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: adminMsg, parse_mode: 'HTML' })
         });
 
-        // 4. SEND GCASH PROOF PHOTO (PHOTO SA TG)
+        // 4. SEND GCASH PROOF PHOTO
         const proofInput = document.getElementById('proof-input');
         if (method === 'gcash' && proofInput && proofInput.files.length > 0) {
             const proofFd = new FormData();
             proofFd.append('chat_id', CONFIG.CHAT_ID);
             proofFd.append('photo', proofInput.files[0]);
-            // Format: 💰 PROOF: GL-XXXX [Name]
             proofFd.append('caption', `💰 PROOF: ${ref} [${custName.toUpperCase()}]`);
             
             await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {
@@ -1921,88 +1943,94 @@ const loyaltyHTML = renderLoyaltyUI(finalStamps);
             });
         }
 
-            // 5. SEND PRINT FILES (ANG MGA PDF/DOCS NA I-PRINT)
-            for(let item of cart) {
-                const fileFd = new FormData();
-                fileFd.append('chat_id', CONFIG.CHAT_ID);
-                const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
-                fileFd.append(isImg ? 'photo' : 'document', item.file);
-                fileFd.append('caption', `📂 FILE TO PRINT: ${item.name}\nRef: ${ref}`);
-                
-                await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {
-                    method: 'POST', 
-                    body: fileFd
-                });
-            }
-
-            // 6. GENERATE FULL RECEIPT VIEW (PARA SA CUSTOMER)
-            const now = new Date().toLocaleString('en-US', { 
-                month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+        // 5. SEND PRINT FILES
+        for(let item of cart) {
+            const fileFd = new FormData();
+            fileFd.append('chat_id', CONFIG.CHAT_ID);
+            const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
+            fileFd.append(isImg ? 'photo' : 'document', item.file);
+            // UPDATED CAPTION TO INCLUDE RANGE:
+            fileFd.append('caption', `📂 FILE TO PRINT: ${item.name}\nRef: ${ref}\nPrint: ${item.range}`);
+            
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {
+                method: 'POST', 
+                body: fileFd
             });
+        }
 
-            let receiptHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 20px;">
-                    <div id="capture-receipt" style="background: #fff; color: #000; padding: 35px 25px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; width: 300px; text-align: left; border-top: 10px solid #ffcc00; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-                        <center style="border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px;">
-                            <h2 style="margin: 0; font-family: 'Syncopate'; font-size: 15px; letter-spacing: 1px;">GL PRINTING SERVICES</h2>
-                            <p style="font-size: 9px; margin: 5px 0; opacity: 0.8;">OFFICIAL DIGITAL RECEIPT</p>
-                            <b style="font-size: 10px; background: #000; color: #fff; padding: 3px 12px; display: inline-block; margin-top: 8px;">
-                                ${method === 'cash' ? 'UNPAID / FOR CASH' : 'PAID / VERIFIED'}
-                            </b>
-                        </center>
-                        <div style="font-size: 12px; margin-bottom: 20px; line-height: 1.6;">
-                            <div style="display: flex; justify-content: space-between;"><span>DATE:</span> <b>${now}</b></div>
-                            <div style="display: flex; justify-content: space-between;"><span>REF NO:</span> <b>${ref}</b></div>
-                            <div style="display: flex; justify-content: space-between;"><span>CUSTOMER:</span> <b style="text-transform: uppercase;">${custName}</b></div>
-                        </div>
-                        <div style="border-bottom: 1px dashed #000; margin-bottom: 15px; padding-bottom: 10px;">
-                            <p style="font-size: 10px; font-weight: bold; margin-bottom: 8px; text-decoration: underline;">ORDER BREAKDOWN:</p>
-                            ${cart.map(item => `
-                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+        // 6. GENERATE FULL RECEIPT VIEW
+        const now = new Date().toLocaleString('en-US', { 
+            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+        });
+
+        let receiptHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 20px;">
+                <div id="capture-receipt" style="background: #fff; color: #000; padding: 35px 25px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; width: 300px; text-align: left; border-top: 10px solid #ffcc00; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                    <center style="border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; font-family: 'Syncopate'; font-size: 15px; letter-spacing: 1px;">GL PRINTING SERVICES</h2>
+                        <p style="font-size: 9px; margin: 5px 0; opacity: 0.8;">OFFICIAL DIGITAL RECEIPT</p>
+                        <b style="font-size: 10px; background: #000; color: #fff; padding: 3px 12px; display: inline-block; margin-top: 8px;">
+                            ${method === 'cash' ? 'UNPAID / FOR CASH' : 'PAID / VERIFIED'}
+                        </b>
+                    </center>
+                    <div style="font-size: 12px; margin-bottom: 20px; line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between;"><span>DATE:</span> <b>${now}</b></div>
+                        <div style="display: flex; justify-content: space-between;"><span>REF NO:</span> <b>${ref}</b></div>
+                        <div style="display: flex; justify-content: space-between;"><span>CUSTOMER:</span> <b style="text-transform: uppercase;">${custName}</b></div>
+                    </div>
+                    <div style="border-bottom: 1px dashed #000; margin-bottom: 15px; padding-bottom: 10px;">
+                        <p style="font-size: 10px; font-weight: bold; margin-bottom: 8px; text-decoration: underline;">ORDER BREAKDOWN:</p>
+                        ${cart.map(item => `
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 11px;">
                                     <span style="flex: 1; padding-right: 15px;">• ${item.name.substring(0,22)}</span>
                                     <span style="font-weight: bold;">${item.type}</span>
                                 </div>
-                            `).join('')}
-                        </div>
+                                <div style="font-size: 9px; color: #666; margin-top: 2px;">
+                                    ${item.size} | ${item.meta} | <b>PAGES: ${item.range}</b>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
 
-                        <div style="text-align: right; margin-top: 15px;">
-                            <p style="margin: 0; font-size: 11px; opacity: 0.8;">SUBTOTAL: ${subtotal}</p>
-                            ${parseFloat(delivery.replace('₱','')) > 0 ? `<p style="margin: 0; font-size: 11px; opacity: 0.8;">DELIVERY: ${delivery}</p>` : ''}
-                            <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">TOTAL: ${total}</h3>
-                            <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">VIA: ${method}</p>
-                            <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
-                        </div>
-                        ${loyaltyHTML}<center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
-                            <p style="font-size: 9px; font-style: italic; color: #777;">Thank you for your Choosing GL!</p>
-                            <div style="font-size: 14px; font-weight: bold; opacity: 0.05; letter-spacing: 8px; margin-top: 5px;">GL-PRINTS</div>
-                        </center>
+                    <div style="text-align: right; margin-top: 15px;">
+                        <p style="margin: 0; font-size: 11px; opacity: 0.8;">SUBTOTAL: ${subtotal}</p>
+                        ${parseFloat(delivery.replace('₱','')) > 0 ? `<p style="margin: 0; font-size: 11px; opacity: 0.8;">DELIVERY: ${delivery}</p>` : ''}
+                        <h3 style="margin: 5px 0; font-size: 24px; font-weight: bold; border-top: 2px solid #000; padding-top: 8px;">TOTAL: ${total}</h3>
+                        <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">VIA: ${method}</p>
+                        <p style="font-size: 10px; color: #555;">ESTIMATED READY: <b>${etaDisplay}</b></p>
                     </div>
-                    
-                    <div style="width: 300px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-                        <button onclick="downloadReceipt('${ref}')" style="background: #2ecc71; color: #fff; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 15px rgba(46,204,113,0.3);">
-                            📥 DOWNLOAD RECEIPT (IMAGE)
-                        </button>
-                        <a href="https://m.me/GLprinting.services" target="_blank" style="background: #0084FF; color: white; padding: 18px; border-radius: 12px; text-decoration: none; font-size: 14px; font-weight: bold; text-align: center; box-shadow: 0 4px 15px rgba(0,132,255,0.3);">
-                            💬 OPEN MESSENGER
-                        </a>
-                    </div>
+                    ${loyaltyHTML}<center style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                        <p style="font-size: 9px; font-style: italic; color: #777;">Thank you for Choosing GL!</p>
+                        <div style="font-size: 14px; font-weight: bold; opacity: 0.05; letter-spacing: 8px; margin-top: 5px;">GL-PRINTS</div>
+                    </center>
                 </div>
-            `;
+                
+                <div style="width: 300px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                    <button onclick="downloadReceipt('${ref}')" style="background: #2ecc71; color: #fff; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; box-shadow: 0 4px 15px rgba(46,204,113,0.3);">
+                        📥 DOWNLOAD RECEIPT (IMAGE)
+                    </button>
+                    <a href="https://m.me/GLprinting.services" target="_blank" style="background: #0084FF; color: white; padding: 18px; border-radius: 12px; text-decoration: none; font-size: 14px; font-weight: bold; text-align: center; box-shadow: 0 4px 15px rgba(0,132,255,0.3);">
+                        💬 OPEN MESSENGER
+                    </a>
+                </div>
+            </div>
+        `;
 
-            // UPDATE SCREEN
-            document.getElementById('customer-receipt-summary').innerHTML = receiptHTML;
-            document.getElementById('payment-modal').style.display = 'none';
-            document.getElementById('success-modal').style.display = 'flex';
-            
-            if(typeof playDoubleThanks === 'function') playDoubleThanks();
+        // UPDATE SCREEN
+        document.getElementById('customer-receipt-summary').innerHTML = receiptHTML;
+        document.getElementById('payment-modal').style.display = 'none';
+        document.getElementById('success-modal').style.display = 'flex';
+        
+        if(typeof playDoubleThanks === 'function') playDoubleThanks();
 
-        } catch (e) {
-            console.error(e);
-            alert("System busy. Retry in a moment.");
-            btn.innerText = "RETRY";
-            btn.disabled = false;
-        }
+    } catch (e) {
+        console.error(e);
+        alert("System busy. Retry in a moment.");
+        btn.innerText = "RETRY";
+        btn.disabled = false;
     }
+}
 
     // 3. DOWNLOAD LOGIC (Must be outside the function)
     function downloadReceipt(refNo) {
@@ -2157,6 +2185,44 @@ function goToPage(val) {
     if (pdfDocSource && num >= 1 && num <= pdfDocSource.numPages) {
         renderSpecificPage(num);
     }
+}
+// HELPER: Ang taga-bilang ng Specific Pages
+function processRangeSelection() {
+    const rangeInput = document.getElementById('gl-page-range').value.trim();
+    const pagesField = document.getElementById('pages'); 
+    const maxFilePages = parseInt(pagesField.dataset.max || 19); // Default 19 based sa screenshot mo
+
+    if (!rangeInput) {
+        // Kung walang tinype, ibalik sa full page count
+        pagesField.value = maxFilePages;
+        updatePrice(); // Tawagin ang original function mo
+        return;
+    }
+
+    let selectedPages = new Set();
+    const segments = rangeInput.split(',');
+
+    segments.forEach(seg => {
+        if (seg.includes('-')) {
+            const range = seg.split('-').map(n => parseInt(n.trim()));
+            if (range.length === 2 && !isNaN(range[0]) && !isNaN(range[1])) {
+                let start = Math.min(range[0], range[1]);
+                let end = Math.max(range[0], range[1]);
+                for (let i = start; i <= end; i++) {
+                    if (i > 0 && i <= maxFilePages) selectedPages.add(i);
+                }
+            }
+        } else {
+            const p = parseInt(seg.trim());
+            if (!isNaN(p) && p > 0 && p <= maxFilePages) selectedPages.add(p);
+        }
+    });
+
+    // I-update ang main 'pages' value na ginagamit ng updatePrice()
+    pagesField.value = selectedPages.size;
+    
+    // 100% SAFE: Tatawagin lang nito ang current updatePrice() mo para mag-recalculate
+    updatePrice();
 }
 
     </script>
