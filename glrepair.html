@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL TECH CARE | Repair Quote</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-gold: #ffcc00;
+            --dark-bg: #0a0a0a;
+            --card-bg: #151515;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .repair-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .repair-header h1 {
+            font-family: 'Syncopate';
+            font-size: 1.4rem;
+            color: var(--neon-gold);
+            margin-bottom: 5px;
+        }
+
+        .calculator-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: #777;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            appearance: none;
+        }
+
+        .price-display {
+            background: var(--glass);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px dashed var(--neon-gold);
+            margin-top: 10px;
+            display: none; /* Lalabas lang pag kumpleto select */
+        }
+
+        .price-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--neon-gold);
+            display: block;
+        }
+
+        .btn-book {
+            width: 100%;
+            padding: 18px;
+            background: var(--neon-gold);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Syncopate';
+            font-size: 0.9rem;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: none;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 204, 0, 0.2);
+        }
+
+        .disclaimer {
+            font-size: 10px;
+            color: #555;
+            text-align: center;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="repair-header">
+        <h1>TECH CARE REPAIR</h1>
+        <p style="font-size: 12px; color: #777;">Quick Quote & Professional Fix</p>
+    </div>
+
+    <div class="calculator-card">
+        <label>1. Select Device Brand</label>
+        <select id="brand" onchange="updateModels()">
+            <option value="">-- Choose Brand --</option>
+            <option value="Infinix">Infinix</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Realme">Realme</option>
+        </select>
+
+        <label>2. Select Model</label>
+        <select id="model" onchange="calculatePrice()" disabled>
+            <option value="">-- Select Brand First --</option>
+        </select>
+
+        <label>3. What's the Issue?</label>
+        <select id="issue" onchange="calculatePrice()">
+            <option value="">-- Choose Issue --</option>
+            <option value="LCD Replacement">LCD / Screen Replacement</option>
+            <option value="Battery Replacement">Battery Replacement</option>
+            <option value="Charging Port">Not Charging / Port Fix</option>
+            <option value="Glass Only">Glass Only (No LCD Issue)</option>
+        </select>
+
+        <div id="price-box" class="price-display">
+            <label style="color: #fff;">Estimated Total (Parts + Labor)</label>
+            <span class="price-value" id="final-price">₱0</span>
+            <p style="font-size: 11px; color: #aaa;">*Price may vary depending on parts availability.</p>
+        </div>
+
+        <button id="book-btn" class="btn-book" onclick="bookRepair()">BOOK REPAIR NOW ➜</button>
+        
+        <p class="disclaimer">
+            GL Printing & Tech Services - Muntinlupa City.<br>
+            All repairs come with a 30-day warranty on parts.
+        </p>
+    </div>
+
+    <script>
+        // DATA OBJECT: Dito mo i-update ang prices mo
+        const repairData = {
+            "Infinix": {
+                models: ["Hot 30", "Note 30", "Zero 30", "Smart 7"],
+                basePrice: 1200
+            },
+            "Samsung": {
+                models: ["A14", "A24", "A54", "S21 FE"],
+                basePrice: 1800
+            },
+            "Realme": {
+                models: ["Realme 11", "Realme 12 5G", "C55", "C35"],
+                basePrice: 1400
+            }
+        };
+
+        const issueMarkup = {
+            "LCD Replacement": 1500,
+            "Battery Replacement": 800,
+            "Charging Port": 500,
+            "Glass Only": 1000
+        };
+
+        function updateModels() {
+            const brand = document.getElementById('brand').value;
+            const modelSelect = document.getElementById('model');
+            
+            modelSelect.innerHTML = '<option value="">-- Choose Model --</option>';
+            
+            if(brand) {
+                modelSelect.disabled = false;
+                repairData[brand].models.forEach(m => {
+                    let opt = document.createElement('option');
+                    opt.value = m;
+                    opt.innerHTML = m;
+                    modelSelect.appendChild(opt);
+                });
+            } else {
+                modelSelect.disabled = true;
+            }
+            calculatePrice();
+        }
+
+        function calculatePrice() {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const issue = document.getElementById('issue').value;
+            const priceBox = document.getElementById('price-box');
+            const bookBtn = document.getElementById('book-btn');
+
+            if(brand && model && issue) {
+                let total = repairData[brand].basePrice + issueMarkup[issue];
+                document.getElementById('final-price').innerText = "₱" + total.toLocaleString();
+                priceBox.style.display = "block";
+                bookBtn.style.display = "block";
+            } else {
+                priceBox.style.display = "none";
+                bookBtn.style.display = "none";
+            }
+        }
+
+        function bookRepair() {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const issue = document.getElementById('issue').value;
+            const price = document.getElementById('final-price').innerText;
+
+            const message = `Hi GL Tech! I want to book a repair:%0A%0A` +
+                            `📱 Device: ${brand} ${model}%0A` +
+                            `🛠️ Issue: ${issue}%0A` +
+                            `💰 Est. Quote: ${price}%0A%0A` +
+                            `Kailan po pwedeng dalhin sa shop?`;
+
+            // I-replace ito ng iyong Facebook Page Link o Telegram
+            // Example for Telegram: https://t.me/YourUsername?text=...
+            const messengerLink = `https://m.me/GLPrintingServices?text=${message}`;
+            
+            window.open(messengerLink, '_blank');
+        }
+    </script>
+</body>
+</html>

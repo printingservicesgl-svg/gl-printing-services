@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL RESUME BUILDER | Fast & Professional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --neon-gold: #ffcc00;
+            --dark-bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* LEFT SIDE: FORM */
+        .form-section {
+            width: 40%;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+            background: #111;
+        }
+
+        h1 { font-family: 'Syncopate'; color: var(--neon-gold); font-size: 1.2rem; margin-bottom: 20px; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; color: #777; margin-bottom: 5px; text-transform: uppercase; }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .temp-btn {
+            padding: 10px;
+            font-size: 10px;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .temp-btn.active { background: var(--neon-gold); color: black; border-color: var(--neon-gold); }
+
+        /* RIGHT SIDE: PREVIEW */
+        .preview-section {
+            width: 60%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        #resume-paper {
+            width: 210mm; /* A4 Width */
+            min-height: 297mm;
+            background: white;
+            color: black;
+            padding: 20mm;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            transform: scale(0.65); /* Scale down for screen view */
+            transform-origin: top center;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: var(--neon-gold);
+            color: black;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Syncopate';
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 204, 0, 0.3);
+        }
+
+        /* --- TEMPLATE STYLES --- */
+        /* MODERN */
+        .modern .header { border-bottom: 5px solid #333; padding-bottom: 10px; }
+        .modern .name { font-size: 28px; font-weight: 800; text-transform: uppercase; }
+        
+        /* MINIMALIST */
+        .minimalist { font-family: 'Inter', sans-serif; text-align: center; }
+        .minimalist .name { font-size: 24px; border-bottom: 1px solid #eee; display: inline-block; padding-bottom: 5px; }
+        
+        /* CLASSIC */
+        .classic { font-family: 'Playfair Display', serif; }
+        .classic .section-title { border-bottom: 1px solid black; margin-top: 15px; font-weight: bold; }
+
+        .section-content { font-size: 13px; line-height: 1.6; margin-top: 5px; white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+    <div class="form-section">
+        <h1>RESUME BUILDER</h1>
+        
+        <label>Select Template</label>
+        <div class="template-selector">
+            <div class="temp-btn active" onclick="setTemplate('modern', this)">MODERN</div>
+            <div class="temp-btn" onclick="setTemplate('minimalist', this)">MINIMAL</div>
+            <div class="temp-btn" onclick="setTemplate('classic', this)">CLASSIC</div>
+        </div>
+
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="in-name" placeholder="Juan Dela Cruz" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <label>Contact Info (Email, Phone, Location)</label>
+            <input type="text" id="in-contact" placeholder="juan@email.com | 09123456789 | Muntinlupa" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <label>Professional Summary</label>
+            <textarea id="in-summary" rows="3" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label>Experience</label>
+            <textarea id="in-exp" rows="5" placeholder="Job Title - Company (Year)" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label>Education</label>
+            <textarea id="in-edu" rows="3" placeholder="Degree - School (Year)" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label>Skills</label>
+            <input type="text" id="in-skills" placeholder="Encoding, Customer Service, etc." oninput="updatePreview()">
+        </div>
+    </div>
+
+    <div class="preview-section">
+        <div id="resume-paper" class="modern">
+            <div class="header">
+                <div class="name" id="p-name">YOUR NAME</div>
+                <div style="font-size: 12px; color: #555;" id="p-contact">Contact details here</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <b class="section-title">PROFILE</b>
+                <div class="section-content" id="p-summary">Professional summary goes here...</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <b class="section-title">EXPERIENCE</b>
+                <div class="section-content" id="p-exp">Work history...</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <b class="section-title">EDUCATION</b>
+                <div class="section-content" id="p-edu">Academic background...</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <b class="section-title">SKILLS</b>
+                <div class="section-content" id="p-skills">List of skills...</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="print-btn" onclick="downloadPDF()">GENERATE PDF & PRINT ➜</button>
+
+    <script>
+        function updatePreview() {
+            document.getElementById('p-name').innerText = document.getElementById('in-name').value || "YOUR NAME";
+            document.getElementById('p-contact').innerText = document.getElementById('in-contact').value || "Contact details here";
+            document.getElementById('p-summary').innerText = document.getElementById('in-summary').value || "Professional summary...";
+            document.getElementById('p-exp').innerText = document.getElementById('in-exp').value || "Experience details...";
+            document.getElementById('p-edu').innerText = document.getElementById('in-edu').value || "Education details...";
+            document.getElementById('p-skills').innerText = document.getElementById('in-skills').value || "Skills...";
+        }
+
+        function setTemplate(style, btn) {
+            document.getElementById('resume-paper').className = style;
+            document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('resume-paper');
+            const opt = {
+                margin: 0,
+                filename: 'GL-Resume-' + document.getElementById('in-name').value + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // New Tab behavior
+            html2pdf().set(opt).from(element).save();
+            
+            alert("✅ RESUME GENERATED! After download, just send the file to our Terminal to print.");
+        }
+    </script>
+</body>
+</html>
