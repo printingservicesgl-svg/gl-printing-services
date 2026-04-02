@@ -2535,15 +2535,19 @@ function goToPage(val) {
     }
 }
 // HELPER: Ang taga-bilang ng Specific Pages
+// HELPER: Ang taga-bilang ng Specific Pages (FIXED VERSION)
 function processRangeSelection() {
     const rangeInput = document.getElementById('gl-page-range').value.trim();
     const pagesField = document.getElementById('pages'); 
-    const maxFilePages = parseInt(pagesField.dataset.max || 19); // Default 19 based sa screenshot mo
+    
+    // FIX: Imbes na default 19, kunin natin ang totoong page count mula sa pdfDocSource
+    // Kung wala pang file, fallback tayo sa 0 o sa data-max attribute
+    const actualMaxPages = pdfDocSource ? pdfDocSource.numPages : parseInt(pagesField.dataset.max || 0);
 
     if (!rangeInput) {
-        // Kung walang tinype, ibalik sa full page count
-        pagesField.value = maxFilePages;
-        updatePrice(); // Tawagin ang original function mo
+        // Kung binura (empty input), ibalik sa totoong total page count ng file
+        pagesField.value = actualMaxPages;
+        updatePrice(); 
         return;
     }
 
@@ -2557,19 +2561,20 @@ function processRangeSelection() {
                 let start = Math.min(range[0], range[1]);
                 let end = Math.max(range[0], range[1]);
                 for (let i = start; i <= end; i++) {
-                    if (i > 0 && i <= maxFilePages) selectedPages.add(i);
+                    // Proteksyon para hindi lumampas sa totoong dami ng pages
+                    if (i > 0 && i <= actualMaxPages) selectedPages.add(i);
                 }
             }
         } else {
             const p = parseInt(seg.trim());
-            if (!isNaN(p) && p > 0 && p <= maxFilePages) selectedPages.add(p);
+            if (!isNaN(p) && p > 0 && p <= actualMaxPages) selectedPages.add(p);
         }
     });
 
     // I-update ang main 'pages' value na ginagamit ng updatePrice()
-    pagesField.value = selectedPages.size;
+    // Kung ang maling input ay nagresulta sa 0 pages, ibalik sa actualMaxPages
+    pagesField.value = selectedPages.size > 0 ? selectedPages.size : actualMaxPages;
     
-    // 100% SAFE: Tatawagin lang nito ang current updatePrice() mo para mag-recalculate
     updatePrice();
 }
 const nameInput = document.getElementById('cust-name');
