@@ -1522,7 +1522,7 @@ select:focus, input:focus {
 </div>
 
             <div style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
-    <label style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 8px;">SPECIFIC PAGES (Optional)</label>
+    <label style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 8px;">SPECIFIC PAGES TO PRINT (Optional)</label>
     <input type="text" id="gl-page-range" placeholder="Ex: 3-5, 8, 10-12" 
         oninput="processRangeSelection()"
         style="width: 100%; padding: 10px; background: #000; border: 1px solid #444; border-radius: 8px; color: #ffcc00; text-align: center; font-weight: bold; outline: none;">
@@ -1909,39 +1909,33 @@ applySystemLock();
     const file = fileInput.files[0];
     if(!file) return;
 
-    // --- 1. ROBOT AI GUARD (Format Check) ---
+    // --- 1. ROBOT AI GUARD ---
     const supportedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-    const robot = document.getElementById('gl-robot-ai'); // Ito yung robot div sa gilid
+    const robot = document.getElementById('gl-robot-ai'); 
     
     if (!supportedTypes.includes(file.type)) {
-        // Labas ang Robot!
         if(robot) robot.classList.add('active');
-
-        // AI Voice Trigger
         const msg = new SpeechSynthesisUtterance();
         msg.text = "Apologies. G-L Prints scans P-D-F and images only. Please use the converter on the side.";
-        
         const voices = window.speechSynthesis.getVoices();
         const britishVoice = voices.find(v => v.name.includes('Google UK English Female') || v.lang === 'en-GB');
         if (britishVoice) msg.voice = britishVoice;
-        
         window.speechSynthesis.speak(msg);
-
-        // UI Reset
         fileInput.value = ""; 
         document.getElementById('status-text').innerText = "INVALID FORMAT!";
         document.getElementById('filename-display').innerText = "CONVERT TO PDF FIRST";
-        
-        return; // Dito hihinto ang code, hindi babasahin yung rendering sa baba
+        return; 
     }
 
-    // --- 2. SUCCESS STATE (Kung tama ang file, tago ang robot) ---
     if(robot) robot.classList.remove('active');
 
-    // --- 3. DITO NAGSISIMULA ANG ORIGINAL LOGIC MO (WALANG GALAW) ---
+    // --- 2. SUCCESS STATE ---
     pendingFile = file;
     document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
     document.getElementById('filename-display').innerText = file.name;
+
+    const canvas = document.getElementById('scan-canvas');
+    const ctx = canvas.getContext('2d');
 
     if (file.type === "application/pdf") {
         const reader = new FileReader();
@@ -1955,24 +1949,34 @@ applySystemLock();
             }
             
             const page = await pdf.getPage(1);
-            const viewport = page.getViewport({scale: 0.3});
-            const canvas = document.getElementById('scan-canvas');
-            const ctx = canvas.getContext('2d');
+            const viewport = page.getViewport({scale: 0.8}); // Tinaasan ang scale para luminaw
             canvas.width = viewport.width; canvas.height = viewport.height;
             await page.render({canvasContext: ctx, viewport: viewport}).promise;
+            
             analyzePixels(canvas, viewport.width / viewport.height);
+            updatePaperVisual(); // I-apply ang size (Short/A4/Long)
         };
         reader.readAsArrayBuffer(file);
     } else {
+        // --- FIXED IMAGE RENDERING (HINDI NA IPIT) ---
         const img = new Image();
         img.src = URL.createObjectURL(file);
         img.onload = () => {
-            const canvas = document.getElementById('scan-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 100; canvas.height = 100;
-            ctx.drawImage(img, 0, 0, 100, 100);
+            // Gamitin ang natural size para sa analysis pero i-limit ang canvas size para sa preview
+            const maxDim = 800; 
+            const scale = Math.min(maxDim / img.naturalWidth, maxDim / img.naturalHeight);
+            
+            canvas.width = img.naturalWidth * scale;
+            canvas.height = img.naturalHeight * scale;
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             document.getElementById('pages').value = 1;
+            if(document.getElementById('total-pages-view')) {
+                document.getElementById('total-pages-view').innerText = "1";
+            }
+            
             analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
+            updatePaperVisual(); // I-apply ang size (Short/A4/Long)
         };
     }
 }
@@ -1980,6 +1984,7 @@ applySystemLock();
 function closeRobot() {
     document.getElementById('gl-robot-ai').classList.remove('active');
 }
+
 
     function analyzePixels(canvas, ratio) {
     const ctx = canvas.getContext('2d');
@@ -2586,6 +2591,46 @@ nameInput.addEventListener('focus', () => {
 
     }, 10000); 
 }, { once: true }); // Para isang beses lang siya lilitaw per session (hindi makulit)
+function closePreview() {
+    // 1. I-reset ang File Input (para payagan ang re-upload ng parehong file)
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) fileInput.value = "";
+
+    // 2. I-reset ang Canvas (Burahin ang image/PDF preview)
+    const canvas = document.getElementById('scan-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = 0;
+        canvas.height = 0;
+    }
+
+    // 3. I-reset ang Page Numbers sa UI
+    const currentPageView = document.querySelector('.nav-current-page') || document.getElementById('current-page-display');
+    const totalPageView = document.getElementById('total-pages-view');
+    const hiddenPagesInput = document.getElementById('pages');
+
+    if (currentPageView) currentPageView.innerText = "0";
+    if (totalPageView) totalPageView.innerText = "0";
+    if (hiddenPagesInput) hiddenPagesInput.value = 0;
+
+    // 4. I-reset ang Status Texts
+    const statusText = document.getElementById('status-text');
+    const filenameDisplay = document.getElementById('filename-display');
+    
+    if (statusText) statusText.innerText = "TAP TO UPLOAD DOCUMENT";
+    if (filenameDisplay) filenameDisplay.innerText = "";
+
+    // 5. I-clear ang Global Variables
+    pendingFile = null;
+    pdfDocSource = null;
+
+    // 6. Itago ang Robot AI kung nakalabas man
+    const robot = document.getElementById('gl-robot-ai');
+    if (robot) robot.classList.remove('active');
+
+    console.log("Terminal Cleared: Ready for next upload.");
+}
     </script>
     <script>
     (function() {
