@@ -1113,6 +1113,87 @@ select:focus, input:focus {
     border-top: 10px solid rgba(255, 204, 0, 0.2);
     border-left: 10px solid transparent;
 }
+#connect {
+    text-align: center;
+    padding: 100px 20px 180px; /* Nilakihan ang padding para "hinga" ang design */
+    
+    /* GINAWANG TRANSPARENT PARA LUMABAS ANG WEB BG MO */
+    background: transparent; 
+    
+    position: relative;
+    z-index: 1;
+}
+
+.connect-title {
+    color: #ffcc00;
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.5rem); /* Responsive size */
+    letter-spacing: 15px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 15px rgba(255, 204, 0, 0.4); /* Glow effect para litaw sa bg */
+}
+
+.location-text {
+    color: rgba(255, 255, 255, 0.5); /* Semi-transparent white para hindi masakit sa mata */
+    font-size: 10px;
+    letter-spacing: 5px;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+}
+
+.phone-number {
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    font-weight: 300;
+}
+
+/* Button Grouping - Clean & Floating Look */
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.connect-btn {
+    display: inline-block;
+    width: 100%;
+    max-width: 380px;
+    padding: 22px;
+    
+    /* Semi-transparent border para bumagay sa kahit anong BG */
+    border: 1px solid rgba(255, 204, 0, 0.3); 
+    background: rgba(0, 0, 0, 0.3); /* Subtle dark tint para mabasa ang text */
+    backdrop-filter: blur(8px); /* Glassmorphism effect */
+    
+    color: #ffcc00;
+    text-decoration: none;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.connect-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    border-color: #ffcc00;
+    transform: translateY(-5px); /* Lift effect */
+    box-shadow: 0 15px 30px rgba(255, 204, 0, 0.2);
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    #connect {
+        padding-bottom: 200px; /* Extra space para sa GL AI floating button */
+    }
+    .connect-title {
+        letter-spacing: 10px;
+    }
+}
 
 
 
@@ -1327,20 +1408,24 @@ select:focus, input:focus {
                 <button class="btn-add" style="background:white; color:black;" onclick="showConfirm()">CHECKOUT VIA GCASH</button>
             </div>
         </div>
-    </section>
+    </section> 
 
-    <div class="terminal-card" style="max-width: 400px; margin: 0 auto; border: 1px solid #ffcc00; padding: 25px;">
+   <section id="connect">
+    <h2 class="connect-title">CONNECT</h2>
+    <p class="location-text">MUNTINLUPA CITY • OPERATIONS</p>
     
+    <!-- Glowing Number with Click-to-Copy -->
+    <div class="phone-container" onclick="copyToClipboard('09916361742')">
+        <h3 class="phone-number glow-text">0991 636 1742</h3>
+        <!-- <span id="copy-toast">COPIED TO CLIPBOARD!</span> -->
+    </div>
 
-    <div class="section-header">
-    <h2>CONNECT</h2>
-    <p>Muntinlupa City • Operations</p>
-</div>
-    <section id="contact" style="text-align:center;">
-        <p id="phone-num" onclick="copyNumber()">0991 636 1742</p>
-        <button class="btn-glitch" onclick="window.open('https://facebook.com/GLprinting.services/')">MESSAGE US ON FB</button>
-    </section>
-</div>
+    <div class="social-buttons">
+        <a href="https://facebook.com/GLprinting.services/" target="_blank" class="connect-btn">MESSAGE US ON FB</a>
+        <a href="https://instagram.com/glprnts" target="_blank" class="connect-btn">FOLLOW US ON IG</a>
+        <a href="mailto:glprintingservices.ph@gmail.com" class="connect-btn">SEND US AN EMAIL</a>
+    </div>
+</section>
 
 <canvas id="scan-canvas" style="display:none;"></canvas>
 <div id="payment-modal" class="modal">
