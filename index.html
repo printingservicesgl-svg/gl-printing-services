@@ -245,19 +245,100 @@ body::before {
     opacity: 0.3;
 }
 
-.scanner-box {
-    border: 2px dashed rgba(255, 204, 0, 0.3);
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 20px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    padding: 50px 20px;
+/* --- UI UPGRADE: SAVAGELY CLASSY UPLOAD ZONE --- */
+
+/* The outer input wrapper for structural spacing */
+.input-wrapper {
+    margin: 20px 0;
+    text-align: left;
 }
 
+/* Redesign of the main 'scanner-box' from the provided image */
+.scanner-box {
+    position: relative;
+    padding: 60px 20px; /* Increased padding for emphasis */
+    text-align: center;
+    border-radius: 20px;
+    background: #080808; /* Deep terminal background */
+    border: 2px dashed #333; /* Default dashed state from reference */
+    cursor: pointer;
+    overflow: hidden; /* Important for the internal animation */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hover effect from reference: border glows, box scales slightly */
 .scanner-box:hover {
-    border-color: var(--neon-gold);
-    background: rgba(255, 204, 0, 0.05);
-    transform: scale(0.98); /* Nagki-click effect pag ni-hover */
+    border-color: #ffcc00;
+    transform: translateY(-5px) scale(0.99);
+}
+
+/* 'Active' state (when a file is ready) remains defined, but we add visual flair */
+.scanner-box.active {
+    border-color: #ffcc00;
+    background: rgba(255, 204, 0, 0.03);
+}
+
+/* --- GLOW UPGRADE (Adding the checkout card conic glow) --- */
+.scanner-box::after {
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    /* Same conic-gradient from your premium checkout card */
+    background: conic-gradient(from 0deg, transparent, #ffcc00, transparent, #0052da, transparent);
+    animation: rotateGlow 6s linear infinite;
+    opacity: 0.15; /* High enough to be beautiful, low enough to not distract */
+    pointer-events: none;
+    z-index: 1; /* Puts the glow behind the text */
+}
+
+/* The horizontal shimmer line animation */
+.shimmer-line {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.1), transparent);
+    animation: shimmer-flow 4s infinite;
+    z-index: 2; /* Puts the shimmer line over the conic glow */
+    pointer-events: none;
+}
+
+@keyframes shimmer-flow { 0% { left: -100%; } 100% { left: 100%; } }
+
+/* --- ICON & TEXT STYLING --- */
+.upload-icon-compact {
+    background: rgba(255, 204, 0, 0.1);
+    width: 60px; height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    margin: 0 auto 18px auto;
+    position: relative;
+    z-index: 3; /* Puts the icon at the very front */
+}
+
+.upload-text-main {
+    color: #ffcc00;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 3;
+}
+
+.upload-text-sub {
+    color: #777;
+    font-size: 9px;
+    margin: 6px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 3;
 }
 
 /* Hover effect for Select & Inputs */
@@ -1194,6 +1275,62 @@ select:focus, input:focus {
         letter-spacing: 10px;
     }
 }
+/* --- GL ROBOT AI ASSISTANT --- */
+#gl-robot-ai {
+    position: absolute;
+    right: -320px; /* Nakatago sa gilid */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 250px;
+    background: #0a0a0a;
+    border: 1px solid #ffcc00;
+    border-radius: 15px;
+    padding: 15px;
+    z-index: 999;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+}
+
+#gl-robot-ai.active {
+    right: 10px; /* Papasok sa screen */
+}
+
+.robot-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 8px;
+}
+
+.robot-msg {
+    font-size: 11px;
+    color: #eee;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.convert-link {
+    display: block;
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid #ffcc00;
+    color: #ffcc00;
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.convert-link:hover {
+    background: #ffcc00;
+    color: #000;
+}
+
 
 
 
@@ -1355,11 +1492,34 @@ select:focus, input:focus {
     <canvas id="scan-canvas" style="max-width: 100%; border-radius: 8px; transition: filter 0.3s ease;"></canvas>
 </div>
 
-            <div class="scanner-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
-                <input type="file" id="file-input" style="display:none;" onchange="handleProcess()">
-                <div id="status-text" style="font-weight:700; font-size:0.75rem;">TAP TO UPLOAD DOCUMENT</div>
-                <div id="filename-display" style="font-size:10px; color:var(--neon-gold); margin-top:8px; opacity:0.8;"></div>
-            </div>
+           <div class="scanner-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
+    
+    <input type="file" id="file-input" style="display:none;" onchange="handleProcess()">
+    
+    <div class="shimmer-line"></div>
+    
+    <div class="upload-icon-compact">
+        <span>📂</span> </div>
+    
+    <p class="upload-text-main" id="status-text">TAP TO UPLOAD DOCUMENT</p>
+    
+    <p class="upload-text-sub" id="filename-display"></p>
+
+    <p class="upload-text-sub">SUPPORTED: PDF, PNG, JPG</p>
+</div>
+<div id="gl-robot-ai">
+    <div class="robot-head">
+        <span style="font-size: 20px;">🤖</span>
+        <span style="font-family:'Syncopate'; font-size: 10px; color:#ffcc00;">GL FILE HELPER</span>
+        <button onclick="closeRobot()" style="margin-left:auto; background:none; border:none; color:#555; cursor:pointer;">&times;</button>
+    </div>
+    <p class="robot-msg">
+        Mali ang format, Boss! <b>PDF o IMAGE</b> lang ang tinatanggap ko. Convert mo muna dito:
+    </p>
+    <a href="https://www.ilovepdf.com/word_to_pdf" target="_blank" class="convert-link">WORD TO PDF ➜</a>
+    <a href="https://www.ilovepdf.com/excel_to_pdf" target="_blank" class="convert-link">EXCEL TO PDF ➜</a>
+    <a href="https://www.ilovepdf.com/jpg_to_pdf" target="_blank" class="convert-link">IMAGE TO PDF ➜</a>
+</div>
 
             <div style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
     <label style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; display: block; margin-bottom: 8px;">SPECIFIC PAGES (Optional)</label>
@@ -1744,38 +1904,41 @@ applySystemLock();
     }
     
 
-   async function handleProcess() {
-    const file = document.getElementById('file-input').files[0];
+  async function handleProcess() {
+    const fileInput = document.getElementById('file-input');
+    const file = fileInput.files[0];
     if(!file) return;
 
-    // --- ERROR GUARD (Uulit-ulit ito bawat upload ng mali) ---
+    // --- 1. ROBOT AI GUARD (Format Check) ---
     const supportedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const robot = document.getElementById('gl-robot-ai'); // Ito yung robot div sa gilid
     
     if (!supportedTypes.includes(file.type)) {
-        // AI Voice Trigger - Laging gagana basta pumasok dito
+        // Labas ang Robot!
+        if(robot) robot.classList.add('active');
+
+        // AI Voice Trigger
         const msg = new SpeechSynthesisUtterance();
-        msg.text = "Apologies. G-L Prints currently scans P-D-F and images only. Please convert your file.";
+        msg.text = "Apologies. G-L Prints scans P-D-F and images only. Please use the converter on the side.";
         
-        // Hanapin ang British Voice
         const voices = window.speechSynthesis.getVoices();
         const britishVoice = voices.find(v => v.name.includes('Google UK English Female') || v.lang === 'en-GB');
         if (britishVoice) msg.voice = britishVoice;
         
-        msg.rate = 1.0; // "Sakto lang" na bilis
         window.speechSynthesis.speak(msg);
 
-        // Classy Alert
-        alert("SYSTEM NOTICE: Please convert Office files (Word/Excel) to PDF for precise AI scanning.");
+        // UI Reset
+        fileInput.value = ""; 
+        document.getElementById('status-text').innerText = "INVALID FORMAT!";
+        document.getElementById('filename-display').innerText = "CONVERT TO PDF FIRST";
         
-        // I-reset ang UI para pwede sila mag-upload uli (at mag-error uli kung mali)
-        document.getElementById('file-input').value = ""; 
-        document.getElementById('status-text').innerText = "TAP TO UPLOAD DOCUMENT";
-        document.getElementById('filename-display').innerText = "";
-        return; // Hihinto rito para hindi basahin ang original logic sa baba
+        return; // Dito hihinto ang code, hindi babasahin yung rendering sa baba
     }
-    // --- END NG ERROR GUARD ---
 
-    // DITO NAGSISIMULA ANG ORIGINAL LOGIC MO (WALANG GALAW)
+    // --- 2. SUCCESS STATE (Kung tama ang file, tago ang robot) ---
+    if(robot) robot.classList.remove('active');
+
+    // --- 3. DITO NAGSISIMULA ANG ORIGINAL LOGIC MO (WALANG GALAW) ---
     pendingFile = file;
     document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
     document.getElementById('filename-display').innerText = file.name;
@@ -1785,10 +1948,12 @@ applySystemLock();
         reader.onload = async function() {
             const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
             document.getElementById('pages').value = pdf.numPages;
-            pdfDocSource = pdf; // Ito ang mag-aactivate ng navigation logic natin
-if(document.getElementById('total-pages-view')) {
-    document.getElementById('total-pages-view').innerText = pdf.numPages;
-}
+            pdfDocSource = pdf; 
+            
+            if(document.getElementById('total-pages-view')) {
+                document.getElementById('total-pages-view').innerText = pdf.numPages;
+            }
+            
             const page = await pdf.getPage(1);
             const viewport = page.getViewport({scale: 0.3});
             const canvas = document.getElementById('scan-canvas');
@@ -1810,6 +1975,10 @@ if(document.getElementById('total-pages-view')) {
             analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
         };
     }
+}
+
+function closeRobot() {
+    document.getElementById('gl-robot-ai').classList.remove('active');
 }
 
     function analyzePixels(canvas, ratio) {
