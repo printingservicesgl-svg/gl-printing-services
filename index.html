@@ -1331,8 +1331,59 @@ select:focus, input:focus {
     color: #000;
 }
 
+/* --- SIKRETO SA UMIIKOT NA BORDER --- */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
 
+/* --- GLASSMODAL ANIMATIONS --- */
+@keyframes pFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
+@keyframes pPop {
+    from {
+        opacity: 0;
+        /* Magsisimula sa mas mababang posisyon */
+        transform: translate(-50%, -20%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        /* Hihilahin paitaas para hindi tabon ng nav bar */
+        transform: translate(-50%, -65%) scale(1);
+    }
+}
+
+#p-modal {
+    position: fixed;
+    /* I-adjust ang top point paitaas */
+    top: 45%; 
+    left: 50%;
+    /* Ang -65% ang magsisiguro na aangat siya sa gitna-taas */
+    transform: translate(-50%, -65%);
+    width: 92%;
+    max-width: 360px;
+    background: rgba(10, 10, 10, 0.98); 
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    border-radius: 24px;
+    padding: 25px;
+    /* Magdagdag ng extra space sa ilalim para hindi dikit sa Home bar */
+    padding-bottom: 35px; 
+    color: white;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+    z-index: 1000000;
+    animation: pPop 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
     </style>
 </head>     
@@ -1463,6 +1514,16 @@ select:focus, input:focus {
         <p style="text-align:center; padding:20px; color:#aaa;">Loading orders...</p>
     </div>
 </div>
+<div style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 30px 0; position: relative; z-index: 10;">
+    <button onclick="pToggle()" style="cursor: pointer; width: 100%; max-width: 280px; height: 50px; background: #000; border: none; border-radius: 12px; position: relative; overflow: hidden; padding: 2px;">
+        <div style="position: absolute; inset: -100%; background: conic-gradient(from 0deg, transparent, #ffcc00, transparent, #ffcc00); animation: rotate 4s linear infinite;"></div>
+        
+        <div style="position: relative; width: 100%; height: 100%; background: #0a0a0a; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2;">
+            <span style="font-size: 16px;">💎</span>
+            <span style="color: #ffcc00; font-size: 10px; font-weight: 900; letter-spacing: 2px; font-family: sans-serif; text-transform: uppercase;">Special Papers</span>
+        </div>
+    </button>
+</div>
 
            <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222;">
     <div style="display:flex; align-items:center; gap:10px;">
@@ -1490,6 +1551,57 @@ select:focus, input:focus {
 
 <div style="padding: 20px; display: flex; justify-content: center; background: #000;">
     <canvas id="scan-canvas" style="max-width: 100%; border-radius: 8px; transition: filter 0.3s ease;"></canvas>
+</div>
+
+
+<div id="p-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:999999; animation: pFade 0.3s ease;">
+    
+    <div id="p-modal" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -48%); width:90%; max-width:360px; background:rgba(255, 255, 255, 0.05); border:1.5px solid rgba(255, 204, 0, 0.3); border-radius:30px; padding:30px; padding-bottom: 40px; color:white; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: pPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-size:10px; font-weight:900; color:#ffcc00; letter-spacing:4px;">PREMIUM UPLOAD</span>
+            <button onclick="pToggle()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
+
+        <div onclick="document.getElementById('p-file-real').click()" style="width:100%; height:130px; background:rgba(0,0,0,0.4); border:1px dashed rgba(255,204,0,0.4); border-radius:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; margin-bottom:20px; position:relative;">
+            <input type="file" id="p-file-real" hidden accept=".pdf, .png, .jpg" onchange="pPreview(this)">
+            <div id="p-msg" style="text-align:center;">
+                <div style="font-size:24px; margin-bottom:5px;">📄</div>
+                <div style="font-size:11px; color:#ffcc00; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">Tap to upload document</div>
+                <div style="font-size:9px; color:#aaa; margin-top:3px;">Supported: PDF, PNG, JPG</div>
+            </div>
+            <img id="p-view-img" src="" style="width:100%; height:100%; object-fit:contain; display:none; z-index:2;">
+            <div id="p-internal-scan" style="display:none;" class="p-scan-beam"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:15px;">
+            <select id="p-mat" onchange="pCalc()" style="background:rgba(0,0,0,0.6); border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:11px; outline:none; appearance:none;">
+                <option value="GLOSSY">Glossy Photo</option>
+                <option value="STICKER">Vinyl Sticker</option>
+                <option value="VELLUM">Vellum Board</option>
+            </select>
+            <select id="p-size" onchange="pCalc()" style="background:rgba(0,0,0,0.6); border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:11px; outline:none; appearance:none;">
+                <option value="A4">A4 Size</option>
+                <option value="4R">4R Size</option>
+                <option value="5R">5R Size</option>
+            </select>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,204,0,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid rgba(255,204,0,0.1);">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <label for="p-qty" style="font-size: 11px; color: #aaa;">Qty:</label>
+                <input type="number" id="p-qty" value="1" min="1" oninput="pCalc()" style="width:60px; background:rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; color:white; font-size:18px; font-weight:bold; outline:none; padding: 5px;">
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:8px; color:#555;">TOTAL COST</div>
+                <div style="color:#ffcc00; font-weight:bold; font-size:24px;">₱<span id="p-total">40.00</span></div>
+            </div>
+        </div>
+
+        <button id="p-submit-btn" disabled onclick="alert('Added to Cart!')" style="width:100%; padding:15px; border:none; border-radius:15px; font-weight:bold; font-size:11px; letter-spacing:1px; cursor:pointer; background:#1a1a1a; color:#444; transition:0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            UPLOAD IMAGE FIRST
+        </button>
+    </div>
 </div>
 
            <div class="scanner-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -2596,46 +2708,99 @@ nameInput.addEventListener('focus', () => {
 
     }, 10000); 
 }, { once: true }); // Para isang beses lang siya lilitaw per session (hindi makulit)
-function closePreview() {
-    // 1. I-reset ang File Input (para payagan ang re-upload ng parehong file)
-    const fileInput = document.getElementById('file-input');
-    if (fileInput) fileInput.value = "";
+    function closePreview() {
+        // 1. I-reset ang File Input (para payagan ang re-upload ng parehong file)
+        const fileInput = document.getElementById('file-input');
+        if (fileInput) fileInput.value = "";
 
-    // 2. I-reset ang Canvas (Burahin ang image/PDF preview)
-    const canvas = document.getElementById('scan-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = 0;
-        canvas.height = 0;
+        // 2. I-reset ang Canvas (Burahin ang image/PDF preview)
+        const canvas = document.getElementById('scan-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.width = 0;
+            canvas.height = 0;
+        }
+
+        // 3. I-reset ang Page Numbers sa UI
+        const currentPageView = document.querySelector('.nav-current-page') || document.getElementById('current-page-display');
+        const totalPageView = document.getElementById('total-pages-view');
+        const hiddenPagesInput = document.getElementById('pages');
+
+        if (currentPageView) currentPageView.innerText = "0";
+        if (totalPageView) totalPageView.innerText = "0";
+        if (hiddenPagesInput) hiddenPagesInput.value = 0;
+
+        // 4. I-reset ang Status Texts
+        const statusText = document.getElementById('status-text');
+        const filenameDisplay = document.getElementById('filename-display');
+        
+        if (statusText) statusText.innerText = "TAP TO UPLOAD DOCUMENT";
+        if (filenameDisplay) filenameDisplay.innerText = "";
+
+        // 5. I-clear ang Global Variables
+        pendingFile = null;
+        pdfDocSource = null;
+
+        // 6. Itago ang Robot AI kung nakalabas man
+        const robot = document.getElementById('gl-robot-ai');
+        if (robot) robot.classList.remove('active');
+
+        console.log("Terminal Cleared: Ready for next upload.");
+    }
+    // Rate card para sa kaukulang presyo (Galing sa luma mong code)
+    const PREMIUM_RATES = { 
+        "GLOSSY": { "A4": 40, "4R": 15, "5R": 25 }, 
+        "STICKER": { "A4": 60, "4R": 25, "5R": 35 }, 
+        "VELLUM": { "A4": 35, "4R": 15, "5R": 20 } 
+    };
+
+    // 1. ETO YUNG MAGPAPALITAW AT MAGTATAGO NG MODAL
+    function pToggle() {
+        const overlay = document.getElementById('p-overlay');
+        
+        // Tinitingnan kung nakatago ba yung modal ngayon
+        const isOpening = (overlay.style.display === 'none' || overlay.style.display === '');
+        
+        // Pag nakatago, gagawing 'block' para lumabas. Pag nakalitaw, gagawing 'none'.
+        overlay.style.display = isOpening ? 'block' : 'none';
+        
+        // Eto yung magla-lock sa background para di naii-scroll habang buhay ang modal
+        document.body.classList.toggle('stop-scrolling', isOpening);
     }
 
-    // 3. I-reset ang Page Numbers sa UI
-    const currentPageView = document.querySelector('.nav-current-page') || document.getElementById('current-page-display');
-    const totalPageView = document.getElementById('total-pages-view');
-    const hiddenPagesInput = document.getElementById('pages');
+    // 2. PARA SA PREVIEW NG IN-UPLOAD NA FILE AT PAG-ENABLE NG BUTTON
+    function pPreview(input) {
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('p-view-img').src = e.target.result;
+                document.getElementById('p-view-img').style.display = 'block';
+                document.getElementById('p-msg').style.display = 'none';
+                document.getElementById('p-internal-scan').style.display = 'block';
+                
+                // I-enable ang Submit Button at gawing gold
+                const btn = document.getElementById('p-submit-btn');
+                btn.disabled = false;
+                btn.style.background = "#ffcc00";
+                btn.style.color = "#000";
+                btn.innerText = "CONFIRM & ADD TO QUEUE";
+                
+                pCalc(); // Para mag-compute agad
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
-    if (currentPageView) currentPageView.innerText = "0";
-    if (totalPageView) totalPageView.innerText = "0";
-    if (hiddenPagesInput) hiddenPagesInput.value = 0;
-
-    // 4. I-reset ang Status Texts
-    const statusText = document.getElementById('status-text');
-    const filenameDisplay = document.getElementById('filename-display');
-    
-    if (statusText) statusText.innerText = "TAP TO UPLOAD DOCUMENT";
-    if (filenameDisplay) filenameDisplay.innerText = "";
-
-    // 5. I-clear ang Global Variables
-    pendingFile = null;
-    pdfDocSource = null;
-
-    // 6. Itago ang Robot AI kung nakalabas man
-    const robot = document.getElementById('gl-robot-ai');
-    if (robot) robot.classList.remove('active');
-
-    console.log("Terminal Cleared: Ready for next upload.");
-}
+    // 3. PARA SA PAG-COMPUTE NG PRESYO DEPENDE SA SIZES AT QUANTITY
+    function pCalc() {
+        const mat = document.getElementById('p-mat').value;
+        const size = document.getElementById('p-size').value;
+        const qty = parseInt(document.getElementById('p-qty').value) || 1;
+        
+        const total = PREMIUM_RATES[mat][size] * qty;
+        document.getElementById('p-total').innerText = total.toFixed(2);
+    }
     </script>
     <script>
     (function() {
