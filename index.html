@@ -1563,16 +1563,30 @@ select:focus, input:focus {
             <button onclick="pToggle()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
         </div>
 
-        <div onclick="document.getElementById('p-file-real').click()" style="width:100%; height:130px; background:rgba(0,0,0,0.4); border:1px dashed rgba(255,204,0,0.4); border-radius:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; margin-bottom:20px; position:relative;">
-            <input type="file" id="p-file-real" hidden accept=".pdf, .png, .jpg" onchange="pPreview(this)">
-            <div id="p-msg" style="text-align:center;">
-                <div style="font-size:24px; margin-bottom:5px;">📄</div>
-                <div style="font-size:11px; color:#ffcc00; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">Tap to upload document</div>
-                <div style="font-size:9px; color:#aaa; margin-top:3px;">Supported: PDF, PNG, JPG</div>
-            </div>
-            <img id="p-view-img" src="" style="width:100%; height:100%; object-fit:contain; display:none; z-index:2;">
-            <div id="p-internal-scan" style="display:none;" class="p-scan-beam"></div>
+        <div id="p-upload-container" style="width:100%; height:180px; background:rgba(0,0,0,0.6); border:1.5px dashed rgba(255,204,0,0.3); border-radius:20px; position:relative; margin-bottom:15px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+    
+    <div id="p-render-area" style="width:100%; height:100%; display:none; position:relative;">
+        <canvas id="p-canvas-preview" style="max-width:100%; max-height:100%; margin:auto; display:block;"></canvas>
+        <img id="p-img-preview" style="width:100%; height:100%; object-fit:contain; display:none;">
+        
+        <div id="p-nav-controls" style="display:none; position:absolute; bottom:10px; width:100%; justify-content:center; gap:10px; z-index:10;">
+            <button onclick="pChangePage(-1)" style="background:rgba(0,0,0,0.7); border:1px solid #ffcc00; color:#ffcc00; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:12px;">❮</button>
+            <span id="p-page-indicator" style="background:#ffcc00; color:black; padding:2px 12px; border-radius:15px; font-size:10px; font-weight:bold; min-width:60px; text-align:center;">1 / 1</span>
+            <button onclick="pChangePage(1)" style="background:rgba(0,0,0,0.7); border:1px solid #ffcc00; color:#ffcc00; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:12px;">❯</button>
         </div>
+    </div>
+
+    <div id="p-msg" onclick="document.getElementById('p-file-real').click()" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer;">
+        <div style="font-size:24px; margin-bottom:5px;">📄</div>
+        <div style="font-size:10px; color:#ffcc00; font-weight:bold; letter-spacing:1px;">UPLOAD SPECIAL DOCUMENT</div>
+        <div style="font-size:8px; color:#555; margin-top:3px;">PDF • PNG • JPG</div>
+    </div>
+
+    <button id="p-reset-btn" onclick="pResetFile(event)" style="display:none; position:absolute; top:10px; right:10px; z-index:20; background:#ff4444; border:none; color:white; width:22px; height:22px; border-radius:50%; cursor:pointer; font-weight:bold;">✕</button>
+</div>
+
+<input type="file" id="p-file-real" hidden accept=".pdf, .png, .jpg" onchange="pPreview(this)">
+
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:15px;">
             <select id="p-mat" onchange="pCalc()" style="background:rgba(0,0,0,0.6); border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:11px; outline:none; appearance:none;">
@@ -2770,37 +2784,188 @@ nameInput.addEventListener('focus', () => {
     }
 
     // 2. PARA SA PREVIEW NG IN-UPLOAD NA FILE AT PAG-ENABLE NG BUTTON
-    function pPreview(input) {
-        if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('p-view-img').src = e.target.result;
-                document.getElementById('p-view-img').style.display = 'block';
-                document.getElementById('p-msg').style.display = 'none';
-                document.getElementById('p-internal-scan').style.display = 'block';
-                
-                // I-enable ang Submit Button at gawing gold
-                const btn = document.getElementById('p-submit-btn');
-                btn.disabled = false;
-                btn.style.background = "#ffcc00";
-                btn.style.color = "#000";
-                btn.innerText = "CONFIRM & ADD TO QUEUE";
-                
-                pCalc(); // Para mag-compute agad
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+   // 1. IMPROVED PREVIEW LOGIC (Supports PDF & Images)
+function pPreview(input) {
+    const file = input.files[0];
+    const imgPreview = document.getElementById('p-view-img');
+    const pdfPreview = document.getElementById('p-view-pdf');
+    const msg = document.getElementById('p-msg');
+    const resetBtn = document.getElementById('p-reset-file');
+    const btn = document.getElementById('p-submit-btn');
+
+    if (file) {
+        const reader = new FileReader();
+        const fileType = file.type;
+
+        reader.onload = function(e) {
+            // Itago muna ang prompt message
+            msg.style.display = 'none';
+            resetBtn.style.display = 'block'; // Ipakita ang Exit Button
+
+            if (fileType === 'application/pdf') {
+                // PDF Logic
+                pdfPreview.src = e.target.result;
+                pdfPreview.style.display = 'block';
+                imgPreview.style.display = 'none';
+            } else {
+                // Image Logic
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'block';
+                pdfPreview.style.display = 'none';
+            }
+
+            // I-enable ang Submit Button
+            btn.disabled = false;
+            btn.style.background = "#ffcc00";
+            btn.style.color = "#000";
+            btn.innerText = "CONFIRM & ADD TO QUEUE";
+
+            pCalc(); // Re-calculate price
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+// 2. RESET/EXIT FILE FUNCTION (Ang bubura ng maling file)
+function pResetFile(event) {
+    // Pigilan ang pag-trigger ng upload box click
+    if(event) event.stopPropagation();
+
+    const fileInput = document.getElementById('p-file-real');
+    const imgPreview = document.getElementById('p-view-img');
+    const pdfPreview = document.getElementById('p-view-pdf');
+    const msg = document.getElementById('p-msg');
+    const resetBtn = document.getElementById('p-reset-file');
+    const btn = document.getElementById('p-submit-btn');
+
+    // I-clear lahat
+    fileInput.value = "";
+    imgPreview.src = "";
+    pdfPreview.src = "";
+    imgPreview.style.display = 'none';
+    pdfPreview.style.display = 'none';
+    
+    // Ibalik ang original state
+    msg.style.display = 'block';
+    resetBtn.style.display = 'none';
+    
+    // I-disable ulit ang button
+    btn.disabled = true;
+    btn.style.background = "#1a1a1a";
+    btn.style.color = "#444";
+    btn.innerText = "UPLOAD DOCUMENT FIRST";
+    
+    document.getElementById('p-total').innerText = "0.00";
+}
+
+// 3. SIGURADUHIN NA ANG pToggle AY MAG-RESET DIN PARA MALINIS PAG NAG-CLOSE
+function pToggle() {
+    const overlay = document.getElementById('p-overlay');
+    const isOpening = (overlay.style.display === 'none' || overlay.style.display === '');
+    
+    if (!isOpening) {
+        pResetFile(); // Bura file preview pag ni-close ang modal
+    }
+    
+    overlay.style.display = isOpening ? 'block' : 'none';
+    document.body.classList.toggle('stop-scrolling', isOpening);
+}
+let pPdfDoc = null; 
+let pCurrentPage = 1;
+
+async function renderPPage(num) {
+    if (!pPdfDoc) return;
+    pCurrentPage = num;
+
+    const canvas = document.getElementById('p-canvas-preview');
+    const ctx = canvas.getContext('2d');
+    const page = await pPdfDoc.getPage(num);
+    
+    // Scale para kumasya sa maliit na box
+    const viewport = page.getViewport({ scale: 0.8 }); 
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    
+    // Update Indicator
+    document.getElementById('p-page-indicator').innerText = `${pCurrentPage} / ${pPdfDoc.numPages}`;
+}
+
+function pChangePage(offset) {
+    const next = pCurrentPage + offset;
+    if (pPdfDoc && next >= 1 && next <= pPdfDoc.numPages) {
+        renderPPage(next);
+    }
+}
+
+async function pPreview(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const img = document.getElementById('p-img-preview');
+    const canvas = document.getElementById('p-canvas-preview');
+    const renderArea = document.getElementById('p-render-area');
+    const nav = document.getElementById('p-nav-controls');
+    const msg = document.getElementById('p-msg');
+    const resetBtn = document.getElementById('p-reset-btn');
+    const submitBtn = document.getElementById('p-submit-btn');
+
+    msg.style.display = 'none';
+    renderArea.style.display = 'block';
+    resetBtn.style.display = 'block';
+
+    if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = async function() {
+            const typedarray = new Uint8Array(this.result);
+            pPdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+            
+            nav.style.display = 'flex'; // Ipakita ang Next/Prev
+            img.style.display = 'none';
+            canvas.style.display = 'block';
+            
+            renderPPage(1); // Render first page
+            pCalc(); 
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        // Image logic
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            img.style.display = 'block';
+            canvas.style.display = 'none';
+            nav.style.display = 'none'; // Tago buttons pag image
+            pCalc();
+        };
+        reader.readAsDataURL(file);
     }
 
-    // 3. PARA SA PAG-COMPUTE NG PRESYO DEPENDE SA SIZES AT QUANTITY
-    function pCalc() {
-        const mat = document.getElementById('p-mat').value;
-        const size = document.getElementById('p-size').value;
-        const qty = parseInt(document.getElementById('p-qty').value) || 1;
-        
-        const total = PREMIUM_RATES[mat][size] * qty;
-        document.getElementById('p-total').innerText = total.toFixed(2);
-    }
+    submitBtn.disabled = false;
+    submitBtn.style.background = "#ffcc00";
+    submitBtn.style.color = "#000";
+    submitBtn.innerText = "CONFIRM & ADD TO QUEUE";
+}
+
+function pResetFile(e) {
+    if(e) e.stopPropagation();
+    document.getElementById('p-file-real').value = "";
+    document.getElementById('p-render-area').style.display = 'none';
+    document.getElementById('p-msg').style.display = 'flex';
+    document.getElementById('p-reset-btn').style.display = 'none';
+    
+    pPdfDoc = null;
+    pCurrentPage = 1;
+    
+    const btn = document.getElementById('p-submit-btn');
+    btn.disabled = true;
+    btn.style.background = "#1a1a1a";
+    btn.style.color = "#444";
+    btn.innerText = "UPLOAD IMAGE FIRST";
+}
+
     </script>
     <script>
     (function() {
