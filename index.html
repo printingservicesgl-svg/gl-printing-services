@@ -1612,9 +1612,9 @@ select:focus, input:focus {
             </div>
         </div>
 
-        <button id="p-submit-btn" disabled onclick="alert('Added to Cart!')" style="width:100%; padding:15px; border:none; border-radius:15px; font-weight:bold; font-size:11px; letter-spacing:1px; cursor:pointer; background:#1a1a1a; color:#444; transition:0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            UPLOAD IMAGE FIRST
-        </button>
+       <button id="p-submit-btn" disabled onclick="handlePremiumCheckout()" style="width:100%; padding:15px; border:none; border-radius:15px; font-weight:bold; font-size:11px; letter-spacing:1px; cursor:pointer; background:#1a1a1a; color:#444; transition:0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+    UPLOAD IMAGE FIRST
+</button>
     </div>
 </div>
 
@@ -2965,7 +2965,42 @@ function pResetFile(e) {
     btn.style.color = "#444";
     btn.innerText = "UPLOAD IMAGE FIRST";
 }
+function handlePremiumCheckout() {
+    // 1. Kunin ang total price mula sa Premium Modal (₱0.00 format)
+    const premiumTotal = document.getElementById('p-total').innerText;
 
+    // 2. I-update ang Main Price Display (Yung nasa terminal UI mo)
+    const livePrice = document.getElementById('live-price');
+    if (livePrice) livePrice.innerText = premiumTotal;
+
+    // 3. I-update ang Payment Modal Price (Para tugma ang babayaran)
+    const payAmount = document.getElementById('pay-amount');
+    if (payAmount) payAmount.innerText = "₱" + premiumTotal;
+
+    // 4. "Add to Cart" Visual Feedback
+    const btn = document.getElementById('p-submit-btn');
+    btn.innerText = "ADDED TO CART! 🛒";
+    btn.style.background = "#2ecc71"; // Gagawin nating Green sandali
+    btn.style.color = "#fff";
+
+    // 5. Automatic Transition to Payment Modal
+    setTimeout(() => {
+        // Isara ang Premium Modal (Special Paper modal)
+        pToggle(); 
+
+        // Buksan ang Payment/Checkout Modal
+        // Note: Siguraduhin na 'payment-modal' ang ID ng checkout modal mo
+        const paymentModal = document.getElementById('payment-modal');
+        if (paymentModal) {
+            paymentModal.style.display = 'flex';
+        }
+
+        // I-reset ang button text para sa susunod na upload
+        btn.innerText = "CONFIRM & ADD TO QUEUE";
+        btn.style.background = "#ffcc00"; 
+        btn.style.color = "#000";
+    }, 1000); // 1 second delay para makita ni customer na "Added" na
+}
     </script>
     <script>
     (function() {
