@@ -1880,6 +1880,9 @@ select:focus, input:focus {
 
 <script>
 
+    let currentSubtotal = 0; // Dito mase-save yung ₱40.00 (o kung magkano man)
+let isPremiumMode = false; // Flag para malaman ng system kung special paper ang order
+
 function applySystemLock() {
     const now = new Date();
     const hour = now.getHours(); 
@@ -1944,6 +1947,7 @@ applySystemLock();
         "bw_partial": {short:5, a4:6, long:7}, "color_partial": {short:6, a4:7, long:8},
         "bw_full": {short:5, a4:6, long:7}, "color_full": {short:8, a4:10, long:15}
     };
+    
 
     let cart = [];
     let pendingFile = null;
@@ -2966,41 +2970,61 @@ function pResetFile(e) {
     btn.innerText = "UPLOAD IMAGE FIRST";
 }
 function handlePremiumCheckout() {
-    // 1. Kunin ang total price mula sa Premium Modal (₱0.00 format)
-    const premiumTotal = document.getElementById('p-total').innerText;
+    // 1. Kunin ang text (e.g., "₱40.00") at gawing numero (40)
+    const pTotalText = document.getElementById('p-total').innerText;
+    currentSubtotal = parseFloat(pTotalText.replace(/[^\d.]/g, '')) || 0;
+    
+    // 2. I-activate ang Premium Mode
+    isPremiumMode = true;
 
-    // 2. I-update ang Main Price Display (Yung nasa terminal UI mo)
-    const livePrice = document.getElementById('live-price');
-    if (livePrice) livePrice.innerText = premiumTotal;
+    // 3. I-update agad ang Receipt Values bago lumipat
+    refreshFinalTotal();
 
-    // 3. I-update ang Payment Modal Price (Para tugma ang babayaran)
-    const payAmount = document.getElementById('pay-amount');
-    if (payAmount) payAmount.innerText = "₱" + premiumTotal;
-
-    // 4. "Add to Cart" Visual Feedback
+    // 4. Visual Feedback sa Button (Design remains the same)
     const btn = document.getElementById('p-submit-btn');
     btn.innerText = "ADDED TO CART! 🛒";
-    btn.style.background = "#2ecc71"; // Gagawin nating Green sandali
+    btn.style.background = "#2ecc71"; 
     btn.style.color = "#fff";
 
-    // 5. Automatic Transition to Payment Modal
+    // 5. Transition to Payment Modal
     setTimeout(() => {
-        // Isara ang Premium Modal (Special Paper modal)
-        pToggle(); 
-
-        // Buksan ang Payment/Checkout Modal
-        // Note: Siguraduhin na 'payment-modal' ang ID ng checkout modal mo
-        const paymentModal = document.getElementById('payment-modal');
-        if (paymentModal) {
-            paymentModal.style.display = 'flex';
-        }
-
-        // I-reset ang button text para sa susunod na upload
+        pToggle(); // Isara ang Premium Upload Modal
+        document.getElementById('payment-modal').style.display = 'flex'; // Buksan ang Payment Modal
+        
+        // I-reset ang Confirm button para sa susunod na transaction
         btn.innerText = "CONFIRM & ADD TO QUEUE";
         btn.style.background = "#ffcc00"; 
         btn.style.color = "#000";
-    }, 1000); // 1 second delay para makita ni customer na "Added" na
+    }, 1000);
 }
+function refreshFinalTotal() {
+    // 1. Kunin ang Destination Value
+    const dest = document.getElementById('destination').value;
+    let deliveryFee = 0;
+
+    // 2. Delivery Fee Logic (Base sa IDs sa HTML mo)
+    if (dest === 'jhs') deliveryFee = 15;
+    else if (dest === 'shs') deliveryFee = 20;
+    else deliveryFee = 0; // pickup
+
+    // 3. Compute Grand Total
+    const grandTotal = currentSubtotal + deliveryFee;
+
+    // 4. I-update ang UI ng Payment Modal Receipt
+    // Siguraduhin na tama ang IDs na ito sa HTML mo
+    const subDisplay = document.getElementById('subtotal-display');
+    const delDisplay = document.getElementById('delivery-fee-display');
+    const finalDisplay = document.getElementById('pay-amount');
+
+    if (subDisplay) subDisplay.innerText = "₱" + currentSubtotal.toFixed(2);
+    if (delDisplay) delDisplay.innerText = "₱" + deliveryFee.toFixed(2);
+    if (finalDisplay) finalDisplay.innerText = "₱" + grandTotal.toFixed(2);
+}
+document.addEventListener('change', function(e) {
+    if (e.target && (e.target.id === 'destination' || e.target.id === 'payment-method')) {
+        refreshFinalTotal();
+    }
+});
     </script>
     <script>
     (function() {
