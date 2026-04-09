@@ -2153,25 +2153,39 @@ function closeRobot() {
 
    function updatePrice() {
     const paperSize = document.getElementById('paper-size').value;
-    const printType = document.getElementById('print-type').value;
+    const printType = document.getElementById('print-type').value; // e.g. "bw_text" or "GLOSSY"
     const pages = parseInt(document.getElementById('pages').value) || 0;
-    const copies = parseInt(document.getElementById('copies').value) || 0;
+    const copies = parseInt(document.getElementById('copies').value) || 1;
     const destination = document.getElementById('destination').value;
-    const paymentMethod = document.getElementById('payment-method').value; // Dagdag ito
 
-    const basePrice = PRICING[printType][paperSize];
-    const subPrintTotal = basePrice * pages * copies;
+    let subPrintTotal = 0;
 
-    let deliveryFee = 0;
-    if (destination === 'jhs') {
-        deliveryFee = 15; 
-    } else if (destination === 'shs') {
-        deliveryFee = 20; 
+    // 1. ISOLATION LOGIC: Check muna kung ano ang "printType"
+    // Kung ang printType ay isa sa mga keys ng PREMIUM_RATES
+    if (PREMIUM_RATES.hasOwnProperty(printType)) {
+        
+        // PREMIUM MODE: No pages, only Copies
+        const unitPrice = PREMIUM_RATES[printType][paperSize] || 0;
+        subPrintTotal = unitPrice * copies;
+        
+        // Safety: I-disable ang "pages" input visual kung premium (Optional)
+        document.getElementById('pages').style.opacity = "0.5";
+        
+    } else if (PRICING.hasOwnProperty(printType)) {
+        
+        // STANDARD TERMINAL MODE: Price * Pages * Copies
+        const unitPrice = PRICING[printType][paperSize] || 0;
+        subPrintTotal = unitPrice * pages * copies;
+        
+        // Reset visual of pages input
+        document.getElementById('pages').style.opacity = "1";
     }
 
-    const grandTotalValue = subPrintTotal + deliveryFee; // Total amount as number
+    // 2. DELIVERY FEE (No changes here)
+    let deliveryFee = (destination === 'jhs') ? 15 : (destination === 'shs' ? 20 : 0);
+    const grandTotal = subPrintTotal + deliveryFee;
 
-    // Display sa UI
+    // 3. UI SYNC (Siguraduhin na ang displays ay tama)
     document.getElementById('live-price').innerText = subPrintTotal.toFixed(2);
     
     if(document.getElementById('subtotal-display')) {
@@ -2181,15 +2195,9 @@ function closeRobot() {
         document.getElementById('delivery-fee-display').innerText = `₱${deliveryFee.toFixed(2)}`;
     }
     if(document.getElementById('pay-amount')) {
-        document.getElementById('pay-amount').innerText = `₱${grandTotalValue.toFixed(2)}`;
+        document.getElementById('pay-amount').innerText = `₱${grandTotal.toFixed(2)}`;
     }
-
-    // I-save ang values sa global variables o sa button attributes para makuha ng receiptHTML
-    window.currentDeliveryFee = deliveryFee;
-    window.currentPaymentMethod = paymentMethod;
-    window.currentGrandTotal = grandTotalValue;
 }
-
    function addItem() {
     if(!pendingFile) return;
 
