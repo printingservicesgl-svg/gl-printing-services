@@ -185,6 +185,21 @@ body::before {
     margin-bottom: 15px;
     text-shadow: 0 0 10px rgba(255, 204, 0, 0.3); /* Letter glow */
 }
+/* Tech Solutions Card - Balanced Version */
+.container .tilt-card:nth-child(3) {
+    /* Mula 0.4, gawin nating 0.15 para humalo sa background */
+    border: 1px solid rgba(255, 204, 0, 0.15) !important;
+    
+    /* Gawing mas malabo ang glow (Blur: 40px, Spread: -10px) */
+    box-shadow: 0 10px 40px -10px rgba(255, 204, 0, 0.1) !important;
+}
+
+/* Hover effect - Mas subtle na rin dapat */
+.container .tilt-card:nth-child(3):hover {
+    border-color: rgba(255, 204, 0, 0.5) !important;
+    box-shadow: 0 15px 45px rgba(255, 204, 0, 0.15), 
+                inset 0 0 15px rgba(255, 204, 0, 0.05) !important;
+}
 
         /* GLOBAL STYLES */
         * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
@@ -1508,7 +1523,7 @@ select:focus, input:focus {
         <a onclick="goHome()">Home</a>
         <a href="#services-anchor">Services</a>
         <a href="#terminal-sector">Terminal</a>
-        <a href="#contact">Contact</a>
+        <a href="#connect">Contact</a>
     </nav>
 
     <div class="section-header" id="services-anchor">
