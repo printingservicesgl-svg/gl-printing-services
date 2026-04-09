@@ -1498,7 +1498,69 @@ select:focus, input:focus {
     margin-top: 25px;
     text-transform: uppercase;
 }
+/* --- CINEMATIC COVER STYLES --- */
+#cover-page {
+    height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 10000;
+    background: #020204; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; transition: 1.2s cubic-bezier(0.8, 0, 0.2, 1);
+}
 
+/* Luxury Ambient Lighting */
+.gold-ambient-glow {
+    position: absolute; width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(255, 204, 0, 0.08) 0%, transparent 70%);
+    filter: blur(80px); animation: drift 20s infinite alternate;
+}
+
+@keyframes drift { from { transform: translate(-10%, -10%); } to { transform: translate(10%, 10%); } }
+
+/* The Glass Card */
+.glass-shield {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 204, 0, 0.15);
+    padding: 60px 40px; border-radius: 40px; text-align: center;
+    width: 380px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    position: relative; z-index: 10;
+}
+
+/* Typography & Branding */
+.gl-main-title {
+    font-family: 'Syncopate', sans-serif; font-weight: 900; font-size: 1.8rem;
+    letter-spacing: 12px; color: #fff; margin: 20px 0 10px;
+    text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+}
+
+/* Marketing Reel - Clean Flow */
+.marketing-reel {
+    height: 20px; overflow: hidden; margin-bottom: 40px; opacity: 0.6;
+}
+
+.reel-track { animation: reelScroll 12s infinite cubic-bezier(0.6, 0, 0.4, 1); }
+.reel-track span {
+    display: block; font-size: 10px; font-weight: bold; letter-spacing: 4px;
+    color: #ffcc00; height: 20px; line-height: 20px;
+}
+
+@keyframes reelScroll {
+    0%, 20% { transform: translateY(0); }
+    25%, 45% { transform: translateY(-20px); }
+    50%, 70% { transform: translateY(-40px); }
+    75%, 95% { transform: translateY(-60px); }
+    100% { transform: translateY(0); }
+}
+
+/* Elite Button */
+.gl-enter-btn {
+    background: transparent; border: 1px solid #ffcc00; color: #ffcc00;
+    padding: 16px 40px; border-radius: 100px; cursor: pointer;
+    font-family: 'Syncopate'; font-size: 9px; letter-spacing: 4px;
+    position: relative; overflow: hidden; transition: 0.4s;
+}
+
+.gl-enter-btn:hover { background: #ffcc00; color: #000; box-shadow: 0 0 30px #ffcc00; }
+
+.location-tag { font-size: 7px; color: #444; margin-top: 25px; letter-spacing: 3px; }
     </style>
 </head>     
 
@@ -1511,12 +1573,39 @@ select:focus, input:focus {
     <h1 id="freeze-time" style="font-family: 'Syncopate'; color: white;">SYSTEM RESTING...</h1>
     <p style="color: gray; font-size: 12px;">GL PRINTING SERVICES | 8AM - 12AM</p>
 </div>
-<section id="cover-page">
-    <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
-    <h1 style="font-family:'Syncopate'; letter-spacing:10px; font-size: clamp(2.2rem, 6vw, 3.5rem);">GL PRINTS</h1>
-    <p style="letter-spacing: 6px; opacity: 0.4; font-size: 0.7rem; margin-top: 10px;">EST. 2025 | MUNTINLUPA CITY </p>
-    <button class="btn-glitch" onclick="unlockSystem()">HI PO, WELCOME</button>
-</section>
+<div id="cover-page">
+    <!-- Ethereal Background Elements -->
+    <div class="gold-ambient-glow"></div>
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="glass-shield">
+        <div class="inner-content">
+            <div class="logo-wrapper">
+                <img src="GL_Logo.png" class="gl-logo-cover" alt="GL Logo">
+                <div class="logo-pulse"></div>
+            </div>
+            
+            <h1 class="gl-main-title">GL PRNTS</h1>
+            
+            <!-- Marketing Reel -->
+            <div class="marketing-reel">
+                <div class="reel-track">
+                    <span>PRINTING SOLUTIONS</span>
+                    <span>ELITE GRAPHIC DESIGN</span>
+                    <span>TECH REPAIR</span>
+                    <span>MUNTINLUPA CITY</span>
+                </div>
+            </div>
+
+            <button onclick="enterSystem();" class="gl-enter-btn">
+                <span class="btn-shimmer"></span>
+                ACCESS TERMINAL
+            </button>
+            
+            <div class="location-tag">EST. 2025 | MUNTINLUPA CITY</div>
+        </div>
+    </div>
+</div>
 
 <div id="main-system">
     <nav>
@@ -1805,7 +1894,7 @@ select:focus, input:focus {
                     <span>TOTAL:</span>
                     <h2 id="grand-total" style="color:var(--neon-gold);">₱0.00</h2>
                 </div>
-                <button class="btn-add" style="background:white; color:black;" onclick="showConfirm()">CHECKOUT VIA GCASH</button>
+                <button class="btn-add" style="background:white; color:black;" onclick="showConfirm()">CHECKOUT</button>
             </div>
         </div>
     </section> 
@@ -3151,34 +3240,57 @@ function initiateTerminalSync() {
     overlay.id = 'sync-terminal-prompt';
     overlay.className = 'gl-sync-overlay';
     
-    // Gagamit tayo ng Backticks ( ` ) dito para gumana ang ${ }
+    // Paggamit ng Template Literal (Backticks) para sa responsive content
     overlay.innerHTML = `
         <div class="gl-sync-card">
             <div class="gl-sync-icon-container">
                 <div class="gl-sync-ring"></div>
-                <div class="gl-sync-ring"></div>
                 <div class="gl-sync-core">!</div>
             </div>
-            
-            <h2 class="gl-sync-header">SESSION RE-SYNC</h2>
-            
-            <p class="gl-sync-text">
-                Detected Premium Terminal navigation. To ensure
-                <span class="gl-highlight">Standard Pricing accuracy</span>,
-                a quick session recalibration is required.
-            </p>
-            
+            <h2 class="gl-sync-header">RECALIBRATION REQUIRED</h2>
+            <p class="gl-sync-text">Detected session conflict. Refreshing to sync Standard rates.</p>
             <button onclick="localStorage.clear(); location.reload();" class="gl-sync-btn">
-                <span class="gl-btn-text">RECALIBRATE SESSION</span>
-                <span class="gl-btn-glow"></span>
+                <span class="gl-btn-text">SYNC NOW</span>
             </button>
-            
-            <p class="gl-sync-footer">TERMINAL ID: GL-TS-${Math.floor(1000 + Math.random() * 9000)}</p>
         </div>
     `;
-    
     document.body.appendChild(overlay);
+    
+    // Mobile accessibility: Pigilan ang background scroll kapag nakalabas ang prompt
+    document.body.style.overflow = 'hidden';
 }
+function enterSystem() {
+    const cover = document.getElementById('cover-page');
+    const main = document.getElementById('main-system');
+    
+    // Luxury Fade & Slide transition
+    cover.style.transition = "transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease";
+    cover.style.transform = "scale(1.1) translateY(-100%)";
+    cover.style.opacity = "0";
+    
+    setTimeout(() => {
+        cover.style.display = 'none';
+        main.style.visibility = 'visible';
+        main.style.opacity = '1';
+    }, 1200);
+}
+
+// Particle Generator for "Gold Dust" effect
+function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+            position: absolute; width: 2px; height: 2px; background: #ffcc00;
+            border-radius: 50%; opacity: ${Math.random()};
+            top: ${Math.random() * 100}%; left: ${Math.random() * 100}%;
+            filter: blur(1px); animation: floatParticle ${5 + Math.random() * 5}s infinite;
+        `;
+        container.appendChild(p);
+    }
+}
+document.addEventListener('DOMContentLoaded', createParticles);
     </script>
     <script>
     (function() {
