@@ -1880,9 +1880,6 @@ select:focus, input:focus {
 
 <script>
 
-    let currentSubtotal = 0; // Dito mase-save yung ₱40.00 (o kung magkano man)
-let isPremiumMode = false; // Flag para malaman ng system kung special paper ang order
-
 function applySystemLock() {
     const now = new Date();
     const hour = now.getHours(); 
@@ -3108,7 +3105,6 @@ document.addEventListener('change', function(e) {
         // Kung gusto mo na hihingi lagi ng pass, siguraduhin na 'sessionStorage' ang gamit.
     })();
 
-    // Idagdag o i-update itong function sa loob ng iyong <script> tag
     function updatePrice() {
         // 1. Kuhanin ang values mula sa Terminal Inputs
         const paperSize = document.getElementById('paper-size').value;
@@ -3248,8 +3244,6 @@ function filterRepairs() {
         }
     }
 }
-
-
     </script>
     <script>
 
