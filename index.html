@@ -2981,20 +2981,6 @@ nameInput.addEventListener('focus', () => {
         "VELLUM": { "A4": 35, "4R": 15, "5R": 20 } 
     };
 
-    // 1. ETO YUNG MAGPAPALITAW AT MAGTATAGO NG MODAL
-    function pToggle() {
-        const overlay = document.getElementById('p-overlay');
-        
-        // Tinitingnan kung nakatago ba yung modal ngayon
-        const isOpening = (overlay.style.display === 'none' || overlay.style.display === '');
-        
-        // Pag nakatago, gagawing 'block' para lumabas. Pag nakalitaw, gagawing 'none'.
-        overlay.style.display = isOpening ? 'block' : 'none';
-        
-        // Eto yung magla-lock sa background para di naii-scroll habang buhay ang modal
-        document.body.classList.toggle('stop-scrolling', isOpening);
-    }
-
     // 2. PARA SA PREVIEW NG IN-UPLOAD NA FILE AT PAG-ENABLE NG BUTTON
    // 1. IMPROVED PREVIEW LOGIC (Supports PDF & Images)
 function pPreview(input) {
@@ -3233,32 +3219,6 @@ document.addEventListener('change', function(e) {
         refreshFinalTotal();
     }
 });
-function initiateTerminalSync() {
-    if (document.getElementById('sync-terminal-prompt')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'sync-terminal-prompt';
-    overlay.className = 'gl-sync-overlay';
-    
-    // Paggamit ng Template Literal (Backticks) para sa responsive content
-    overlay.innerHTML = `
-        <div class="gl-sync-card">
-            <div class="gl-sync-icon-container">
-                <div class="gl-sync-ring"></div>
-                <div class="gl-sync-core">!</div>
-            </div>
-            <h2 class="gl-sync-header">RECALIBRATION REQUIRED</h2>
-            <p class="gl-sync-text">Detected session conflict. Refreshing to sync Standard rates.</p>
-            <button onclick="localStorage.clear(); location.reload();" class="gl-sync-btn">
-                <span class="gl-btn-text">SYNC NOW</span>
-            </button>
-        </div>
-    `;
-    document.body.appendChild(overlay);
-    
-    // Mobile accessibility: Pigilan ang background scroll kapag nakalabas ang prompt
-    document.body.style.overflow = 'hidden';
-}
 function enterSystem() {
     const cover = document.getElementById('cover-page');
     const main = document.getElementById('main-system');
@@ -3439,12 +3399,6 @@ document.addEventListener('DOMContentLoaded', createParticles);
     }
 
     function validateCheckout() {
-        // 1. DITO MO ISINGIT:
-    const hasPremiumMemory = localStorage.getItem('enteredPremium') === 'true';
-    if (hasPremiumMemory) {
-        initiateTerminalSync(); // BOOM! Labas ang harang.
-        return; // Stop the flow.
-    }
         const name = document.getElementById('cust-name').value.trim();
         const method = document.getElementById('payment-method').value;
         const proofInput = document.getElementById('proof-input');
