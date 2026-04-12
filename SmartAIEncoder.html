@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL Pro Encoder | Perfect Layout Copy</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root { --accent: #00d2ff; --dark: #1a1a1a; }
+        body { margin: 0; background: #2c2c2c; color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Sidebar & Layout */
+        .app-shell { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 280px; background: var(--dark); padding: 20px; border-right: 1px solid #444; display: flex; flex-direction: column; gap: 15px; }
+        
+        .main-viewer { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; padding: 40px; position: relative; }
+
+        /* The "Canvas" Bond Paper */
+        .canvas-container { box-shadow: 0 0 30px rgba(0,0,0,0.5); background: white; }
+
+        /* Controls */
+        .btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 5px; cursor: pointer; text-align: left; }
+        .btn:hover { background: var(--accent); color: black; }
+        .zoom-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 50px; display: flex; gap: 20px; align-items: center; }
+
+        #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <i class="fas fa-sync fa-spin fa-3x" style="color:var(--accent)"></i>
+    <p>Mapping original layout... Please wait.</p>
+</div>
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <h3 style="color:var(--accent)">GL ENCODER PRO</h3>
+        <input type="file" id="upload" hidden onchange="processImage()">
+        <button class="btn" onclick="document.getElementById('upload').click()"><i class="fas fa-upload"></i> Upload Source Image</button>
+        
+        <label>Paper Size</label>
+        <select id="paperSize" class="btn" onchange="initCanvas()">
+            <option value="short">Short (8.5 x 11)</option>
+            <option value="a4">A4 Standard</option>
+            <option value="long">Long (8.5 x 13)</option>
+        </select>
+
+        <hr style="width:100%; border:0; border-top:1px solid #444">
+        <button class="btn" onclick="addText()"><i class="fas fa-plus"></i> Add Manual Text</button>
+        <button class="btn" style="background:var(--accent); color:black;" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> SAVE AS PDF</button>
+        
+        <div style="font-size: 0.8rem; color: #888; margin-top: 20px;">
+            <b>Instructions:</b><br>
+            1. Click any text to edit.<br>
+            2. Drag text to match the original image layout.
+        </div>
+    </aside>
+
+    <main class="main-viewer">
+        <canvas id="paperCanvas"></canvas>
+    </main>
+</div>
+
+<div class="zoom-bar">
+    <button onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
+    <span id="zoomLabel">100%</span>
+    <button onclick="zoomIn()"><i class="fas fa-search-plus"></i></button>
+</div>
+
+<script>
+    let canvas;
+    let zoomLevel = 1.0;
+
+    // 1. Initialize Canvas (Bond Paper Ratio)
+    function initCanvas() {
+        const size = document.getElementById('paperSize').value;
+        const sizes = {
+            'short': { w: 816, h: 1056 }, // 8.5 x 11 at 96 DPI
+            'a4': { w: 794, h: 1123 },
+            'long': { w: 816, h: 1248 }
+        };
+
+        if(canvas) canvas.dispose();
+
+        canvas = new fabric.Canvas('paperCanvas', {
+            backgroundColor: 'white',
+            width: sizes[size].w,
+            height: sizes[size].h
+        });
+    }
+
+    // 2. Process Image (Precise Mapping)
+    async function processImage() {
+        const file = document.getElementById('upload').files[0];
+        if(!file) return;
+
+        document.getElementById('loader').style.display = 'flex';
+
+        // Tesseract HOCR provides layout info (coordinates)
+        const result = await Tesseract.recognize(file, 'eng', { logger: m => console.log(m) });
+        
+        // Split by lines to maintain original position
+        const lines = result.data.lines;
+        
+        lines.forEach(line => {
+            const textBlock = new fabric.IText(line.text, {
+                left: line.bbox.x0 / 1.5, // Scaling down to fit canvas
+                top: line.bbox.y0 / 1.5,
+                fontSize: 16,
+                fontFamily: 'Arial'
+            });
+            canvas.add(textBlock);
+        });
+
+        document.getElementById('loader').style.display = 'none';
+    }
+
+    // 3. Manual Text Addition
+    function addText() {
+        const t = new fabric.IText('New Text', { left: 50, top: 50, fontSize: 18 });
+        canvas.add(t);
+        canvas.setActiveObject(t);
+    }
+
+    // 4. Zoom Logic
+    function zoomIn() { zoomLevel += 0.1; applyZoom(); }
+    function zoomOut() { zoomLevel -= 0.1; applyZoom(); }
+    function applyZoom() {
+        canvas.setZoom(zoomLevel);
+        document.getElementById('zoomLabel').innerText = Math.round(zoomLevel * 100) + "%";
+    }
+
+    // 5. Perfect Export
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const size = document.getElementById('paperSize').value;
+        const format = size === 'long' ? [8.5, 13] : (size === 'short' ? 'letter' : 'a4');
+
+        const imgData = canvas.toDataURL({ format: 'png', quality: 1.0 });
+        const pdf = new jsPDF('p', 'in', format);
+        
+        const width = pdf.internal.pageSize.getWidth();
+        const height = pdf.internal.pageSize.getHeight();
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.save("GL_Encoded_Document.pdf");
+    }
+
+    window.onload = initCanvas;
+</script>
+
+</body>
+</html>
