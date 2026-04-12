@@ -3,240 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GL TECH CARE | Repair Quote</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>GL TECH CARE | V12 ULTRA INFINITY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-gold: #ffcc00;
-            --dark-bg: #0a0a0a;
-            --card-bg: #151515;
-            --glass: rgba(255, 255, 255, 0.05);
+            --gold: #ffcc00;
+            --gold-glow: rgba(255, 204, 0, 0.4);
+            --bg: #020202;
+            --card: #0d0d0d;
+            --border: rgba(255, 255, 255, 0.05);
         }
 
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); scrollbar-width: none; }
+        ::-webkit-scrollbar { display: none; }
+
         body {
-            background: var(--dark-bg);
+            background: var(--bg);
             color: #fff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .repair-header {
-            text-align: center;
-            margin-bottom: 30px;
+        /* Animated Glow Background */
+        .bg-glow {
+            position: fixed; width: 400px; height: 400px; background: var(--gold-glow);
+            filter: blur(150px); border-radius: 50%; z-index: -1; top: -100px; right: -100px;
+            animation: float 10s infinite alternate;
         }
 
-        .repair-header h1 {
-            font-family: 'Syncopate';
-            font-size: 1.4rem;
-            color: var(--neon-gold);
-            margin-bottom: 5px;
-        }
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(-50px, 100px); } }
 
-        .calculator-card {
-            background: var(--card-bg);
+        .container {
             width: 100%;
-            max-width: 450px;
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid #333;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-width: 550px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+            margin-top: 30px;
         }
 
-        label {
-            display: block;
-            font-size: 11px;
-            color: #777;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
+        .header { text-align: left; margin-bottom: 35px; border-left: 4px solid var(--gold); padding-left: 20px; }
+        .header h1 { font-family: 'Syncopate'; font-size: 1.2rem; letter-spacing: 4px; color: var(--gold); margin: 0; }
+        .header p { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #444; margin-top: 8px; font-weight: 800; }
+
+        .label-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1.5px; }
+        .badge { background: #1a1a1a; padding: 4px 10px; border-radius: 6px; font-size: 9px; color: var(--gold); border: 1px solid #333; }
 
         select {
-            width: 100%;
-            padding: 15px;
-            background: #222;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            appearance: none;
+            width: 100%; padding: 18px 25px; background: #050505; border: 1px solid var(--border);
+            border-radius: 20px; color: #fff; font-size: 14px; font-weight: 600; appearance: none; outline: none; margin-bottom: 25px;
+        }
+        select:focus { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,204,0,0.1); }
+
+        /* Multi-Issue Selector */
+        .issue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .issue-item {
+            background: #050505; border: 1px solid var(--border); padding: 15px; border-radius: 18px;
+            cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #666;
+        }
+        .issue-item.selected { border-color: var(--gold); color: #fff; background: rgba(255,204,0,0.05); }
+
+        /* Quality Toggle */
+        .quality-box { display: flex; gap: 10px; margin-bottom: 25px; }
+        .quality-btn { 
+            flex: 1; padding: 12px; border-radius: 15px; background: #050505; border: 1px solid var(--border); 
+            font-size: 10px; font-weight: 800; color: #444; cursor: pointer; text-align: center;
+        }
+        .quality-btn.active { border-color: #fff; color: #fff; }
+
+        .price-engine {
+            background: #000; border: 1px solid var(--gold); border-radius: 30px; padding: 35px;
+            text-align: center; margin-top: 20px; display: none;
         }
 
-        .price-display {
-            background: var(--glass);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px dashed var(--neon-gold);
-            margin-top: 10px;
-            display: none; /* Lalabas lang pag kumpleto select */
-        }
+        .saving-badge { font-size: 10px; background: #00ff88; color: #000; padding: 3px 12px; border-radius: 20px; font-weight: 900; margin-bottom: 10px; display: inline-block; }
 
-        .price-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--neon-gold);
-            display: block;
-        }
+        .price-value { font-size: 3.5rem; font-weight: 800; color: var(--gold); display: block; letter-spacing: -2px; }
 
-        .btn-book {
-            width: 100%;
-            padding: 18px;
-            background: var(--neon-gold);
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Syncopate';
-            font-size: 0.9rem;
-            margin-top: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: none;
-        }
+        .stats-bar { display: flex; justify-content: space-around; margin-top: 25px; border-top: 1px solid #111; padding-top: 20px; }
+        .stat { text-align: center; }
+        .stat small { display: block; font-size: 8px; color: #444; text-transform: uppercase; margin-bottom: 5px; }
+        .stat span { font-family: 'JetBrains Mono'; font-size: 11px; color: #aaa; }
 
-        .btn-book:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 204, 0, 0.2);
+        .btn-order {
+            width: 100%; padding: 25px; background: var(--gold); color: #000; border: none;
+            border-radius: 22px; font-family: 'Syncopate'; font-weight: 800; font-size: 11px;
+            letter-spacing: 2px; cursor: pointer; margin-top: 30px; box-shadow: 0 10px 40px var(--gold-glow);
         }
-
-        .disclaimer {
-            font-size: 10px;
-            color: #555;
-            text-align: center;
-            margin-top: 15px;
-            line-height: 1.4;
-        }
+        .btn-order:hover { transform: scale(1.02); filter: brightness(1.1); }
     </style>
 </head>
 <body>
 
-    <div class="repair-header">
-        <h1>TECH CARE REPAIR</h1>
-        <p style="font-size: 12px; color: #777;">Quick Quote & Professional Fix</p>
+<div class="bg-glow"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>GL TECH CARE</h1>
+        <p>Ultra-High Precision Restoration</p>
     </div>
 
-    <div class="calculator-card">
-        <label>1. Select Device Brand</label>
-        <select id="brand" onchange="updateModels()">
-            <option value="">-- Choose Brand --</option>
-            <option value="Infinix">Infinix</option>
-            <option value="Samsung">Samsung</option>
-            <option value="Realme">Realme</option>
-        </select>
+    <div class="label-meta">
+        <label>01. Device Platform</label>
+        <span class="badge">V12 ENGINE</span>
+    </div>
+    <select id="brand" onchange="loadModels()">
+        <option value="">Select Manufacturer</option>
+        <option value="iPhone">Apple iPhone</option>
+        <option value="Samsung">Samsung Mobile</option>
+        <option value="Infinix">Infinix Tech</option>
+        <option value="Realme">Realme Global</option>
+    </select>
 
-        <label>2. Select Model</label>
-        <select id="model" onchange="calculatePrice()" disabled>
-            <option value="">-- Select Brand First --</option>
-        </select>
+    <div class="label-meta">
+        <label>02. Hardware Model</label>
+    </div>
+    <select id="model" onchange="calculateAll()" disabled>
+        <option value="">Awaiting Brand...</option>
+    </select>
 
-        <label>3. What's the Issue?</label>
-        <select id="issue" onchange="calculatePrice()">
-            <option value="">-- Choose Issue --</option>
-            <option value="LCD Replacement">LCD / Screen Replacement</option>
-            <option value="Battery Replacement">Battery Replacement</option>
-            <option value="Charging Port">Not Charging / Port Fix</option>
-            <option value="Glass Only">Glass Only (No LCD Issue)</option>
-        </select>
+    <div class="label-meta">
+        <label>03. Select Issues (Multi-Select)</label>
+        <span class="badge" id="discount-note" style="display:none;">10% BUNDLE ACTIVE</span>
+    </div>
+    <div class="issue-grid" id="issue-grid">
+        <div class="issue-item" data-val="LCD" data-price="2000" onclick="toggleIssue(this)">Screen / LCD</div>
+        <div class="issue-item" data-val="Battery" data-price="900" onclick="toggleIssue(this)">Battery Fix</div>
+        <div class="issue-item" data-val="Port" data-price="700" onclick="toggleIssue(this)">Charging Port</div>
+        <div class="issue-item" data-val="Glass" data-price="1300" onclick="toggleIssue(this)">Glass Only</div>
+    </div>
 
-        <div id="price-box" class="price-display">
-            <label style="color: #fff;">Estimated Total (Parts + Labor)</label>
-            <span class="price-value" id="final-price">₱0</span>
-            <p style="font-size: 11px; color: #aaa;">*Price may vary depending on parts availability.</p>
+    <div class="label-meta">
+        <label>04. Part Quality</label>
+    </div>
+    <div class="quality-box">
+        <div class="quality-btn active" onclick="setQuality(1.2, this)">PREMIUM OEM</div>
+        <div class="quality-btn" onclick="setQuality(1.0, this)">HIGH-GRADE</div>
+    </div>
+
+    <div id="price-card" class="price-engine">
+        <div id="savings" class="saving-badge" style="display:none;">BUNDLE SAVINGS APPLIED</div>
+        <span style="font-size: 10px; color: #555; font-weight: 800; display: block;">FINAL QUOTE</span>
+        <span class="price-value" id="total-price">₱0</span>
+        
+        <div class="stats-bar">
+            <div class="stat"><small>Est. Time</small><span id="stat-time">--</span></div>
+            <div class="stat"><small>Success Rate</small><span>99.2%</span></div>
+            <div class="stat"><small>Tech</small><span>GL-PRO</span></div>
         </div>
 
-        <button id="book-btn" class="btn-book" onclick="bookRepair()">BOOK REPAIR NOW ➜</button>
-        
-        <p class="disclaimer">
-            GL Printing & Tech Services - Muntinlupa City.<br>
-            All repairs come with a 30-day warranty on parts.
-        </p>
+        <button class="btn-order" onclick="bookNow()">CONFIRM BOOKING ➜</button>
     </div>
+</div>
 
-    <script>
-        // DATA OBJECT: Dito mo i-update ang prices mo
-        const repairData = {
-            "Infinix": {
-                models: ["Hot 30", "Note 30", "Zero 30", "Smart 7"],
-                basePrice: 1200
-            },
-            "Samsung": {
-                models: ["A14", "A24", "A54", "S21 FE"],
-                basePrice: 1800
-            },
-            "Realme": {
-                models: ["Realme 11", "Realme 12 5G", "C55", "C35"],
-                basePrice: 1400
+<script>
+    const techData = {
+        "iPhone": { models: ["iPhone 11", "iPhone 12/13", "iPhone 14 Pro", "iPhone 15 Pro Max"], base: 2500 },
+        "Samsung": { models: ["S21/S22 Ultra", "S23/S24", "A-Series (A54/A14)", "Note 20"], base: 1800 },
+        "Infinix": { models: ["Note 30/40 Pro", "Hot 30/40", "Zero Ultra", "Smart 8"], base: 1200 },
+        "Realme": { models: ["Realme 11/12 Pro", "C55/C67", "GT Series", "C35"], base: 1400 }
+    };
+
+    let selectedIssues = [];
+    let qualityMultiplier = 1.2;
+
+    function loadModels() {
+        const brand = document.getElementById('brand').value;
+        const modelSel = document.getElementById('model');
+        modelSel.innerHTML = '<option value="">Choose Model</option>';
+        if(brand) {
+            modelSel.disabled = false;
+            techData[brand].models.forEach(m => {
+                let o = document.createElement('option'); o.value = m; o.innerText = m;
+                modelSel.appendChild(o);
+            });
+        } else { modelSel.disabled = true; }
+        calculateAll();
+    }
+
+    function toggleIssue(el) {
+        const val = el.getAttribute('data-val');
+        if(selectedIssues.includes(val)) {
+            selectedIssues = selectedIssues.filter(i => i !== val);
+            el.classList.remove('selected');
+        } else {
+            if(selectedIssues.length < 3) {
+                selectedIssues.push(val);
+                el.classList.add('selected');
             }
-        };
+        }
+        calculateAll();
+    }
 
-        const issueMarkup = {
-            "LCD Replacement": 1500,
-            "Battery Replacement": 800,
-            "Charging Port": 500,
-            "Glass Only": 1000
-        };
+    function setQuality(val, btn) {
+        qualityMultiplier = val;
+        document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        calculateAll();
+    }
 
-        function updateModels() {
-            const brand = document.getElementById('brand').value;
-            const modelSelect = document.getElementById('model');
+    function calculateAll() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const card = document.getElementById('price-card');
+        const discNote = document.getElementById('discount-note');
+        const savings = document.getElementById('savings');
+
+        if(brand && model && selectedIssues.length > 0) {
+            let base = techData[brand].base;
+            let issuesSum = 0;
             
-            modelSelect.innerHTML = '<option value="">-- Choose Model --</option>';
+            document.querySelectorAll('.issue-item.selected').forEach(item => {
+                issuesSum += parseInt(item.getAttribute('data-price'));
+            });
+
+            let subtotal = (base + issuesSum) * qualityMultiplier;
             
-            if(brand) {
-                modelSelect.disabled = false;
-                repairData[brand].models.forEach(m => {
-                    let opt = document.createElement('option');
-                    opt.value = m;
-                    opt.innerHTML = m;
-                    modelSelect.appendChild(opt);
-                });
+            // Bundle Discount (10% off if more than 1 issue)
+            if(selectedIssues.length > 1) {
+                subtotal = subtotal * 0.9;
+                discNote.style.display = "block";
+                savings.style.display = "inline-block";
             } else {
-                modelSelect.disabled = true;
+                discNote.style.display = "none";
+                savings.style.display = "none";
             }
-            calculatePrice();
+
+            document.getElementById('total-price').innerText = "₱" + Math.round(subtotal).toLocaleString();
+            document.getElementById('stat-time').innerText = (selectedIssues.length * 45) + " Mins";
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
         }
+    }
 
-        function calculatePrice() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const issue = document.getElementById('issue').value;
-            const priceBox = document.getElementById('price-box');
-            const bookBtn = document.getElementById('book-btn');
+    function bookNow() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const price = document.getElementById('total-price').innerText;
+        const quality = qualityMultiplier === 1.2 ? "Premium OEM" : "High-Grade";
+        
+        const msg = `ULTRA REPAIR BOOKING (V12):%0A%0A` +
+                    `UNIT: ${brand} ${model}%0A` +
+                    `ISSUES: ${selectedIssues.join(', ')}%0A` +
+                    `QUALITY: ${quality}%0A` +
+                    `FINAL QUOTE: ${price}%0A%0A` +
+                    `Muntinlupa Branch. Pa-reserve po ng parts.`;
 
-            if(brand && model && issue) {
-                let total = repairData[brand].basePrice + issueMarkup[issue];
-                document.getElementById('final-price').innerText = "₱" + total.toLocaleString();
-                priceBox.style.display = "block";
-                bookBtn.style.display = "block";
-            } else {
-                priceBox.style.display = "none";
-                bookBtn.style.display = "none";
-            }
-        }
+        window.open(`https://m.me/GLPrintingServices?text=${msg}`, '_blank');
+    }
+</script>
 
-        function bookRepair() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const issue = document.getElementById('issue').value;
-            const price = document.getElementById('final-price').innerText;
-
-            const message = `Hi GL Tech! I want to book a repair:%0A%0A` +
-                            `📱 Device: ${brand} ${model}%0A` +
-                            `🛠️ Issue: ${issue}%0A` +
-                            `💰 Est. Quote: ${price}%0A%0A` +
-                            `Kailan po pwedeng dalhin sa shop?`;
-
-            // I-replace ito ng iyong Facebook Page Link o Telegram
-            // Example for Telegram: https://t.me/YourUsername?text=...
-            const messengerLink = `https://m.me/GLPrintingServices?text=${message}`;
-            
-            window.open(messengerLink, '_blank');
-        }
-    </script>
 </body>
 </html>
