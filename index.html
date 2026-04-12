@@ -1763,7 +1763,7 @@ select:focus, input:focus {
         
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <span style="font-size:10px; font-weight:900; color:#ffcc00; letter-spacing:4px;">PREMIUM UPLOAD</span>
-            <button onclick="pToggle()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+            <button onclick="exitPremium()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
         </div>
 
         <div id="p-upload-container" style="width:100%; height:180px; background:rgba(0,0,0,0.6); border:1.5px dashed rgba(255,204,0,0.3); border-radius:20px; position:relative; margin-bottom:15px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
@@ -1791,29 +1791,31 @@ select:focus, input:focus {
 <input type="file" id="p-file-real" hidden accept=".pdf, .png, .jpg" onchange="pPreview(this)">
 
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:15px;">
-            <select id="p-mat" onchange="pCalc()" style="background:rgba(0,0,0,0.6); border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:11px; outline:none; appearance:none;">
-                <option value="GLOSSY">Glossy Photo</option>
-                <option value="STICKER">Vinyl Sticker</option>
-                <option value="VELLUM">Vellum Board</option>
-            </select>
-            <select id="p-size" onchange="pCalc()" style="background:rgba(0,0,0,0.6); border:1px solid #333; color:white; padding:10px; border-radius:10px; font-size:11px; outline:none; appearance:none;">
-                <option value="A4">A4 Size</option>
-                <option value="4R">4R Size</option>
-                <option value="5R">5R Size</option>
+       <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,204,0,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid rgba(255,204,0,0.2);">
+    
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; color: #aaa; font-weight: bold;">QTY:</label>
+            <input type="number" id="p-qty" value="1" min="1" oninput="pCalc()" 
+                style="width:70px; background:rgba(255,255,255,0.1); border: 1px solid #444; border-radius: 8px; color:white; font-size:20px; font-weight:bold; outline:none; padding: 5px 10px;">
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; color: #aaa; font-weight: bold;">TYPE:</label>
+            <select id="p-paper" onchange="pCalc()" 
+                style="background:rgba(0,0,0,0.5); border: 2px solid #ffcc00; border-radius: 12px; color:white; font-size:14px; font-weight:bold; outline:none; padding: 5px 10px; cursor: pointer;">
+                <option value="MATTE">Matte</option>
+                <option value="GLOSSY">Glossy</option>
+                <option value="STANDARD">Standard</option>
             </select>
         </div>
+    </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,204,0,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid rgba(255,204,0,0.1);">
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <label for="p-qty" style="font-size: 11px; color: #aaa;">Qty:</label>
-                <input type="number" id="p-qty" value="1" min="1" oninput="pCalc()" style="width:60px; background:rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; color:white; font-size:18px; font-weight:bold; outline:none; padding: 5px;">
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:8px; color:#555;">TOTAL COST</div>
-                <div style="color:#ffcc00; font-weight:bold; font-size:24px;">₱<span id="p-total">40.00</span></div>
-            </div>
-        </div>
+    <div style="text-align:right;">
+        <div style="font-size:10px; color:#666; letter-spacing: 1px;">TOTAL COST</div>
+        <div style="color:#ffcc00; font-weight:bold; font-size:28px;">₱<span id="p-total">45.00</span></div>
+    </div>
+</div>
 
        <button id="p-submit-btn" disabled onclick="handlePremiumCheckout()" style="width:100%; padding:15px; border:none; border-radius:15px; font-weight:bold; font-size:11px; letter-spacing:1px; cursor:pointer; background:#1a1a1a; color:#444; transition:0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
     UPLOAD IMAGE FIRST
@@ -1922,9 +1924,9 @@ select:focus, input:focus {
         <div class="card-glow"></div> 
         
         <div class="checkout-content">
-            <button type="button" class="terminal-exit-btn" onclick="closeModal('payment-modal')">
-                &times;
-            </button>
+          <button type="button" class="terminal-exit-btn" onclick="closeModal('payment-modal')">
+    &times;
+</button>
 
             <div class="steps-container">
                 <span class="step-pill active" id="step1">1. INFO</span>
@@ -2083,10 +2085,13 @@ select:focus, input:focus {
 
 <script>
 
+let isPremiumMode = false; 
+let currentSubtotal = 0;
 function applySystemLock() {
     const now = new Date();
     const hour = now.getHours(); 
     const mins = now.getMinutes();
+
     
     // Convert current time to total minutes
     const currentTime = (hour * 60) + mins;
@@ -2974,12 +2979,6 @@ nameInput.addEventListener('focus', () => {
 
         console.log("Terminal Cleared: Ready for next upload.");
     }
-    // Rate card para sa kaukulang presyo (Galing sa luma mong code)
-    const PREMIUM_RATES = { 
-        "GLOSSY": { "A4": 40, "4R": 15, "5R": 25 }, 
-        "STICKER": { "A4": 60, "4R": 25, "5R": 35 }, 
-        "VELLUM": { "A4": 35, "4R": 15, "5R": 20 } 
-    };
 
     // 2. PARA SA PREVIEW NG IN-UPLOAD NA FILE AT PAG-ENABLE NG BUTTON
    // 1. IMPROVED PREVIEW LOGIC (Supports PDF & Images)
@@ -3164,53 +3163,59 @@ function pResetFile(e) {
     btn.innerText = "UPLOAD IMAGE FIRST";
 }
 function handlePremiumCheckout() {
-    // 1. Kunin ang text (e.g., "₱40.00") at gawing numero (40)
     const pTotalText = document.getElementById('p-total').innerText;
+    // Siguraduhin na number ang makuha
     currentSubtotal = parseFloat(pTotalText.replace(/[^\d.]/g, '')) || 0;
     
-    // 2. I-activate ang Premium Mode
-    isPremiumMode = true;
+    isPremiumMode = true; // ITAG NA PREMIUM TO
 
-    // 3. I-update agad ang Receipt Values bago lumipat
     refreshFinalTotal();
 
-    // 4. Visual Feedback sa Button (Design remains the same)
     const btn = document.getElementById('p-submit-btn');
     btn.innerText = "ADDED TO CART! 🛒";
     btn.style.background = "#2ecc71"; 
-    btn.style.color = "#fff";
 
-    // 5. Transition to Payment Modal
     setTimeout(() => {
-        pToggle(); // Isara ang Premium Upload Modal
-        document.getElementById('payment-modal').style.display = 'flex'; // Buksan ang Payment Modal
+        if(typeof pToggle === "function") pToggle(); 
+        document.getElementById('payment-modal').style.display = 'flex'; 
         
-        // I-reset ang Confirm button para sa susunod na transaction
         btn.innerText = "CONFIRM & ADD TO QUEUE";
         btn.style.background = "#ffcc00"; 
         btn.style.color = "#000";
     }, 1000);
 }
 function refreshFinalTotal() {
-    // 1. Kunin ang Destination Value
+    let subTotal = 0;
+
+    // CHECK KUNG NASAAN TAYONG MODE
+    if (isPremiumMode) {
+        // Gamitin ang global currentSubtotal na nakuha sa handlePremiumCheckout
+        subTotal = currentSubtotal;
+    } else {
+        // RE-CALCULATE STANDARD: (Dito natin kukunin ang standard pricing)
+        const paperSize = document.getElementById('paper-size').value;
+        const printType = document.getElementById('print-type').value;
+        const pages = parseInt(document.getElementById('pages').value) || 0;
+        const copies = parseInt(document.getElementById('copies').value) || 1;
+
+        // Siguraduhin na ang PRICING object ay accessible dito
+        if (PRICING[printType] && PRICING[printType][paperSize]) {
+            subTotal = PRICING[printType][paperSize] * pages * copies;
+        }
+    }
+
+    // DELIVERY LOGIC
     const dest = document.getElementById('destination').value;
-    let deliveryFee = 0;
+    let deliveryFee = (dest === 'jhs') ? 15 : (dest === 'shs' ? 20 : 0);
 
-    // 2. Delivery Fee Logic (Base sa IDs sa HTML mo)
-    if (dest === 'jhs') deliveryFee = 15;
-    else if (dest === 'shs') deliveryFee = 20;
-    else deliveryFee = 0; // pickup
+    const grandTotal = subTotal + deliveryFee;
 
-    // 3. Compute Grand Total
-    const grandTotal = currentSubtotal + deliveryFee;
-
-    // 4. I-update ang UI ng Payment Modal Receipt
-    // Siguraduhin na tama ang IDs na ito sa HTML mo
+    // UI UPDATE
     const subDisplay = document.getElementById('subtotal-display');
     const delDisplay = document.getElementById('delivery-fee-display');
     const finalDisplay = document.getElementById('pay-amount');
 
-    if (subDisplay) subDisplay.innerText = "₱" + currentSubtotal.toFixed(2);
+    if (subDisplay) subDisplay.innerText = "₱" + subTotal.toFixed(2);
     if (delDisplay) delDisplay.innerText = "₱" + deliveryFee.toFixed(2);
     if (finalDisplay) finalDisplay.innerText = "₱" + grandTotal.toFixed(2);
 }
@@ -3219,6 +3224,27 @@ document.addEventListener('change', function(e) {
         refreshFinalTotal();
     }
 });
+
+const PREMIUM_RATES = {
+    "MATTE": 45.00,   // Palitan mo ang presyo ayon sa gusto mo
+    "GLOSSY": 40.00,
+    "STANDARD": 30.00
+};
+
+function pCalc() {
+    const qtyInput = document.getElementById('p-qty');
+    const typeSelect = document.getElementById('p-paper');
+    const totalDisplay = document.getElementById('p-total');
+
+    if (qtyInput && typeSelect && totalDisplay) {
+        let quantity = parseFloat(qtyInput.value) || 0;
+        let paperType = typeSelect.value;
+        let rate = PREMIUM_RATES[paperType] || 0;
+
+        let total = quantity * rate;
+        totalDisplay.innerText = total.toFixed(2);
+    }
+}
 function enterSystem() {
     const cover = document.getElementById('cover-page');
     const main = document.getElementById('main-system');
@@ -3251,6 +3277,21 @@ function createParticles() {
     }
 }
 document.addEventListener('DOMContentLoaded', createParticles);
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    
+    // I-OFF ANG PREMIUM MODE PARA BACK TO STANDARD
+    isPremiumMode = false; 
+    currentSubtotal = 0;
+
+    // I-reset ang dropdowns (Gaya ng usapan natin kanina)
+    document.getElementById('destination').selectedIndex = 0;
+    
+    // Tawagin ulit ang refresh para mag 0.00
+    refreshFinalTotal();
+}
+
     </script>
     <script>
     (function() {
