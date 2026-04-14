@@ -99,23 +99,6 @@ async function updateOrder() {
         document.getElementById('ref-id').value = ""; // Clear input
     }
 }
-
-async function notifyCustomer() {
-    const targetRef = prompt("ENTER CUSTOMER REF NO:"); // O gamitin mo yung input field mo
-    
-    if(!targetRef) return;
-
-    const { error } = await gl_db
-        .from('orders')
-        .update({ status: 'READY' })
-        .eq('ref_no', targetRef);
-
-    if (error) {
-        alert("Error: " + error.message);
-    } else {
-        alert("SIGNAL SENT! Notified na ang customer.");
-    }
-}
 </script>
 </body>
 </html>

@@ -3293,33 +3293,6 @@ function closeModal(modalId) {
     // Tawagin ulit ang refresh para mag 0.00
     refreshFinalTotal();
 }
-async function enableNotifications(refNo) {
-    // 1. Humingi ng Permission
-    const permission = await Notification.requestPermission();
-    
-    if (permission === 'granted' && 'serviceWorker' in navigator) {
-        // 2. Register ang Service Worker
-        const reg = await navigator.serviceWorker.register('sw.js');
-        
-        // 3. Makinig sa Supabase Realtime
-        gl_db.channel(`order-${refNo}`)
-            .on('postgres_changes', { 
-                event: 'UPDATE', 
-                schema: 'public', 
-                table: 'orders', 
-                filter: `ref_no=eq.${refNo}` 
-            }, (payload) => {
-                if (payload.new.status === 'READY') {
-                    // I-trigger ang System Notification
-                    reg.showNotification("GL PRINTS: READY NA! ✅", {
-                        body: `Hi ${payload.new.customer_name}, handa na ang order mo (#${refNo}). Pwede mo na itong kunin!`,
-                        icon: 'GL_Logo.png',
-                        vibrate: [200, 100, 200]
-                    });
-                }
-            }).subscribe();
-    }
-}
 
     </script>
     <script>
