@@ -2585,6 +2585,10 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
 
         if (dbError) throw dbError;
 
+        // --- DITO MO ISINGIT ITO ---
+startOrderWatcher(ref, custName); 
+// ---------------------------
+
         const finalStamps = await updateLoyalty(custName);
         const loyaltyHTML = renderLoyaltyUI(finalStamps);
 
@@ -3712,5 +3716,41 @@ function filterRepairs() {
             </div>
     </div>
 </div>
+let swReg = null;
+
+// 1. Pag-load ng page, i-register agad ang SW
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+        .then(reg => { swReg = reg; console.log("GL Notif System: Ready"); });
+}
+
+// 2. Ang Watcher Function
+async function startOrderWatcher(refNo, name) {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    // Makinig sa pagbabago ng status sa 'orders' table
+    const channel = gl_db.channel(`notif-${refNo}`)
+        .on('postgres_changes', { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'orders', 
+            filter: `ref_no=eq.${refNo}` 
+        }, (payload) => {
+            if (payload.new.status === 'READY') {
+                sendSystemNotif(name, refNo);
+                channel.unsubscribe();
+            }
+        }).subscribe();
+}
+
+function sendSystemNotif(name, ref) {
+    const data = {
+        type: 'SHOW_NOTIFICATION',
+        title: 'GL PRINTS: READY NA! ✅',
+        body: `Hi ${name}, tapos na ang order mong #${ref}.`
+    };
+    if (swReg && swReg.active) swReg.active.postMessage(data);
+}
     </body>
     </html>
