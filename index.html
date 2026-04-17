@@ -2583,13 +2583,8 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                 status: 'PENDING'
             }]);
 
-       
        if (dbError) throw dbError;
-
-// DITO MO ISINGIT (Safe version):
-if (typeof startOrderWatcher === 'function') {
-    startOrderWatcher(ref, custName).catch(e => console.log("Watcher failed but order proceed"));
-}
+startOrderWatcher(ref, custName);
 
         const finalStamps = await updateLoyalty(custName);
         const loyaltyHTML = renderLoyaltyUI(finalStamps);
@@ -3333,43 +3328,7 @@ async function startOrderWatcher(refNo, customerName) {
                 channel.unsubscribe();
             }
         }).subscribe();
-    }
-    // ILAGAY SA PINAKABABA NG SCRIPT (LABAS NG SENDTOTEGRAM)
-async function startOrderWatcher(ref, custName) {
-    try {
-        // Hihingi ng permission sa notification
-        if ("Notification" in window && Notification.permission !== "granted") {
-            await Notification.requestPermission();
-        }
 
-        // MAKINIG SA SUPABASE
-        gl_db
-            .channel(`notif-${ref}`)
-            .on('postgres_changes', { 
-                event: 'UPDATE', 
-                schema: 'public', 
-                table: 'orders', 
-                filter: `ref_no=eq.${ref}` 
-            }, (payload) => {
-                if (payload.new.status === 'READY') {
-                    // PAG NAGING READY NA, MAG NOTIF SA PHONE
-                    new Notification("GL PRINTING SERVICES ✨", {
-                        body: `Glow day, ${custName}! Ready na ang print mo (Ref: ${ref}).`,
-                        icon: 'https://github.com/fluent-icon.png' // Palitan mo ng logo mo
-                    });
-
-                    // VOICE ALERT PARA KAHIT DI NAKATINGIN SA PHONE
-                    const speech = new SpeechSynthesisUtterance(`Glow day ${custName}, your order is now ready.`);
-                    window.speechSynthesis.speak(speech);
-                }
-            })
-            .subscribe();
-            
-        console.log("🔔 Watcher active for: " + ref);
-    } catch (err) {
-        console.log("Notif error:", err);
-    }
-}
     </script>
     <script>
     (function() {
