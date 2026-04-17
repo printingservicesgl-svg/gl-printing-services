@@ -3331,6 +3331,42 @@ async function startOrderWatcher(refNo, customerName) {
             }
         }).subscribe();
 }
+
+// Ilagay ito sa dulo ng script sa Main Website
+function startOrderWatcher(ref, custName) {
+    requestNotificationPermission(ref);
+
+    // Makikinig tayo sa pagbabago sa Database
+    const channel = gl_db
+        .channel('order-update')
+        .on('postgres_changes', { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'orders',
+            filter: `ref_no=eq.${ref}` 
+        }, payload => {
+            if (payload.new.status === 'READY') {
+                showNotification(custName, ref);
+            }
+        })
+        .subscribe();
+}
+
+function showNotification(name, ref) {
+    const title = "GL PRINTING SERVICES ✨";
+    const options = {
+        body: `Glow day, ${name}! Ready na ang print mo (Ref: ${ref}). Pwede mo na itong kunin/i-deliver.`,
+        icon: 'https://github.com/fluent-icon.png', // Palitan mo ng logo mo
+        vibrate: [200, 100, 200]
+    };
+
+    // Ito ang maglalabas ng notif kahit naka-lock ang phone (basta open ang browser)
+    new Notification(title, options);
+    
+    // Voice alert para extra special
+    const msg = new SpeechSynthesisUtterance("Your order is now ready for pickup.");
+    window.speechSynthesis.speak(msg);
+}
     </script>
     <script>
     (function() {
