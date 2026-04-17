@@ -2583,6 +2583,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
                 status: 'PENDING'
             }]);
 
+       
         if (dbError) throw dbError;
 
         // DITO MO ISINGIT:
@@ -3330,7 +3331,7 @@ async function startOrderWatcher(refNo, customerName) {
                 channel.unsubscribe();
             }
         }).subscribe();
-}
+    }
     </script>
     <script>
     (function() {
