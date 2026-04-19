@@ -1561,6 +1561,96 @@ select:focus, input:focus {
 .gl-enter-btn:hover { background: #ffcc00; color: #000; box-shadow: 0 0 30px #ffcc00; }
 
 .location-tag { font-size: 7px; color: #444; margin-top: 25px; letter-spacing: 3px; }
+.estimator-pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: rgba(0, 132, 255, 0.05);
+    border: 1px solid rgba(0, 132, 255, 0.3);
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 132, 255, 0.1);
+}
+
+/* Ang "Glowing Beam" effect na umiikot */
+.estimator-pill::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent, #0084FF, transparent 30%);
+    animation: rotate-beam 4s linear infinite;
+    z-index: -1;
+    opacity: 0;
+}
+
+.estimator-pill:hover::before {
+    opacity: 1;
+}
+
+.estimator-pill:hover {
+    background: rgba(0, 132, 255, 0.15);
+    transform: translateY(-2px);
+    border-color: #0084FF;
+    box-shadow: 0 0 25px rgba(0, 132, 255, 0.4);
+}
+
+@keyframes rotate-beam {
+    100% { transform: rotate(360deg); }
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #0084FF;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 10px #0084FF;
+}
+
+.pulse-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: inherit;
+    animation: pulse-ring 1.5s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+.pill-text {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.pill-arrow {
+    color: #0084FF;
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.estimator-pill:hover .pill-arrow {
+    transform: translateX(5px);
+}
     </style>
 </head>     
 
@@ -1652,17 +1742,26 @@ select:focus, input:focus {
     <p>Professional Hardware & Software troubleshooting for mobile and PC.</p>
     <div class="view-archive-btn" style="color: #ffcc00;">OPEN DATABASE</div>
 </div>
-
 <div id="tech-archive-modal" class="modal tech-archive-modal">
-    <div class="modal-content">
+    <div class="modal-content" style="display: flex; flex-direction: column; max-height: 90vh;">
         <button class="terminal-exit-btn" onclick="closeTechArchive()">&times;</button>
         
-        <h2 style="font-family:'Syncopate'; font-size:1.2rem; letter-spacing:8px; color:#fff; margin-bottom:5px;">TECH ARCHIVE</h2>
-        <p style="font-size:8px; letter-spacing:4px; color:#0084FF; opacity:0.6; margin-bottom:25px;">HARDWARE REPAIR DATABASE v1.0</p>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="font-family:'Syncopate'; font-size:1.2rem; letter-spacing:8px; color:#fff; margin:0;">TECH ARCHIVE</h2>
+            <p style="font-size:8px; letter-spacing:4px; color:#0084FF; opacity:0.6; margin-top:5px;">HARDWARE REPAIR DATABASE v1.0</p>
+        </div>
+
+       <div style="width:100%; display:flex; justify-content:flex-end; margin-bottom:20px;">
+    <div onclick="window.location.href='glrepair.html'" class="estimator-pill">
+        <span class="pulse-dot"></span>
+        <span class="pill-text">REPAIR ESTIMATOR</span>
+        <span class="pill-arrow">➜</span>
+    </div>
+</div>
+
+        <input type="text" class="tech-search" placeholder="SEARCH MODEL (e.g. iPhone 13, Samsung)..." onkeyup="filterTech()" style="margin-bottom: 20px;">
         
-        <input type="text" class="tech-search" placeholder="SEARCH MODEL (e.g. iPhone 13, Samsung)..." onkeyup="filterTech()">
-        
-        <div class="tech-grid" id="tech-list">
+        <div class="tech-grid" id="tech-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;">
             <div class="repair-entry">
                 <span class="model-name">IPHONE 11 — LCD REPLACEMENT</span>
                 <div class="frame-wrapper">
