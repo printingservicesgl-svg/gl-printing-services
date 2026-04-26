@@ -2159,7 +2159,46 @@ select:focus, input:focus {
 .hide-robot {
     animation: fadeOutRobot 0.8s forwards;
 }
+    /* Desktop Default Styles - Siguraduhin na may class ang grids mo */
+    .event-grid-top {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 30px;
+        margin-bottom: 50px;
+    }
 
+    .event-grid-bottom {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    /* MOBILE RESPONSIVE LOGIC */
+    @media (max-width: 768px) {
+        .lookbook-container {
+            border-radius: 20px; /* Mas maliit na kanto sa phone */
+            height: 95vh;
+            padding: 10px;
+        }
+
+        .event-grid-top, .event-grid-bottom {
+            grid-template-columns: 1fr !important; /* Isang column na lang sila */
+            gap: 20px;
+        }
+
+        .lookbook-container h2 {
+            font-size: 1.1rem !important; /* Liitan ang text sa mobile */
+        }
+
+        /* I-adjust ang height ng mga placeholders para hindi masyadong mahaba */
+        .event-grid-top div:first-child {
+            height: 250px !important; 
+        }
+        
+        .lookbook-container div[style*="padding: 40px"] {
+            padding: 20px !important; /* Bawasan ang space sa gilid */
+        }
+    }
 </style>
 
 <div id="success-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; overflow-y:auto; padding:20px 0;">
@@ -3944,7 +3983,18 @@ function filterRepairs() {
 </div>
 <div id="event-media-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:100005; align-items:center; justify-content:center; opacity:0; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
     
-    <div class="lookbook-container" style="max-width: 1100px; width: 95%; height: 85vh; background: #0a0a0a; border-radius: 40px; overflow: hidden; position: relative; display: flex; flex-direction: column; transform: translateY(50px); transition: transform 0.6s ease; border: 1px solid rgba(255, 0, 150, 0.3);">
+<div class="lookbook-container" style="
+    max-width: 1100px; 
+    width: 95%; 
+    height: 90vh; /* Mas mataas ng konti para sa mobile scrolling */
+    background: #0a0a0a; 
+    border-radius: 40px; 
+    overflow-y: auto; /* Siguraduhin na ang buong container ay pwedeng mag-scroll */
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    border: 1px solid rgba(255, 0, 150, 0.3);
+">
         
         <div style="padding: 40px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #1a1a1a;">
             <div>
