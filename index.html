@@ -3892,6 +3892,56 @@ function filterRepairs() {
             </div>
     </div>
 </div>
+<div id="design-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:100000; align-items:center; justify-content:center; opacity:0; transition: opacity 0.4s ease;">
+    
+    <div class="modal-content" style="max-width: 900px; width: 95%; background: #050505; border: 1px solid #00ff96; border-radius: 35px; padding: 40px; position: relative; box-shadow: 0 0 50px rgba(0, 255, 150, 0.15);">
+        
+        <button onclick="closeDesignModal()" style="position: absolute; top: 20px; right: 25px; background: transparent; border: none; color: #00ff96; font-size: 35px; cursor: pointer; transition: 0.3s;" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-family:'Syncopate'; color:#00ff96; letter-spacing: 8px; font-size: 1.4rem; text-shadow: 0 0 10px rgba(0,255,150,0.5);">CREATIVE ARCHIVE</h2>
+            <div style="width: 60px; height: 2px; background: #00ff96; margin: 10px auto; opacity: 0.6;"></div>
+        </div>
+
+        <div style="display: flex; gap: 20px; overflow-x: auto; padding: 20px 5px; scrollbar-width: none; -ms-overflow-style: none;">
+            
+            <div style="min-width: 280px; background: #111; border-radius: 20px; border: 1px solid #222; overflow: hidden; transition: 0.4s;" onmouseover="this.style.borderColor='#00ff96'">
+                <div style="height: 200px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333;">
+                    <span style="font-size: 10px; font-family: 'Syncopate';">LOGO PROJECT</span>
+                </div>
+                <div style="padding: 15px; text-align: center;">
+                    <span style="color: #00ff96; font-size: 11px; font-family: 'Syncopate';">BRAND IDENTITY</span>
+                </div>
+            </div>
+
+            <div style="min-width: 280px; background: #111; border-radius: 20px; border: 1px solid #222; overflow: hidden; transition: 0.4s;" onmouseover="this.style.borderColor='#00ff96'">
+                <div style="height: 200px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333;">
+                    <span style="font-size: 10px; font-family: 'Syncopate';">SOCIAL MEDIA KIT</span>
+                </div>
+                <div style="padding: 15px; text-align: center;">
+                    <span style="color: #00ff96; font-size: 11px; font-family: 'Syncopate';">MARKETING ASSETS</span>
+                </div>
+            </div>
+
+            <div style="min-width: 280px; background: #111; border-radius: 20px; border: 1px solid #222; overflow: hidden; transition: 0.4s;" onmouseover="this.style.borderColor='#00ff96'">
+                <div style="height: 200px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333;">
+                    <span style="font-size: 10px; font-family: 'Syncopate';">MENU / LAYOUTS</span>
+                </div>
+                <div style="padding: 15px; text-align: center;">
+                    <span style="color: #00ff96; font-size: 11px; font-family: 'Syncopate';">PRINTABLE DESIGN</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <p style="color: #666; font-size: 10px; margin-bottom: 15px; letter-spacing: 2px;">READY TO ELEVATE YOUR BRAND?</p>
+            <button style="padding: 15px 40px; border-radius: 100px; border: none; background: #00ff96; color: #000; font-family: 'Syncopate'; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 0 20px rgba(0,255,150,0.4); transition: 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                DM FOR CUSTOM DESIGN ➜
+            </button>
+        </div>
+    </div>
+</div>
 <div id="event-media-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:100005; align-items:center; justify-content:center; opacity:0; transition: all 0.5s ease;">
     
     <div class="lookbook-container" style="
@@ -3957,7 +4007,7 @@ function filterRepairs() {
                 INQUIRE FOR BUNDLES ➜
             </button>
         </div>
-    </div>  
+    </div>
 </div>
     </body>
     </html>
