@@ -2324,11 +2324,11 @@ async function askAI() {
     }
 
     // 2. FOLLOW-UP LOGIC
-    else if (query === "oo" || query === "yes" || query === "sige" || query === "paano" || query.includes("how") || query.includes("saan makikita") || query.includes("nasaan")) {
+    else if (query === "oo" || query === "Ok" || query === "g" || query === "G" || query === "Go" || query === "keri" || query === "ok" || query === "okay" || query === "Okay" || query === "yes" || query === "san" || query === "sige" || query === "paano" || query.includes("how") || query.includes("saan makikita") || query.includes("nasaan")) {
         if (lastIntent === "price") {
-            response = "Para sa saktong computation, i-click lang ang **Price Estimator** sa terminal menu sa itaas ng chat na ito! ☝️";
+            response = "Para sa saktong computation, i-click lang ang **Price Estimator** sa terminal menu or pumunta sa Terminal v2.0";
         } else if (lastIntent === "repair") {
-            response = "I-click mo lang yung button na **REPAIR ESTIMATOR** sa Tech Archive section sa likod ng chat na ito para makita ang budget range! 🛠️";
+            response = "I-click mo lang yung button na **REPAIR ESTIMATOR** sa Tech Archive section sa likod ng chat na ito para makita ang budget range! 🛠️m";
         } else if (lastIntent === "photo") {
             response = "Pumunta lang sa **AI Photo Studio** sa menu. I-upload ang iyong photo, piliin ang ID size, at hayaan ang system namin na mag-ayos ng background!";
         } else if (lastIntent === "event") {
@@ -2339,7 +2339,7 @@ async function askAI() {
     }
 
     // 3. GRATITUDE / CLOSING
-    else if (query.includes("thank") || query.includes("salamat") || query.includes("ty") || query === "ok" || query === "okay") {
+    else if (query.includes("thank") || query === "thanks" || query === "Thanks" || query === "Thank" || query.includes("salamat") || query.includes("ty") || query === "oks" || query === "okay") {
         response = "Walang anuman! ✨ Happy to help. I-chat mo lang ako ulit kung may kailangan ka pa. Have a Glow day!";
     }
 
@@ -2351,7 +2351,7 @@ async function askAI() {
     }
 
     // 5. PRINTING SERVICES
-    else if (query.includes("price") || query.includes("magkano") || query.includes("rates") || query === "print" || query.includes("pa-print") || query.includes("paprint")) {
+    else if (query.includes("price") || query.includes("magkano") || query.includes("rates") || query === "print" || query.includes("pa print") || query.includes("paprint")) {
         lastIntent = "price";
         response = "Presyong tropa lang tayo sa **GL Printing**! ✨\n• B&W: ₱4 - ₱6\n• Color: ₱7 - ₱15\n• Photo: ₱10 - ₱40\n\nGusto mo ba gamitin ang aming **Price Estimator** sa terminal para sa saktong computation?";
     } 
@@ -2359,7 +2359,7 @@ async function askAI() {
     // 5.1 LAMINATION (BAGONG ADDED LOGIC)
     else if (query.includes("laminate") || query.includes("lamination")) {
         lastIntent = "price"; // I-set sa price para gumana ang "oo/paano" follow-up
-        response = "Yes boss! Mayroon kaming **Lamination Service** (Hot Laminate). 🔥\n\n• ID Size: ₱15\n• A4 Size: ₱30\n• Long/Legal: ₱40\n\nGusto mo bang gamitin ang aming **Price Estimator** para sa bulk orders?";
+        response = "Yes boss! Mayroon kaming **Lamination Service** (Hot Laminate). 🔥\n\n• ID Size: ₱15\n• A4 Size: ₱30\n• Long/Legal: ₱40\n\nMessage us on FB for laminating inquiries.";
     }
 
 // ... (retain original code below)
@@ -2371,7 +2371,7 @@ async function askAI() {
     }
     else if (query.includes("photo") || query.includes("1x1") || query.includes("2x2") || query.includes("picture")) {
         lastIntent = "photo";
-        response = "Nag-o-offer kami ng high-quality photo printing. Alam mo ba na may **AI Photo Studio** kami sa web terminal? Gusto mo ba itong subukan?";
+        response = "Nag-o-offer kami ng high-quality photo printing. Alam mo ba na may **AI Photo Studio** kami sa web terminal? Gusto mo ba itong subukan?, If yes, then punta ng terminal V2.0 at hanapin ang **Special Paper** button or message us on our FB.";
     }
     else if (query.includes("location") || query.includes("saan") || query.includes("exact")) {
         response = "Kami ay matatagpuan sa **Muntinlupa City**. 📍 [I-click ito para sa Google Maps](https://www.google.com/maps?q=GL+Printing+Services+Muntinlupa)";
@@ -2380,7 +2380,7 @@ async function askAI() {
         response = "Hatid namin ay quality printing (Docs, Photos, Invitations) at expert Tech Repair (Laptops/Phones). Ano ang maipaglilingkod ko sa iyo ngayon, boss?";
     }
     else if (query.includes("oras") || query.includes("open")) {
-        response = "Bukas kami mula **8:00 AM hanggang 6:00 PM**, Lunes hanggang Sabado. Kita-kits!";
+        response = "Bukas kami mula **8:00 AM hanggang 6:00 PM**, Lunes hanggang Linggo. Kita-kits!";
     }
 
     setTimeout(() => startTyping(response), 600);
