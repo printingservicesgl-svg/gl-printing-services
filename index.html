@@ -2316,7 +2316,7 @@ async function askAI() {
     // RANDOMIZED FALLBACKS (Para hindi nauumay sa isang sagot lang)
     const fallbacks = [
         "Medyo malabo yung query natin, boss! Pero baka isa ito sa hanap mo: PRINTING, TECH REPAIR, o LOCATION? Chat mo lang ako! ✨",
-        "Oops! Hindi ko masyadong nagets 'yun. Pero kung tungkol sa rates o repair, ready ako sumagot! Or message mo kami sa FB. 😊",
+        "Oops! Hindi ko masyadong nagets yun. Pero kung tungkol sa rates o repair, ready ako sumagot! Or message mo kami sa FB. 😊",
         "Loading... 🧠 Pasensya na, boss. Baka pwedeng paki-detalye? Pwede mong itanong ang price list, repair budget, o nasaan kami.",
         "Glow day! ✨ Hindi ko makuha yung message mo. Baka gusto mo makita ang aming Event Gallery o Tech Estimator?"
     ];
@@ -2324,7 +2324,7 @@ async function askAI() {
     let response = randomFallback;
 
     // 1. GREETINGS
-    const greetings = ["hi", "hello", "umaga", "hey", "good morning", "good afternoon", "good evening", "good day", "morning", "hapon", "gabi", "gl"];
+    const greetings = ["hi", "hello", "umaga", "hey",  "goodmorning","magandang umaga", "good gabi", "good eve", "good morning", "good afternoon", "good evening", "good day", "morning", "hapon", "gabi", "gl"];
     const isGreeting = greetings.some(greet => query === greet);
 
     if (isGreeting || (query.length < 3 && !["oo", "yes", "no", "ok", "ano", "ge"].includes(query))) {
