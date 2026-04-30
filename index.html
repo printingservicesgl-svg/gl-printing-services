@@ -2300,7 +2300,7 @@ applySystemLock();
 }
 
 // Manatili ito sa labas ng function
-let lastIntent = ""; 
+let lastIntent = ""; let violationCount = 0; // Para mabilang kung ilang beses nagmura
 
 async function askAI() {
     const input = document.getElementById('chat-input');
@@ -2313,75 +2313,215 @@ async function askAI() {
     input.value = "";
     display.scrollTop = display.scrollHeight;
 
-    let response = "Pasensya na, boss. Medyo malabo yung query, pero baka isa ito sa hanap mo: **Printing Rates**, **Tech Repair**, o **Location**? Chat mo lang ako! 😊";
+    // RANDOMIZED FALLBACKS (Para hindi nauumay sa isang sagot lang)
+    const fallbacks = [
+        "Medyo malabo yung query natin, boss! Pero baka isa ito sa hanap mo: PRINTING, TECH REPAIR, o LOCATION? Chat mo lang ako! ✨",
+        "Oops! Hindi ko masyadong nagets 'yun. Pero kung tungkol sa rates o repair, ready ako sumagot! Or message mo kami sa FB. 😊",
+        "Loading... 🧠 Pasensya na, boss. Baka pwedeng paki-detalye? Pwede mong itanong ang price list, repair budget, o nasaan kami.",
+        "Glow day! ✨ Hindi ko makuha yung message mo. Baka gusto mo makita ang aming Event Gallery o Tech Estimator?"
+    ];
+    let randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    let response = randomFallback;
 
     // 1. GREETINGS
-    const greetings = ["hi", "hello", "gl", "hey", "good morning", "good afternoon", "good evening", "good day", "morning", "hapon", "gabi", "yo"];
+    const greetings = ["hi", "hello", "umaga", "hey", "good morning", "good afternoon", "good evening", "good day", "morning", "hapon", "gabi", "gl"];
     const isGreeting = greetings.some(greet => query === greet);
 
-    if (isGreeting || (query.length < 3 && !["oo", "yes", "no", "ok", "ano"].includes(query))) {
+    if (isGreeting || (query.length < 3 && !["oo", "yes", "no", "ok", "ano", "ge"].includes(query))) {
         response = "Glow day! ✨ Ako ang GL AI. Paano kita matutulungan? Pwede mong itanong ang aming printing rates, repair rates, location, o event bundles!";
     }
 
-    // 2. FOLLOW-UP LOGIC
-    else if (query === "oo" || query === "Ok" || query === "g" || query === "G" || query === "Go" || query === "keri" || query === "ok" || query === "okay" || query === "Okay" || query === "yes" || query === "san" || query === "sige" || query === "paano" || query.includes("how") || query.includes("saan makikita") || query.includes("nasaan")) {
-        if (lastIntent === "price") {
-            response = "Para sa saktong computation, i-click lang ang **Price Estimator** sa terminal menu or pumunta sa Terminal v2.0";
-        } else if (lastIntent === "repair") {
-            response = "I-click mo lang yung button na **REPAIR ESTIMATOR** sa Tech Archive section sa likod ng chat na ito para makita ang budget range! 🛠️m";
-        } else if (lastIntent === "photo") {
-            response = "Pumunta lang sa **AI Photo Studio** sa menu. I-upload ang iyong photo, piliin ang ID size, at hayaan ang system namin na mag-ayos ng background!";
-        } else if (lastIntent === "event") {
-            response = "Silipin ang **Event Gallery** para sa mga designs. Kapag may napili ka na, i-message kami sa FB para sa saktong quote.";
+    // 0. CLASSY SAVAGE MODERATION
+    const badWords = ["gago", "tarantado", "tangina", "putangina", "pota", "hayop", "bobo", "inutil", "pakyu", "fuck", "shit", "kupal", "pakshet"];
+    const isAbusive = badWords.some(word => query.includes(word)) || query.includes("bulok") || query.includes("scam");
+
+    if (isAbusive) {
+        violationCount++;
+        
+        if (violationCount === 1) {
+            // UNANG BABALA: Ang "Classy Burn"
+            response = `
+                <div style="border: 1px solid #333; background: #fff; color: #000; padding: 20px; border-radius: 2px; font-family: 'Georgia', serif; line-height: 1.6; box-shadow: 5px 5px 0px #000;">
+                    <strong style="letter-spacing: 2px; text-transform: uppercase; font-size: 0.9em; border-bottom: 1px solid #000; padding-bottom: 5px;">Standard of Conduct Notice</strong><br><br>
+                    Boss, mawalang-galang na. Ang <strong>GL Printing & Repair</strong> ay binuo para sa mga kliyenteng marunong rumespeto. Hindi namin pinaghirapang itayo ang business na ito para lang bastusin ng mga taong kulang sa etiquette. <br><br>
+                    Ituring mong 'luxury' ang pag-gamit sa terminal na ito. Isang mura pa, at ituturing naming 'trash' ang session mo. Choose your words wisely—class is expensive, and it seems you're running low.
+                </div>`;
         } else {
+            // PANGALAWANG VIOLATION: Ang "Final Exit"
+            response = `
+                <div style="background: #000; color: #fff; padding: 25px; border-radius: 0; font-family: 'Helvetica', sans-serif; text-align: center;">
+                    <strong style="font-size: 1.5em; letter-spacing: 5px;">SESSION REVOKED</strong><br><br>
+                    <p style="font-style: italic; color: #888;">"Quality attracts quality. Unfortunately, you don't fit the criteria."</p>
+                    <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                    Hindi namin kailangan ng benta mula sa mga taong hindi marunong rumespeto sa small-scale businesses. Blacklisted ka na sa aming services—mula sa printing hanggang sa tech repair. <br><br>
+                    <strong>Don't bother coming back. We're strictly for the classy.</strong>
+                </div>`;
+            
+            // TOTAL LOCKOUT
+            input.disabled = true;
+            input.placeholder = "THIS TERMINAL IS NOT FOR YOU.";
+            if(document.querySelector('.send-btn')) document.querySelector('.send-btn').style.display = 'none';
+        }
+        
+        display.innerHTML += `<div class="ai-msg">${response}</div>`;
+        display.scrollTop = display.scrollHeight;
+        return; 
+    }
+
+    // 2. FOLLOW-UP LOGIC
+    else if (query === "oo" || query === "ok" || query === "sige po" || query === "g" || query === "ge" || query === "go" || query === "keri" || query === "okay" || query === "yes" || query === "san" || query === "sige" || query === "paano" || query.includes("how") || query.includes("saan makikita") || query.includes("nasaan")) {
+        
+        if (lastIntent === "price") {
+            response = "Para sa saktong computation, i-click lang ang PRICE ESTIMATOR sa terminal menu or pumunta sa Terminal V2.0";
+        } 
+        else if (lastIntent === "repair") {
+            response = "I-click mo lang yung button na REPAIR ESTIMATOR sa Tech Archive section sa likod ng chat na ito para makita ang budget range! 🛠️";
+        } 
+        else if (lastIntent === "photo") {
+            response = "Pumunta lang sa AI Photo Studio sa menu. I-upload ang iyong photo, piliin ang ID size, at hayaan ang system namin na mag-ayos ng background!";
+        } 
+        else if (lastIntent === "event") {
+            response = "Silipin ang **Event Gallery** para sa mga designs. Kapag may napili ka na, i-message kami sa FB para sa saktong quote.";
+        } 
+        else if (lastIntent === "scan") {
+            response = "Para sa scanning rates, depende po ito sa dami ng pages. Message mo kami sa FB para mabigyan ka namin ng saktong presyo! 😊";
+        } 
+        else {
             response = "Sige! Ano pa ang maitutulong ko sa iyo? Pwede mong itanong ang rates o location namin.";
         }
     }
 
-    // 3. GRATITUDE / CLOSING
-    else if (query.includes("thank") || query === "thanks" || query === "Thanks" || query === "Thank" || query.includes("salamat") || query.includes("ty") || query === "oks" || query === "okay") {
+    // 2.5 COMPLIMENTS (Para sa mga bilib sa gawa/service)
+    else if (query.includes("galing") || query.includes("bilis") || query.includes("bait") || query.includes("asikaso") || query.includes("astig") || query.includes("nice") || query.includes("lodi") || query.includes("petmalu") || query.includes("ayos") && (query.includes("serbisyo") || query.includes("gawa"))) {
+        response = "Maraming salamat sa compliment, boss! ❤️ Nakaka-ganado lalo magtrabaho. 'Glow' service talaga ang priority namin para sa inyo. Kita-kits!";
+    }
+
+    // 3. GRATITUDE / CLOSING / ENDING
+    else if (query.includes("thank") || query === "thanks" || query.includes("salamat") || query.includes("ty") || query === "oks") {
         response = "Walang anuman! ✨ Happy to help. I-chat mo lang ako ulit kung may kailangan ka pa. Have a Glow day!";
+    }
+    else if (query.includes("wala na") || query.includes("yun lang") || query === "no" || query === "hindi") {
+        response = "Sige boss, copy 'yan! ✨ Nandito lang ako kung may kailangan ka pa. Kita-kits!";
     }
 
     // 4. TECH REPAIR (HIGHER PRIORITY)
-    // Nilagay natin ito sa itaas para kahit may "magkano", kung may "repair/paayos", ito ang mananalo.
-    else if (query.includes("repair") || query.includes("laptop") || query.includes("cellphone") || query.includes("ayos") || query.includes("sira") || query.includes("tech") || query.includes("paayos") || query.includes("phone") || query.includes("lcd") || query.includes("charger")) {
+    else if (query.includes("repair") || query.includes("laptop")|| query.includes("infinix")|| query.includes("iphone")|| query.includes("lcd")|| query.includes("password")|| query.includes("nakalimutan")|| query.includes("realme")|| query.includes("vivo")|| query.includes("samsung") || query.includes("xiaomi") || query.includes("cellphone") || query.includes("ayos") || query.includes("sira") || query.includes("tech") || query.includes("paayos") || query.includes("phone") || query.includes("charger")) {
         lastIntent = "repair";
-        response = "Pagdating sa Tech Solutions, ready kami diyan! 🛠️ Nag-aayos kami ng laptops at phones. \n\nGusto mo bang gamitin ang aming **Tech Estimator** sa terminal para sa budget range ng paayos?";
+        response = "Pagdating sa Tech Solutions, ready kami diyan! 🛠️ Nag-aayos kami ng laptops at phones. \n\n Mapa-LCD replacement man o software bypass, kaya nating silipin 'yan. \n\nGusto mo bang gamitin ang aming TECH ESTIMATOR sa terminal para sa budget range ng paayos?";
     }
 
     // 5. PRINTING SERVICES
     else if (query.includes("price") || query.includes("magkano") || query.includes("rates") || query === "print" || query.includes("pa print") || query.includes("paprint")) {
         lastIntent = "price";
-        response = "Presyong tropa lang tayo sa **GL Printing**! ✨\n• B&W: ₱4 - ₱6\n• Color: ₱7 - ₱15\n• Photo: ₱10 - ₱40\n\nGusto mo ba gamitin ang aming **Price Estimator** sa terminal para sa saktong computation?";
+        response = "Presyong tropa lang tayo sa GL Printing! ✨\n• B&W: ₱4 - ₱6\n• Color: ₱7 - ₱15\n• Photo: ₱10 - ₱40\n\nGusto mo ba gamitin ang aming PRICE ESTIMATOR sa terminal para sa saktong computation?";
     } 
 
-    // 5.1 LAMINATION (BAGONG ADDED LOGIC)
+    // 5.1 LAMINATION
     else if (query.includes("laminate") || query.includes("lamination")) {
-        lastIntent = "price"; // I-set sa price para gumana ang "oo/paano" follow-up
+        lastIntent = "price";
         response = "Yes boss! Mayroon kaming **Lamination Service** (Hot Laminate). 🔥\n\n• ID Size: ₱15\n• A4 Size: ₱30\n• Long/Legal: ₱40\n\nMessage us on FB for laminating inquiries.";
     }
 
-// ... (retain original code below)
+    // 5.2 RUSH & SOFT COPY
+    else if (query.includes("rush") || query.includes("ngayon na") || query.includes("deadline") || query.includes("mabilis")) {
+        response = "Basta kaya ng schedule, igagapang natin 'yan, boss! ⚡ May 'Rush Fee' lang tayo depende sa dami ng gawa. Chat mo agad kami sa FB para ma-priority ang order mo!";
+    }
+    else if (query.includes("soft copy") || query.includes("send") || query.includes("email") || query.includes("file")) {
+        response = "Yes, pwede naming i-send ang soft copy via Email o Messenger. 📧 Siguraduhin lang na malinaw ang instructions para iwas error!";
+    }
 
-    // 6. OTHER SERVICES
+    // 5.3 PAYMENT METHODS
+    else if (query.includes("bayad") || query.includes("payment") || query.includes("gcash") || query.includes("cash")) {
+        response = "Tumatanggap kami ng GCASH, MAYA, at syempre, CASH. 💸 Para sa online payments, send lang ang screenshot ng receipt para ma-verify agad!";
+    }
+
+    // 5.4 GCASH SERVICES
+    else if (query.includes("cash in") || query.includes("cash out") || query.includes("withdraw") || query.includes("pasok sa gcash")) {
+        response = "Yes boss! Nag-o-offer din kami ng GCash Cash-in at Cash-out services dito. 📱 May minimal convenience fee lang tayo. Transaction muna bago alis para safe!";
+    }
+
+    // 5.5 BULK ORDERS
+    else if (query.includes("discount") || query.includes("bulk") || query.includes("marami") || query.includes("bawas")) {
+        lastIntent = "price";
+        response = "Pag 100 pages pataas o bulk order (like invitations/souvenirs), pwedeng-pwede natin pag-usapan ang SPECIAL DISCOUNT! 📉 Message mo kami sa FB para mabigyan kita ng 'Wholesale Price'.";
+    }
+
+    // 5.8 SCANNING SERVICES
+    else if (query.includes("scan") || query.includes("digital copy") || query.includes("pdf")) {
+        lastIntent = "scan";
+        response = "Yes, boss! May SCANNING SERVICES din tayo. Pwedeng i-save sa USB/Flashdrive o i-send direct sa Email/Messenger mo ang digital copy (PDF/JPG). 📄";
+    }
+
+    // 5.9 INVITATIONS & SOUVENIRS
+    else if (query.includes("invitation") || query.includes("debut") || query.includes("christening") || query.includes("binyag") || query.includes("birthday card")) {
+        lastIntent = "event";
+        response = "Expert kami sa CUSTOM INVITATION (Wedding, Birthday, Binyag)! 💌 Meron kaming iba't ibang papel gaya ng Photo Paper, Specialty Paper, at Vellum. Check mo ang 'Event Gallery' sa menu para sa samples.";
+    }
+
+    // 5.10 NOT YET AVAILABLE
+    else if (query.includes("tshirt") || query.includes("damit") || query.includes("mug") || query.includes("tarpaulin") || query.includes("tarp") || query.includes("industrial") || query.includes("pvc card")) {
+        response = "Sa ngayon boss, focus muna kami sa High-Quality Standard Printing (Docs, Photos, Invitations) at Tech Repair. 🛠️\n\nWala pa kaming T-shirt o Industrial printing sa kasalukuyan, pero update namin kayo sa FB page kapag available na! Baka may iba pa akong maipaglilingkod?";
+    }
+
+    // 5.11 HIRING / JOB INQUIRY
+    else if (query.includes("hiring") || query.includes("trabaho") || query.includes("apply") || query.includes("work") || query.includes("vacant")) {
+        response = "Sa ngayon boss, wala pa kaming vacant position sa GL Team. 😊 Pero i-follow mo lang ang aming FB Page para sa future updates! Doon kami nagpo-post kapag kailangan namin ng extra hands.";
+    }
+
+    // 5.12 PROOF OF QUALITY / REVIEWS
+    else if (query.includes("quality") || query.includes("proof") || query.includes("review") || query.includes("satisfaction") || query.includes("sample") || query.includes("ayos ba") || query.includes("patingin") || query.includes("sample") || query.includes("maganda ba") || query.includes("legit")) {
+        response = "Sigurado 'yan, boss! 💯 High-quality ang labas ng aming prints at expert handling sa tech repairs. \n\nPara sa mga actual samples at customer reviews, visit lang kayo sa aming [FB Page: GL Prts at Google map reviews: GL Printing Services. Doon niyo makikita na 'Glow' talaga ang quality namin! ✨";
+    }
+
+    // 5.13 FILE PREPARATION (Para iwas hassle sa pag-send)
+    else if (query.includes("isend") || query.includes("pasa") || query.includes("format") || query.includes("ready")) {
+        response = "Para sa malinaw na print, mas okay kung PDF o High-Resolution Image ang file. \n\n Pwede niyo i-send direct sa aming Email:printingservicesgl@gmail.com para ma-check namin agad bago niyo kami puntahan! 📧";
+    }
+
+    // 5.14 ADVANCE BOOKING / SEND BEFORE VISIT
+    else if (query.includes("pwedeng isend") || query.includes("una") || query.includes("bago pumunta")) {
+        response = "Yes, pwedeng-pwede boss! Mas okay 'yun para pagdating niyo rito, kukunin niyo na lang o minimal wait na lang. I-send ang file sa aming email (printingservicesgl@gmail.com) o sa FB Messenger namin.";
+    }
+    // 5.16 GCASH VERIFICATION
+    else if (query.includes("gcash") || query.includes("pambayad")) {
+        response = "Tumatanggap kami ng GCash. 📱 Isang paalala lang: NO Receipt, NO Transaction.  Kailangan naming makita ang saktong reference number bago namin i-release ang files o repair unit. We keep it professional para iwas aberya.";
+    }
+
+    // 5.6 CUSTOM DESIGN / LAYOUT
+    else if (query.includes("layout") || query.includes("design") || query.includes("edit") || query.includes("pagawa")) {
+        lastIntent = "event";
+        response = "Need ng layout? Kaya namin 'yan! 🎨 Nag-e-edit kami ng Invitations, Posters, at Calling Cards. May minimal 'Layout Fee' depende sa hirap ng design. Ano ba ang ipapagawa mo, boss?";
+    }
+
+    // 6. OTHER SERVICES / INFO
     else if (query.includes("event") || query.includes("bundle") || query.includes("wedding") || query.includes("package")) {
         lastIntent = "event";
-        response = "Mayroon kaming **Premium Event Bundles** para sa Weddings at Birthdays. Gusto mo bang makita ang mga samples?";
+        response = "Mayroon kaming Premium Event Bundles para sa Weddings at Birthdays. Gusto mo bang makita ang mga samples?";
     }
     else if (query.includes("photo") || query.includes("1x1") || query.includes("2x2") || query.includes("picture")) {
         lastIntent = "photo";
-        response = "Nag-o-offer kami ng high-quality photo printing. Alam mo ba na may **AI Photo Studio** kami sa web terminal? Gusto mo ba itong subukan?, If yes, then punta ng terminal V2.0 at hanapin ang **Special Paper** button or message us on our FB.";
+        response = "Nag-o-offer kami ng high-quality photo printing. Alam mo ba na may AI PHOTO STUDIO kami sa web terminal? Gusto mo ba itong subukan? Piliin lang ang 'AI Photo Studio' sa menu or message us on our FB.";
     }
     else if (query.includes("location") || query.includes("saan") || query.includes("exact")) {
-        response = "Kami ay matatagpuan sa **Muntinlupa City**. 📍 [I-click ito para sa Google Maps](https://www.google.com/maps?q=GL+Printing+Services+Muntinlupa)";
+        response = "Kami ay matatagpuan sa MUNTINLUPA CITY. 📍 Check niyo po kami sa google map: GL Printing Services.";
     } 
     else if (query.includes("service") || query.includes("gawa") || query.includes("tinda") || query.includes("offer")) {
         response = "Hatid namin ay quality printing (Docs, Photos, Invitations) at expert Tech Repair (Laptops/Phones). Ano ang maipaglilingkod ko sa iyo ngayon, boss?";
     }
-    else if (query.includes("oras") || query.includes("open")) {
-        response = "Bukas kami mula **8:00 AM hanggang 6:00 PM**, Lunes hanggang Linggo. Kita-kits!";
+    else if (query.includes("oras") || query.includes("time") || query.includes("sarado") || query.includes("close") || query.includes("open")) {
+        response = "Bukas kami mula 8:00 AM hanggang 12:00 AM, Monday to Sunday. Kita-kits!";
     }
+
+    // 6.5 SELF-SERVICE TOOLS
+    else if (query.includes("paano gamitin") || query.includes("tool") || query.includes("studio")) {
+        response = "Boss, our terminal is built for efficiency. 🧠 Lahat ng kailangan mo—mula sa AI Photo Studio hanggang sa Price Estimator ay nasa menu lang. Subukan mong i-explore, napaka-user friendly niyan. Para ka na ring may sariling assistant.";
+    }
+
+    // 7.0 SEASONAL LOGIC (Graduation/School Year)
+    else if (query.includes("grad") || query.includes("thesis") || query.includes("school")) {
+        response = "Graduation season? 🎓 Congratulations! Pagdating sa thesis printing at hardbound, siguradong pasado sa quality ang GL. Suggestion: I-send na ang file sa email namin (printingservicesgl@gmail.com) para ma-check namin ang alignment bago i-print.";
+    }
+    
 
     setTimeout(() => startTyping(response), 600);
 }
