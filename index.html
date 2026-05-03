@@ -1667,6 +1667,7 @@ select:focus, input:focus {
 .trust-header {
     text-align: center;
     margin-bottom: 30px;
+    padding-top: 20px;
 }
 
 .reviews-ticker-container {
@@ -1870,8 +1871,8 @@ select:focus, input:focus {
 
 <div id="main-system">
     <nav>
-        <a onclick="goHome()">Home</a>
         <a href="#services-anchor">Services</a>
+        <a href="#reviews-section">Reviews</a>
         <a href="#terminal">Terminal</a>
         <a href="#connect">Contact</a>
     </nav>
@@ -1951,7 +1952,7 @@ select:focus, input:focus {
 </div>
 
 <div style="width: 100%; display: flex; justify-content: center;"></div>
-<section class="trust-section">
+<section class="trust-section" id="reviews-section">
     <!-- Header stays centered -->
     <div class="trust-header">
         <h2 style="font-family:'Syncopate'; color:#ffcc00; font-size: 1.2rem; letter-spacing: 6px; margin:0;">VOICE OF OUR CUSTOMERS</h2>
@@ -1970,7 +1971,7 @@ select:focus, input:focus {
                         <div><div class="user-name">John Marty Mariñas</div><div class="user-badge">✓ VERIFIED</div></div>
                     </div>
                     <div class="stars">★★★★★</div>
-                    <p class="review-text">"Professional and very accommodating."</p>
+                  <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
                 </div>
 
                 <!-- Review 2 -->
@@ -2001,17 +2002,7 @@ select:focus, input:focus {
                 </div>
 
                 <!-- Review 4 -->
-                <div class="google-card">
-                    <div class="card-user">
-                        <div class="user-avatar">C</div>
-                        <div><div class="user-name">Crysthel Fuertes</div><div class="user-badge">✓ PST CUSTOMER</div></div>
-                    </div>
-                    <div class="stars">★★★★★</div>
-                    <p class="review-text">"As a PST, sobrang helpful sakin yong printing services nila esp nung cramming ako for my final demo. Sobrang solid at maganda yong quality nung mga prints nila at they also helped me prepare my IMs. I highly recommend this printing shop if want niyo ng ultra mega rush na prints for you academic of other stuff."</p>
-                    <div class="review-photo"><img src="img/mcReview1.png" alt="Print Sample"></div>
-                </div>
-
-                <!-- Review 5 -->
+               
                 <div class="google-card">
                     <div class="card-user">
                         <div class="user-avatar" style="background: #d81b60;">G</div>
@@ -2021,6 +2012,18 @@ select:focus, input:focus {
                     <p class="review-text">"Good work most trusted saaken ❤️"</p>
                 </div>
 
+                <!-- Review 5 -->
+                
+                 <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">C</div>
+                        <div><div class="user-name">Crysthel Fuertes</div><div class="user-badge">✓ PST CUSTOMER</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"As a PST, sobrang helpful sakin yong printing services nila esp nung cramming ako for my final demo. Sobrang solid at maganda yong quality nung mga prints nila at they also helped me prepare my IMs. I highly recommend this printing shop if want niyo ng ultra mega rush na prints for you academic of other stuff."</p>
+                    <div class="review-photo"><img src="img/mcReview1.png" alt="Print Sample"></div>
+                </div>
+
                 <!-- Review 6 -->
 
                 <div class="google-card">
@@ -2028,7 +2031,7 @@ select:focus, input:focus {
                         <div class="user-avatar">R</div>
                         <div>
                             <div class="user-name">Rizzalyn Ison</div>
-                            <div class="user-badge">✓ CUSTOMER</div>
+                            <div class="user-badge">✓ ALS CUSTOMER</div>
                         </div>
                     </div>
                     <div class="stars">★★★★★</div>
@@ -2073,13 +2076,134 @@ select:focus, input:focus {
                         <div><div class="user-name">Konan Astravid</div><div class="user-badge">✓ LOCAL GUIDE</div></div>
                     </div>
                     <div class="stars">★★★★★</div>
-                    <p class="review-text">"Fast transaction and very high quality output."</p>
+                   <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
+                </div>
+
+                <!-- GROUP B: DUPLICATE (Copy of 1-10 to make loop seamless) -->
+                <!-- I-duplicate mo lang lahat ng cards dito sa baba para maging continuous ang ikot -->
+             <!-- GROUP A: Original 10 Reviews -->
+                
+                <!-- Review 1 -->
+
+                 <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">J</div>
+                        <div><div class="user-name">John Marty Mariñas</div><div class="user-badge">✓ VERIFIED</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
+                </div>
+
+                <!-- Review 2 -->
+
+                   <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">F</div>
+                        <div><div class="user-name">Florkie Lameme</div><div class="user-badge">✓ VERIFIED CUSTOMER</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"I print legal size mazagine type and SUPERB!!!! Quality yung prints naka discount dinsss, very fast yung transactions and they give suggestions. ss100% suitable and recommendable for students like me ty.. 💛✨"</p>
+                    <div class="review-photo"><img src="img/florkieReview1.png" alt="Print Sample" ></div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">K</div>
+                        <div>
+                            <div class="user-name">Karl Bruno Abenojar</div>
+                            <div class="user-badge">✓ LOCAL GUIDE</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"They were very approachable and responsive. </br>
+                        A godsend for rush printing needs! </br> Thank you GL Printing Services!"</p>
+                    <!--<div class="review-photo"><img src="print-sample-1.jpg" alt="Print Sample"></div>-->
+                </div>
+
+                <!-- Review 4 -->
+                 <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar" style="background: #d81b60;">G</div>
+                        <div><div class="user-name">gregorio john</div><div class="user-badge">✓ STUDENT</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Good work most trusted saaken ❤️"</p>
+                </div>
+                
+                <!-- Review 5 -->
+               
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">C</div>
+                        <div><div class="user-name">Crysthel Fuertes</div><div class="user-badge">✓ PST CUSTOMER</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"As a PST, sobrang helpful sakin yong printing services nila esp nung cramming ako for my final demo. Sobrang solid at maganda yong quality nung mga prints nila at they also helped me prepare my IMs. I highly recommend this printing shop if want niyo ng ultra mega rush na prints for you academic of other stuff."</p>
+                    <div class="review-photo"><img src="img/mcReview1.png" alt="Print Sample"></div>
+                </div>
+
+
+                <!-- Review 6 -->
+
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">R</div>
+                        <div>
+                            <div class="user-name">Rizzalyn Ison</div>
+                            <div class="user-badge">✓ ALS CUSTOMER</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Great service and great experience! Student friendly prices too and the owners are friendly!"</p>
+                    <!--<div class="review-photo"><img src="" alt="Print Sample"></div>-->
+                </div>
+
+                <!-- Review 7 -->
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">K</div>
+                        <div><div class="user-name">Kc Guevarra</div><div class="user-badge">✓ VERIFIED</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Finally, there is also a reliable and super affordable printing services and phone repair nearby, the technician is also super kind, highly recommend this GL Printing Services, for me 100 stars rate, thank you very much😊"</p>
+                </div>
+
+                <!-- Review 8 -->
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">R</div>
+                        <div><div class="user-name">rycas</div><div class="user-badge">✓ STUDENT</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Malapit lang sa school hindi na need namin maghanap anywhere for projects and mabilis at maganda po yung print 😊"</p>
+                </div>
+
+                <!-- Review 9 -->
+              <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">W</div>
+                        <div><div class="user-name">Wenniel Simba</div><div class="user-badge">✓ STUDENT</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Soper lapet neto sa school and so convenient lalong lalo sa sa katulad ko na laging cramming, solid din yong quality ng print walang palya ✋🏼"</p>
+                </div>
+
+                <!-- Review 10 -->
+                <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">K</div>
+                        <div><div class="user-name">Konan Astravid</div><div class="user-badge">✓ LOCAL GUIDE</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                   <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
                 </div>
 
                 <!-- GROUP B: DUPLICATE (Copy of 1-10 to make loop seamless) -->
                 <!-- I-duplicate mo lang lahat ng cards dito sa baba para maging continuous ang ikot -->
             </div>
         </div>
+
 
     <div class="review-link-wrapper">
         <a href="https://maps.google.com/?cid=7283373738615260884" target="_blank" class="google-link">WRITE A REVIEW ON GOOGLE ➜</a>
