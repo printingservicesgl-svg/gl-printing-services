@@ -1828,6 +1828,16 @@ select:focus, input:focus {
     flex-direction: column;
     justify-content: space-between; /* Para pantay ang footer ng card kahit iba-iba haba ng text */
 }
+
+/* Kapag itinapat ang mouse (Laptop/Desktop) */
+.reviews-ticker-container:hover .reviews-wrapper {
+    animation-play-state: paused;
+}
+
+/* Kapag hinawakan o ni-long press sa screen (Mobile/Touch) */
+.reviews-ticker-container:active .reviews-wrapper {
+    animation-play-state: paused;
+}
     </style>
 </head>     
 
@@ -1979,18 +1989,7 @@ select:focus, input:focus {
                   <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
                 </div>
 
-                <!-- Review 2 -->
-
-                   <div class="google-card">
-                    <div class="card-user">
-                        <div class="user-avatar">F</div>
-                        <div><div class="user-name">Florkie Lameme</div><div class="user-badge">✓ VERIFIED CUSTOMER</div></div>
-                    </div>
-                    <div class="stars">★★★★★</div>
-                    <p class="review-text">"I print legal size mazagine type and SUPERB!!!! Quality yung prints naka discount dinsss, very fast yung transactions and they give suggestions. ss100% suitable and recommendable for students like me ty.. 💛✨"</p>
-                    <div class="review-photo"><img src="img/florkieReview1.png" alt="Print Sample" ></div>
-                </div>
-
+              
                 <!-- Review 3 -->
                 <div class="google-card">
                     <div class="card-user">
@@ -2005,6 +2004,64 @@ select:focus, input:focus {
                         A godsend for rush printing needs! </br> Thank you GL Printing Services!"</p>
                     <!--<div class="review-photo"><img src="print-sample-1.jpg" alt="Print Sample"></div>-->
                 </div>
+
+                  <!-- Review -->
+
+               <div class="google-card" style="font-size: 0.8rem; max-height: 400px; display: flex; flex-direction: column;">
+    <div class="card-user">
+        <div class="user-avatar">F</div>
+        <div>
+            <div class="user-name">Rhea iza fale</div>
+            <div class="user-badge">✓ VERIFIED CUSTOMER</div>
+        </div>
+    </div>
+    
+    <div class="stars">★★★★★</div>
+
+    <div class="scroll-content" style="overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-bottom: 10px;">
+        <p class="review-text" style="margin: 0; line-height: 1.4;">
+            "Quality of print color: 5/5<br>
+            Quality of paper: 5/5<br>
+            Cutting: 4/5<br>
+            Alignment of print: 4/5<br><br>
+            <strong>Summary:</strong> If you need a quality print in a rush and value fast/good communication online, then this print shop is great. However, the book itself is not 100% polished but good enough for a class project.
+        </p>
+
+    </br>
+
+        <p class="review-text" style="margin: 0; line-height: 1.4;">
+            
+            <strong>Full Experience:</strong>
+
+Had to print a children’s book for a class project and I messaged 20 printing shop pages of which I received no response or very slow replies. GL Prints was the only one who answered my call and responded right away. They also started printing on the day itself. If I contacted them sooner, then I would’ve received the books within the day but not a problem since I got it the next morning. All in all it’s a great customer experience. Would highly recommend it.
+
+        <div class="review-media-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px;">
+            
+            <div class="media-item">
+                <img src="img/SecretGardenRev.png" alt="Print Sample" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px;">
+            </div>
+
+            <div class="media-item">
+                <img src="img/DreamtalesRev.png" alt="Dreamtales Book" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px;">
+            </div>
+
+            <div class="media-item" style="position: relative;">
+                <video style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px;">
+                    <source src="" type="video/mp4">
+                </video>
+                <span style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 4px; border-radius: 3px;">0:28</span>
+            </div>
+
+            <div class="media-item" style="position: relative;">
+                <video style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px;">
+                    <source src="video/review_vid2.mp4" type="video/mp4">
+                </video>
+                <span style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 4px; border-radius: 3px;">0:29</span>
+            </div>
+
+        </div>
+    </div>
+</div>
 
                 <!-- Review 4 -->
                
@@ -2051,7 +2108,7 @@ select:focus, input:focus {
                         <div><div class="user-name">Kc Guevarra</div><div class="user-badge">✓ VERIFIED</div></div>
                     </div>
                     <div class="stars">★★★★★</div>
-                    <p class="review-text">"Noted po. We are currently testing the sizing and will send a sample for your approval shortly. Once everything is good on your end, we'll proceed with the printing and send over the official quotation. Thank you!"</p>
+                    <p class="review-text">"Finally meron na ding malapit na mapagkakatiwalaan and super affordable printing services and phone repair, super bait din ng technician highly recommend itong GL Printing Services, for me 100 stars rate, thank you very much😊"</p>
                 </div>
 
                 <!-- Review 8 -->
@@ -2101,7 +2158,7 @@ select:focus, input:focus {
 
                 <!-- Review 2 -->
 
-                   <div class="google-card">
+                 <div class="google-card">
                     <div class="card-user">
                         <div class="user-avatar">F</div>
                         <div><div class="user-name">Florkie Lameme</div><div class="user-badge">✓ VERIFIED CUSTOMER</div></div>
@@ -2109,6 +2166,16 @@ select:focus, input:focus {
                     <div class="stars">★★★★★</div>
                     <p class="review-text">"I print legal size mazagine type and SUPERB!!!! Quality yung prints naka discount dinsss, very fast yung transactions and they give suggestions. ss100% suitable and recommendable for students like me ty.. 💛✨"</p>
                     <div class="review-photo"><img src="img/florkieReview1.png" alt="Print Sample" ></div>
+                </div>
+
+                 <!-- Review 2.5 -->
+                   <div class="google-card">
+                    <div class="card-user">
+                        <div class="user-avatar">K</div>
+                        <div><div class="user-name">Konan Astravid</div><div class="user-badge">✓ LOCAL GUIDE</div></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                   <!-- <p class="review-text">"Fast transaction and very high quality output."</p> -->
                 </div>
 
                 <!-- Review 3 -->
@@ -2208,6 +2275,7 @@ select:focus, input:focus {
                 <!-- I-duplicate mo lang lahat ng cards dito sa baba para maging continuous ang ikot -->
             </div>
         </div>
+        
 
 
     <div class="review-link-wrapper">

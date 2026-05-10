@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL Printing Services | Official Receipt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gl-gold: #FFD700; --gl-black: #000000; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #1a1a1a; 
+            margin: 0; padding: 40px 20px; 
+            display: flex; flex-direction: column; align-items: center; 
+        }
+
+        .controls { width: 80mm; display: flex; gap: 8px; margin-bottom: 20px; }
+        .btn { 
+            flex: 1; padding: 10px; border: none; border-radius: 8px; 
+            font-weight: 700; cursor: pointer; font-size: 10px;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .btn-print { background: var(--gl-gold); color: #000; }
+        .btn-clear { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Print Frame for Crop Marks */
+        .print-frame {
+            position: relative;
+            padding: 10mm; /* Space for crop marks */
+            background: transparent;
+        }
+
+        /* Crop Marks Logic */
+        .crop-mark {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 0.5px solid #444;
+            display: none; /* Hidden on screen by default */
+        }
+        .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+        .bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+        .br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        .receipt-card { 
+            background: #fff; 
+            width: 80mm; 
+            padding: 30px 20px;
+            position: relative;
+            color: var(--gl-black);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .signature-accent { 
+            position: absolute; top: 0; left: 0; 
+            height: 6px; width: 100%; background: var(--gl-gold); 
+        }
+
+        header { text-align: center; margin-bottom: 20px; }
+        .brand { font-weight: 900; font-size: 18px; letter-spacing: -0.5px; margin: 0; }
+        .service-tag { font-size: 8px; color: #999; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+        
+        .status-badge { 
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gl-black); color: #fff; font-size: 8px; 
+            padding: 4px 12px; margin-top: 12px; display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .meta-table { width: 100%; font-size: 10px; margin: 15px 0; border-collapse: collapse; }
+        .meta-table td { padding: 4px 0; border-bottom: 0.5px solid #f9f9f9; }
+        .meta-label { color: #aaa; text-transform: uppercase; font-size: 8px; }
+        .meta-value { text-align: right; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        .log-header { font-size: 9px; font-weight: 900; color: #ddd; margin: 15px 0 10px 0; letter-spacing: 1px; text-align: left;}
+
+        .items-section { width: 100%; }
+        .item { margin-bottom: 12px; border-bottom: 1px solid #fcfcfc; padding-bottom: 8px; }
+        .item-main { display: flex; justify-content: space-between; align-items: baseline; }
+        .item-name { font-size: 11px; font-weight: 700; text-align: left; }
+        .item-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; }
+        .item-details { font-size: 8px; color: #888; text-transform: uppercase; margin-top: 1px; text-align: left; }
+
+        .total-box { 
+            margin-top: 20px; padding: 15px 0; 
+            border-top: 1.5px solid #000;
+            text-align: center;
+        }
+        .total-label { font-size: 8px; text-transform: uppercase; letter-spacing: 2px; color: #aaa; margin-bottom: 4px; display: block; }
+        .total-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; outline: none; }
+
+        .footer-info { font-size: 9px; text-align: right; margin-bottom: 15px; color: #666; }
+        .footer-info b { font-family: 'JetBrains Mono', monospace; color: #000; }
+
+        footer { text-align: center; border-top: 1px solid #f9f9f9; padding-top: 15px; }
+        .mindful-msg { font-size: 9px; color: #999; line-height: 1.4; font-style: italic; }
+        .gl-footer { font-weight: 900; font-size: 11px; letter-spacing: 8px; color: #f2f2f2; margin-top: 10px; }
+
+        [contenteditable="true"]:focus { background: #fff9c4; outline: none; border-radius: 2px; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .controls { display: none; }
+            .receipt-card { box-shadow: none; border: 0.1px solid #eee; }
+            .crop-mark { display: block; border-color: #000; } /* Marks appear only when printing */
+            @page { size: auto; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button class="btn btn-clear" onclick="clearData()">New Job</button>
+        <button class="btn btn-print" onclick="window.print()">Print Receipt</button>
+    </div>
+
+    <div class="print-frame">
+        <div class="crop-mark tl"></div>
+        <div class="crop-mark tr"></div>
+        <div class="crop-mark bl"></div>
+        <div class="crop-mark br"></div>
+
+        <div class="receipt-card">
+            <div class="signature-accent"></div>
+            
+            <header>
+                <div class="brand" contenteditable="true" id="p_brand">GL PRINTING SERVICES</div>
+                <div class="service-tag">OFFICIAL RECEIPT</div>
+                <div class="status-badge" contenteditable="true" id="p_stat">PAID / GCASH</div>
+            </header>
+
+            <table class="meta-table">
+                <tr><td class="meta-label">Date</td><td class="meta-value" contenteditable="true" id="p_date">08 MAY 2026</td></tr>
+                <tr><td class="meta-label">Ref</td><td class="meta-value" contenteditable="true" id="p_ref">GL-4112-TX</td></tr>
+                <tr><td class="meta-label">Client</td><td class="meta-value" contenteditable="true" id="p_cust">PREMIUM CLIENT</td></tr>
+            </table>
+
+            <div class="log-header">ORDER LOG</div>
+
+            <div class="items-section">
+                <div class="item">
+                    <div class="item-main">
+                        <span class="item-name" contenteditable="true">Syllabus Comparison 2025_26</span>
+                        <span class="item-price" contenteditable="true">1,665</span>
+                    </div>
+                    <div class="item-details" contenteditable="true">LONG | 111pg x 1cp | fullc 15/per</div>
+                </div>
+                <div class="item">
+                    <div class="item-main">
+                        <span class="item-name" contenteditable="true">2026-BAR-Bar-Bulletin-No.-1</span>
+                        <span class="item-price" contenteditable="true">496</span>
+                    </div>
+                    <div class="item-details" contenteditable="true">LONG | 62pg x 1cp | minc 8/per</div>
+                </div>
+                <div class="item">
+                    <div class="item-main">
+                        <span class="item-name" contenteditable="true">UP BOC_2025 Political Law and PIL</span>
+                        <span class="item-price" contenteditable="true">679</span>
+                    </div>
+                    <div class="item-details" contenteditable="true">LONG | 84pg x 1cp | 1cp fullc 15 x minc 8/per</div>
+                </div>
+                <div class="item">
+                    <div class="item-main">
+                        <span class="item-name" contenteditable="true">UP BOC_2025 Commercial Law</span>
+                        <span class="item-price" contenteditable="true">831</span>
+                    </div>
+                    <div class="item-details" contenteditable="true">LONG | 103pg x 1cp | 1cp fullc 15 x minc 8/per</div>
+                </div>
+                <div class="item">
+                    <div class="item-main">
+                        <span class="item-name" contenteditable="true">Envelope</span>
+                        <span class="item-price" contenteditable="true">60</span>
+                    </div>
+                    <div class="item-details" contenteditable="true">4 LONG ENVELOPES | 15 per</div>
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span class="total-label">Total</span>
+                <div class="total-val" contenteditable="true" id="total_display">₱3,731.00</div>
+            </div>
+
+            <div class="footer-info">
+                Mode: <b contenteditable="true" id="p_via">DELIVER</b><br>
+                Transaction: <b contenteditable="true" id="p_time">FB</b>
+            </div>
+
+            <footer>
+                <div class="mindful-msg" contenteditable="true" id="p_msg">
+                    Thank you for choosing GL PRNTS.
+                </div>
+                <div class="gl-footer">GL PRINTS</div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('.item-price').forEach(el => {
+                let val = el.innerText.replace(/[^0-9.]/g, '');
+                total += parseFloat(val) || 0;
+            });
+            document.getElementById('total_display').innerText = "₱" + total.toLocaleString(undefined, {minimumFractionDigits: 2});
+        }
+
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('item-price')) {
+                calculateTotal();
+            }
+            localStorage.setItem(e.target.id || e.target.innerText, e.target.innerText);
+        });
+
+        function clearData() {
+            if (confirm("Gusto mo bang mag-start ng bagong professional transaction?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        window.onload = calculateTotal;
+    </script>
+</body>
+</html>
