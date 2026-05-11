@@ -208,7 +208,7 @@ body::before {
 
         /* GLOBAL STYLES */
         * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
-        body { background: var(--d x Heep); color: white; font-family: 'Space Grotesk'; overflow-x: hidden; }
+        body { background: var(--deep); color: white; font-family: 'Space Grotesk'; overflow-x: hidden; }
 
         /* COVER PAGE */
         #cover-page {
@@ -2332,9 +2332,9 @@ Had to print a children’s book for a class project and I messaged 20 printing 
     </button>
 </div>
 
-           <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222;">
+           <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222; position:relative; z-index:95;">
     <div style="display:flex; align-items:center; gap:10px;">
-        <button onclick="closePreview()" style="background:#ff4d4d; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;">&times;</button>
+        <button onclick="closePreview()" style="background:#ff4d4d; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; position:relative; z-index:96;">&times;</button>
         <span id="detected-type-label" style="font-family:'Syncopate'; font-size:9px; color:#ffcc00;">LIVE</span>
     </div>
 
@@ -2365,9 +2365,9 @@ Had to print a children’s book for a class project and I messaged 20 printing 
     
     <div id="p-modal" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -48%); width:90%; max-width:360px; background:rgba(255, 255, 255, 0.05); border:1.5px solid rgba(255, 204, 0, 0.3); border-radius:30px; padding:30px; padding-bottom: 40px; color:white; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: pPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
         
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position:relative; z-index:95;">
             <span style="font-size:10px; font-weight:900; color:#ffcc00; letter-spacing:4px;">PREMIUM UPLOAD</span>
-            <button onclick="exitPremium()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+            <button onclick="exitPremium()" style="background:rgba(255,255,255,0.05); border:none; color:#ffcc00; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; z-index:96;">✕</button>
         </div>
 
         <div id="p-upload-container" style="width:100%; height:180px; background:rgba(0,0,0,0.6); border:1.5px dashed rgba(255,204,0,0.3); border-radius:20px; position:relative; margin-bottom:15px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
@@ -2491,7 +2491,7 @@ Had to print a children’s book for a class project and I messaged 20 printing 
                 <div><label>Copies</label><input type="number" id="copies" value="1" min="1" oninput="updatePrice()"></div>
             </div>
 
-            <button class="btn-add" onclick="addItem()">ADD TO CART (₱<span id="live-price">0.00</span>)</button>
+            <button type="button" id="terminal-add-btn" class="btn-add" onclick="addItem()">ADD TO CART (₱<span id="live-price">0.00</span>)</button>
 
             <div id="cart-section" style="display:none; margin-top:30px; border-top:1px solid #222; padding-top:20px;">
                 <label style="color:var(--neon-gold);">CART SUMMARY</label>
@@ -2589,6 +2589,10 @@ Had to print a children’s book for a class project and I messaged 20 printing 
             </div>
 
             <input type="file" id="proof-input" style="display:none;" onchange="checkProof(); validateCheckout();">
+
+            <div id="payment-cart-preview" style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; margin-top:15px; border:1px solid #222; max-height:180px; overflow-y:auto;">
+                <p style="font-size:10px; color:#888; text-align:center; margin:0;">NO FILES IN CART YET</p>
+            </div>
 
             <div class="price-breakdown" style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; margin-top:15px; border:1px solid #222;">
                 <div style="display:flex; justify-content:space-between; font-size:10px; color:#888;">
@@ -2762,6 +2766,9 @@ applySystemLock();
 
     let cart = [];
     let pendingFile = null;
+    let standardTerminalScanning = false;
+    let standardScanSession = 0;
+    let premiumPreviewSession = 0;
     let hasGreeted = false; // Flag for auto-greeting
     const pdfjsLib = window['pdfjs-dist/build/pdf'];
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -3065,6 +3072,92 @@ async function askAI() {
 }
     
 
+function getTerminalBusyOverlay() {
+    let ov = document.getElementById('terminal-busy-overlay');
+    if (!ov) {
+        const card = document.querySelector('#terminal-sector .terminal-card');
+        if (!card) return null;
+        ov = document.createElement('div');
+        ov.id = 'terminal-busy-overlay';
+        ov.style.cssText = 'display:none;position:absolute;inset:0;z-index:80;border-radius:inherit;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.78);backdrop-filter:blur(4px);pointer-events:auto;';
+        ov.innerHTML = '<span id="terminal-busy-title" style="font-family:Syncopate,sans-serif;color:#ffcc00;font-size:11px;letter-spacing:3px;text-align:center;padding:0 20px;">SYSTEM SCANNING</span><span style="font-size:9px;color:#aaa;text-align:center;padding:0 20px;">Please wait — do not add to cart yet.</span>';
+        card.appendChild(ov);
+    }
+    return ov;
+}
+
+function setStandardTerminalBusy(busy, titleText) {
+    standardTerminalScanning = !!busy;
+    ['paper-size','print-type','pages','copies','gl-page-range'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.disabled = !!busy;
+    });
+    const bw = document.getElementById('bw-preview-only');
+    if (bw) bw.disabled = !!busy;
+    const addBtn = document.getElementById('terminal-add-btn');
+    if (addBtn) {
+        addBtn.disabled = !!busy;
+        addBtn.style.opacity = busy ? '0.55' : '1';
+        addBtn.style.pointerEvents = busy ? 'none' : '';
+    }
+    const dz = document.getElementById('drop-zone');
+    if (dz) {
+        dz.style.pointerEvents = busy ? 'none' : '';
+        dz.style.opacity = busy ? '0.55' : '1';
+    }
+    const nav = document.getElementById('nav-controls');
+    if (nav) {
+        nav.style.pointerEvents = busy ? 'none' : '';
+        nav.style.opacity = busy ? '0.55' : '1';
+    }
+    const pageSearch = document.getElementById('page-search');
+    if (pageSearch) pageSearch.disabled = !!busy;
+    const ov = getTerminalBusyOverlay();
+    if (ov) {
+        ov.style.display = busy ? 'flex' : 'none';
+        const t = document.getElementById('terminal-busy-title');
+        if (t && titleText) t.textContent = titleText;
+    }
+}
+
+function getPremiumBusyOverlay() {
+    const modal = document.getElementById('p-modal');
+    if (!modal) return null;
+    let ov = document.getElementById('p-busy-overlay');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'p-busy-overlay';
+        ov.style.cssText = 'display:none;position:absolute;inset:0;z-index:40;border-radius:inherit;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.76);backdrop-filter:blur(3px);pointer-events:auto;';
+        ov.innerHTML = '<span id="p-busy-title" style="font-family:Syncopate,sans-serif;color:#ffcc00;font-size:11px;letter-spacing:2px;text-align:center;padding:0 16px;">LOADING PREVIEW</span><span style="font-size:9px;color:#888;text-align:center;padding:0 16px;">Please wait — do not confirm yet.</span>';
+        modal.appendChild(ov);
+    }
+    return ov;
+}
+
+function setPremiumModalBusy(busy, titleText) {
+    ['p-qty','p-paper'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.disabled = !!busy;
+    });
+    const sub = document.getElementById('p-submit-btn');
+    if (sub && busy) {
+        sub.disabled = true;
+        sub.style.background = '#1a1a1a';
+        sub.style.color = '#444';
+        sub.innerText = 'PLEASE WAIT';
+    }
+    const msg = document.getElementById('p-msg');
+    if (msg) msg.style.pointerEvents = busy ? 'none' : '';
+    const resetB = document.getElementById('p-reset-btn');
+    if (resetB) resetB.style.pointerEvents = busy ? 'none' : '';
+    const ov = getPremiumBusyOverlay();
+    if (ov) {
+        ov.style.display = busy ? 'flex' : 'none';
+        const tt = document.getElementById('p-busy-title');
+        if (tt && titleText) tt.textContent = titleText;
+    }
+}
+
   async function handleProcess() {
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
@@ -3090,8 +3183,9 @@ async function askAI() {
 
     if(robot) robot.classList.remove('active');
 
-    // --- 2. SUCCESS STATE ---
-    pendingFile = file;
+    const session = ++standardScanSession;
+    pendingFile = null;
+    setStandardTerminalBusy(true, 'SYSTEM SCANNING');
     document.getElementById('status-text').innerText = "SYSTEM SCANNING...";
     document.getElementById('filename-display').innerText = file.name;
 
@@ -3100,45 +3194,79 @@ async function askAI() {
 
     if (file.type === "application/pdf") {
         const reader = new FileReader();
+        reader.onerror = function() {
+            if (session !== standardScanSession) return;
+            document.getElementById('status-text').innerText = "READ ERROR — TRY AGAIN";
+            setStandardTerminalBusy(false);
+        };
         reader.onload = async function() {
-            const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-            document.getElementById('pages').value = pdf.numPages;
-            pdfDocSource = pdf; 
-            
-            if(document.getElementById('total-pages-view')) {
-                document.getElementById('total-pages-view').innerText = pdf.numPages;
+            try {
+                if (session !== standardScanSession) return;
+                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+                if (session !== standardScanSession) return;
+                document.getElementById('pages').value = pdf.numPages;
+                pdfDocSource = pdf; 
+                
+                if(document.getElementById('total-pages-view')) {
+                    document.getElementById('total-pages-view').innerText = pdf.numPages;
+                }
+                
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({scale: 0.8});
+                canvas.width = viewport.width; canvas.height = viewport.height;
+                await page.render({canvasContext: ctx, viewport: viewport}).promise;
+                
+                if (session !== standardScanSession) return;
+                analyzePixels(canvas, viewport.width / viewport.height);
+                updatePaperVisual();
+                pendingFile = file;
+            } catch (err) {
+                console.error(err);
+                if (session === standardScanSession) {
+                    document.getElementById('status-text').innerText = "SCAN FAILED — TRY AGAIN";
+                    pendingFile = null;
+                }
+            } finally {
+                if (session === standardScanSession) setStandardTerminalBusy(false);
             }
-            
-            const page = await pdf.getPage(1);
-            const viewport = page.getViewport({scale: 0.8}); // Tinaasan ang scale para luminaw
-            canvas.width = viewport.width; canvas.height = viewport.height;
-            await page.render({canvasContext: ctx, viewport: viewport}).promise;
-            
-            analyzePixels(canvas, viewport.width / viewport.height);
-            updatePaperVisual(); // I-apply ang size (Short/A4/Long)
         };
         reader.readAsArrayBuffer(file);
     } else {
-        // --- FIXED IMAGE RENDERING (HINDI NA IPIT) ---
         const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-            // Gamitin ang natural size para sa analysis pero i-limit ang canvas size para sa preview
-            const maxDim = 800; 
-            const scale = Math.min(maxDim / img.naturalWidth, maxDim / img.naturalHeight);
-            
-            canvas.width = img.naturalWidth * scale;
-            canvas.height = img.naturalHeight * scale;
-            
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            document.getElementById('pages').value = 1;
-            if(document.getElementById('total-pages-view')) {
-                document.getElementById('total-pages-view').innerText = "1";
-            }
-            
-            analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
-            updatePaperVisual(); // I-apply ang size (Short/A4/Long)
+        img.onerror = function() {
+            if (session !== standardScanSession) return;
+            document.getElementById('status-text').innerText = "IMAGE ERROR — TRY AGAIN";
+            setStandardTerminalBusy(false);
         };
+        img.onload = () => {
+            try {
+                if (session !== standardScanSession) return;
+                const maxDim = 800; 
+                const scale = Math.min(maxDim / img.naturalWidth, maxDim / img.naturalHeight);
+                
+                canvas.width = img.naturalWidth * scale;
+                canvas.height = img.naturalHeight * scale;
+                
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                document.getElementById('pages').value = 1;
+                if(document.getElementById('total-pages-view')) {
+                    document.getElementById('total-pages-view').innerText = "1";
+                }
+                
+                analyzePixels(canvas, img.naturalWidth / img.naturalHeight);
+                updatePaperVisual();
+                pendingFile = file;
+            } catch (err) {
+                console.error(err);
+                if (session === standardScanSession) {
+                    document.getElementById('status-text').innerText = "SCAN FAILED — TRY AGAIN";
+                    pendingFile = null;
+                }
+            } finally {
+                if (session === standardScanSession) setStandardTerminalBusy(false);
+            }
+        };
+        img.src = URL.createObjectURL(file);
     }
 }
 
@@ -3233,6 +3361,10 @@ function closeRobot() {
     }
 }
    function addItem() {
+    if (standardTerminalScanning) {
+        alert("Terminal is still scanning your file. Please wait until you see SCAN COMPLETE.");
+        return;
+    }
     if(!pendingFile) return;
 
     // Kunin ang value mula sa range input field
@@ -3255,29 +3387,91 @@ function closeRobot() {
     
     // Reset inputs
     document.getElementById('gl-page-range').value = ""; 
-    document.getElementById('status-text').innerText = "UPLOAD ANOTHER?";
-    document.getElementById('filename-display').innerText = "";
+    closePreview();
+    document.getElementById('status-text').innerText = "ADDED TO CART ✓ UPLOAD NEXT";
 }
 
    function renderCart() {
     const list = document.getElementById('cart-list');
-    list.innerHTML = cart.map((item, idx) => `
+    list.innerHTML = cart.map((item, idx) => {
+        const isPremiumItem = typeof item.type === 'string' && item.type.startsWith('premium_');
+        const typeLabel = isPremiumItem ? `PREMIUM ${item.type.replace('premium_', '').toUpperCase()}` : item.type;
+        const qtyMatch = item.meta && item.meta.match(/x\s*(\d+)\s*cp/i);
+        const metaLabel = isPremiumItem ? `QTY: ${qtyMatch ? qtyMatch[1] : 1}` : item.meta;
+        const rangeLabel = isPremiumItem ? "PREMIUM FILE" : `PRINT: ${item.range}`;
+
+        return `
         <div class="cart-item">
             <button class="remove-btn" onclick="removeItem(${idx})">✕</button>
             <div style="font-size:11px; font-weight:bold; color:var(--neon-gold);">${item.name}</div>
-            <div style="font-size:9px; color:#777;">${item.type} | ${item.size} | ${item.meta}</div>
-            <div style="font-size:9px; color:#ffcc00; margin-top:2px;">PRINT: ${item.range}</div>
+            <div style="font-size:9px; color:#777;">${typeLabel} | ${item.size} | ${metaLabel}</div>
+            <div style="font-size:9px; color:#ffcc00; margin-top:2px;">${rangeLabel}</div>
             <div style="font-weight:bold; margin-top:5px;">₱${item.price.toFixed(2)}</div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
         
     const total = cart.reduce((a,b) => a + b.price, 0);
     document.getElementById('grand-total').innerText = `₱${total.toFixed(2)}`;
     document.getElementById('cart-section').style.display = cart.length > 0 ? 'block' : 'none';
+    renderPaymentCartPreview();
+
+    // Full reset kapag lahat ng items na-remove
+    if (cart.length === 0) {
+        isPremiumMode = false;
+        currentSubtotal = 0;
+        const livePrice = document.getElementById('live-price');
+        if (livePrice) livePrice.innerText = "0.00";
+        if (document.getElementById('subtotal-display')) {
+            document.getElementById('subtotal-display').innerText = "₱0.00";
+        }
+        if (document.getElementById('delivery-fee-display')) {
+            document.getElementById('delivery-fee-display').innerText = "₱0.00";
+        }
+        if (document.getElementById('pay-amount')) {
+            document.getElementById('pay-amount').innerText = "₱0.00";
+        }
+        return;
+    }
+
+    // Keep checkout values synced with current cart
+    if (typeof refreshFinalTotal === 'function') refreshFinalTotal();
+}
+
+function renderPaymentCartPreview() {
+    const preview = document.getElementById('payment-cart-preview');
+    if (!preview) return;
+
+    if (!Array.isArray(cart) || cart.length === 0) {
+        preview.innerHTML = `<p style="font-size:10px; color:#888; text-align:center; margin:0;">NO FILES IN CART YET</p>`;
+        return;
+    }
+
+    preview.innerHTML = cart.map((item, idx) => {
+        const isPremiumItem = typeof item.type === 'string' && item.type.startsWith('premium_');
+        const label = isPremiumItem ? 'PREMIUM' : 'STANDARD';
+        const labelBg = isPremiumItem ? 'rgba(255, 204, 0, 0.15)' : 'rgba(0, 82, 218, 0.2)';
+        const labelColor = isPremiumItem ? '#ffcc00' : '#7fb3ff';
+        const detail = isPremiumItem
+            ? `TYPE: ${item.type.replace('premium_', '').toUpperCase()} • ${item.meta}`
+            : `${item.type} • ${item.size} • ${item.meta} • ${item.range}`;
+
+        return `
+            <div style="padding:8px 0; border-bottom:${idx === cart.length - 1 ? 'none' : '1px dashed #333'};">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                    <span style="font-size:10px; font-weight:700; color:#fff; max-width:75%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</span>
+                    <span style="font-size:8px; font-weight:700; padding:3px 8px; border-radius:999px; background:${labelBg}; color:${labelColor};">${label}</span>
+                </div>
+                <div style="font-size:9px; color:#888; margin-top:4px;">${detail}</div>
+                <div style="font-size:10px; color:#ffcc00; font-weight:700; margin-top:4px;">₱${(parseFloat(item.price) || 0).toFixed(2)}</div>
+            </div>
+        `;
+    }).join('');
 }
 
     function removeItem(idx) { cart.splice(idx, 1); renderCart(); }
     function showConfirm() { 
-        document.getElementById('pay-amount').innerText = document.getElementById('grand-total').innerText;
+        renderPaymentCartPreview();
+        refreshFinalTotal();
         document.getElementById('payment-modal').style.display = 'flex'; 
     }
     
@@ -3375,6 +3569,7 @@ const gl_db = supabase.createClient(SB_URL, SB_KEY);
 
  async function sendToTelegram() {
     const btn = document.getElementById('submit-btn');
+    refreshFinalTotal();
     
     // 1. DATA GATHERING MULA SA UI
     const nameInput = document.getElementById('cust-name');
@@ -3417,27 +3612,43 @@ startOrderWatcher(ref, custName);
         let totalPages = 0;
         let additionalTime = 0;
         cart.forEach(item => {
-            const pages = parseInt(item.meta) || 1;
-            totalPages += pages;
+            // meta format: "Xpg x Ycp"
+            const pageMatch = item.meta && item.meta.match(/(\d+)\s*pg/i);
+            const copyMatch = item.meta && item.meta.match(/x\s*(\d+)\s*cp/i);
+            const pages = pageMatch ? parseInt(pageMatch[1], 10) : 1;
+            const copies = copyMatch ? parseInt(copyMatch[1], 10) : 1;
+            totalPages += pages * copies;
             if(item.type.includes('full') || item.type.includes('color')) additionalTime += 2; 
         });
         let etaDisplay = `${5 + (totalPages * 1) + additionalTime} Mins`;
 
-        // 3. ADMIN MESSAGE (TELEGRAM TEXT)
+        // 3. ADMIN MESSAGE (TELEGRAM TEXT) - organized view
+        const standardCount = cart.filter(item => !(typeof item.type === 'string' && item.type.startsWith('premium_'))).length;
+        const premiumCount = cart.length - standardCount;
+
         let adminMsg = `🧾 <b>NEW ORDER: ${ref}</b>\n`;
         adminMsg += `👤 CUSTOMER: ${custName.toUpperCase()}\n`;
         adminMsg += `💳 PAYMENT: ${method.toUpperCase()}\n`;
         adminMsg += `📍 DESTINATION: ${dest.toUpperCase()}\n`;
+        adminMsg += `⏱ ETA: ${etaDisplay}\n`;
+        adminMsg += `📦 ITEMS: ${cart.length} (STANDARD: ${standardCount} | PREMIUM: ${premiumCount})\n`;
         adminMsg += `━━━━━━━━━━━━━━━━━━\n`;
         adminMsg += `💰 PRINTS: ${subtotal}\n`;
         adminMsg += `🚚 DELIVERY: ${delivery}\n`;
-        adminMsg += `🔥 <b>TOTAL: ${total}</b>\n━━━━━━━━━━━━━━━━━━\n\n`;
-        
+        adminMsg += `🔥 <b>TOTAL: ${total}</b>\n`;
+        adminMsg += `━━━━━━━━━━━━━━━━━━\n\n`;
+
         cart.forEach((item, i) => {
-            adminMsg += `<b>${i+1}.</b> ${item.name.replace(/[<>]/g, '')}\n`;
-            // INSERTS RANGE HERE:
-            adminMsg += `▫️ ${item.size} | ${item.type} | ${item.meta}\n`;
-            adminMsg += `▫️ <b>PRINT: ${item.range}</b>\n\n`; 
+            const isPremiumItem = typeof item.type === 'string' && item.type.startsWith('premium_');
+            const classLabel = isPremiumItem ? 'PREMIUM' : 'STANDARD';
+            const typeLabel = isPremiumItem ? item.type.replace('premium_', '').toUpperCase() : item.type.toUpperCase();
+
+            adminMsg += `<b>${i + 1}. ${item.name.replace(/[<>]/g, '')}</b>\n`;
+            adminMsg += `🏷 CLASS: <b>${classLabel}</b>\n`;
+            adminMsg += `▫️ TYPE: ${typeLabel}\n`;
+            adminMsg += `▫️ SIZE/QTY: ${item.size} | ${item.meta}\n`;
+            adminMsg += `▫️ RANGE: ${isPremiumItem ? 'PREMIUM FILE' : item.range}\n`;
+            adminMsg += `▫️ ITEM TOTAL: ₱${(parseFloat(item.price) || 0).toFixed(2)}\n\n`;
         });
 
         // SEND TEXT MESSAGE TO TG
@@ -3462,17 +3673,95 @@ startOrderWatcher(ref, custName);
         }
 
         // 5. SEND PRINT FILES
+        const failedFiles = [];
         for(let item of cart) {
-            const fileFd = new FormData();
-            fileFd.append('chat_id', CONFIG.CHAT_ID);
             const isImg = ['jpg','jpeg','png'].includes(item.name.split('.').pop().toLowerCase());
-            fileFd.append(isImg ? 'photo' : 'document', item.file);
-            // UPDATED CAPTION TO INCLUDE RANGE:
-            fileFd.append('caption', `📂 FILE TO PRINT: ${item.name}\nRef: ${ref}\nPrint: ${item.range}`);
-            
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/${isImg ? 'sendPhoto' : 'sendDocument'}`, {
-                method: 'POST', 
-                body: fileFd
+            const isPremiumItem = typeof item.type === 'string' && item.type.startsWith('premium_');
+            const classLabel = isPremiumItem ? 'PREMIUM' : 'STANDARD';
+            const typeLabel = isPremiumItem ? item.type.replace('premium_', '').toUpperCase() : item.type.toUpperCase();
+            const fileCaption = `📂 FILE TO PRINT: ${item.name}\nRef: ${ref}\nClass: ${classLabel}\nType: ${typeLabel}\nDetails: ${item.size} | ${item.meta}\nPrint: ${isPremiumItem ? 'PREMIUM FILE' : item.range}`;
+
+            // Primary send attempt
+            let sent = false;
+            let lastError = "";
+
+            if (isImg) {
+                const photoFd = new FormData();
+                photoFd.append('chat_id', CONFIG.CHAT_ID);
+                photoFd.append('photo', item.file);
+                photoFd.append('caption', fileCaption);
+
+                const photoRes = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    body: photoFd
+                });
+
+                if (photoRes.ok) {
+                    sent = true;
+                } else {
+                    const errBody = await photoRes.text();
+                    lastError = `sendPhoto failed: ${errBody}`;
+                }
+            } else {
+                const docFd = new FormData();
+                docFd.append('chat_id', CONFIG.CHAT_ID);
+                docFd.append('document', item.file);
+                docFd.append('caption', fileCaption);
+
+                const docRes = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendDocument`, {
+                    method: 'POST',
+                    body: docFd
+                });
+
+                if (docRes.ok) {
+                    sent = true;
+                } else {
+                    const errBody = await docRes.text();
+                    lastError = `sendDocument failed: ${errBody}`;
+                }
+            }
+
+            // Fallback: if image upload fails as photo, retry as document
+            if (!sent && isImg) {
+                const fallbackFd = new FormData();
+                fallbackFd.append('chat_id', CONFIG.CHAT_ID);
+                fallbackFd.append('document', item.file);
+                fallbackFd.append('caption', `${fileCaption}\nFallback: sent as document`);
+
+                const fallbackRes = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendDocument`, {
+                    method: 'POST',
+                    body: fallbackFd
+                });
+
+                if (fallbackRes.ok) {
+                    sent = true;
+                } else {
+                    const errBody = await fallbackRes.text();
+                    lastError = `${lastError}\nFallback failed: ${errBody}`;
+                }
+            }
+
+            if (!sent) {
+                console.error(`Telegram file send failed for ${item.name}:`, lastError);
+                failedFiles.push(item.name);
+            }
+        }
+
+        // Admin warning if some files were not delivered
+        if (failedFiles.length > 0) {
+            const warnMsg = [
+                `⚠️ <b>FILE SEND ISSUE</b>`,
+                `Ref: <b>${ref}</b>`,
+                `Customer: ${custName.toUpperCase()}`,
+                ``,
+                `Failed files (${failedFiles.length}):`,
+                failedFiles.map(name => `- ${name}`).join('\n')
+            ].join('\n');
+
+            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CONFIG.CHAT_ID, text: warnMsg, parse_mode: 'HTML' })
             });
         }
 
@@ -3767,6 +4056,8 @@ nameInput.addEventListener('focus', () => {
     }, 10000); 
 }, { once: true }); // Para isang beses lang siya lilitaw per session (hindi makulit)
     function closePreview() {
+        standardScanSession++;
+        setStandardTerminalBusy(false);
         // 1. I-reset ang File Input (para payagan ang re-upload ng parehong file)
         const fileInput = document.getElementById('file-input');
         if (fileInput) fileInput.value = "";
@@ -3928,6 +4219,7 @@ async function pPreview(input) {
     const file = input.files[0];
     if (!file) return;
 
+    const session = ++premiumPreviewSession;
     const img = document.getElementById('p-img-preview');
     const canvas = document.getElementById('p-canvas-preview');
     const renderArea = document.getElementById('p-render-area');
@@ -3936,45 +4228,107 @@ async function pPreview(input) {
     const resetBtn = document.getElementById('p-reset-btn');
     const submitBtn = document.getElementById('p-submit-btn');
 
+    setPremiumModalBusy(true, 'LOADING PREVIEW');
     msg.style.display = 'none';
     renderArea.style.display = 'block';
     resetBtn.style.display = 'block';
 
     if (file.type === 'application/pdf') {
         const reader = new FileReader();
+        reader.onerror = function() {
+            if (session !== premiumPreviewSession) return;
+            setPremiumModalBusy(false, '');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "UPLOAD FAILED — RETRY";
+        };
         reader.onload = async function() {
-            const typedarray = new Uint8Array(this.result);
-            pPdfDoc = await pdfjsLib.getDocument(typedarray).promise;
-            
-            nav.style.display = 'flex'; // Ipakita ang Next/Prev
-            img.style.display = 'none';
-            canvas.style.display = 'block';
-            
-            renderPPage(1); // Render first page
-            pCalc(); 
+            let loadOk = false;
+            try {
+                if (session !== premiumPreviewSession) return;
+                const typedarray = new Uint8Array(this.result);
+                pPdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+                if (session !== premiumPreviewSession) return;
+                
+                nav.style.display = 'flex';
+                img.style.display = 'none';
+                canvas.style.display = 'block';
+                
+                await renderPPage(1);
+                pCalc(); 
+                loadOk = true;
+            } catch (e) {
+                console.error(e);
+                if (session === premiumPreviewSession) {
+                    submitBtn.innerText = "PDF ERROR — RETRY";
+                }
+            } finally {
+                if (session === premiumPreviewSession) {
+                    setPremiumModalBusy(false);
+                    if (loadOk) {
+                        submitBtn.disabled = false;
+                        submitBtn.style.background = "#ffcc00";
+                        submitBtn.style.color = "#000";
+                        submitBtn.innerText = "CONFIRM & ADD TO QUEUE";
+                    } else {
+                        submitBtn.disabled = true;
+                        submitBtn.style.background = "#1a1a1a";
+                        submitBtn.style.color = "#444";
+                    }
+                }
+            }
         };
         reader.readAsArrayBuffer(file);
     } else {
-        // Image logic
         const reader = new FileReader();
+        reader.onerror = function() {
+            if (session !== premiumPreviewSession) return;
+            setPremiumModalBusy(false);
+            submitBtn.disabled = true;
+            submitBtn.innerText = "UPLOAD FAILED — RETRY";
+        };
         reader.onload = function(e) {
+            if (session !== premiumPreviewSession) return;
+            img.onload = function() {
+                let loadOk = false;
+                try {
+                    if (session !== premiumPreviewSession) return;
+                    img.style.display = 'block';
+                    canvas.style.display = 'none';
+                    nav.style.display = 'none';
+                    pCalc();
+                    loadOk = true;
+                } finally {
+                    if (session === premiumPreviewSession) {
+                        setPremiumModalBusy(false);
+                        if (loadOk) {
+                            submitBtn.disabled = false;
+                            submitBtn.style.background = "#ffcc00";
+                            submitBtn.style.color = "#000";
+                            submitBtn.innerText = "CONFIRM & ADD TO QUEUE";
+                        } else {
+                            submitBtn.disabled = true;
+                            submitBtn.style.background = "#1a1a1a";
+                            submitBtn.style.color = "#444";
+                        }
+                    }
+                }
+            };
+            img.onerror = function() {
+                if (session !== premiumPreviewSession) return;
+                setPremiumModalBusy(false);
+                submitBtn.disabled = true;
+                submitBtn.innerText = "IMAGE ERROR — RETRY";
+            };
             img.src = e.target.result;
-            img.style.display = 'block';
-            canvas.style.display = 'none';
-            nav.style.display = 'none'; // Tago buttons pag image
-            pCalc();
         };
         reader.readAsDataURL(file);
     }
-
-    submitBtn.disabled = false;
-    submitBtn.style.background = "#ffcc00";
-    submitBtn.style.color = "#000";
-    submitBtn.innerText = "CONFIRM & ADD TO QUEUE";
 }
 
 function pResetFile(e) {
     if(e) e.stopPropagation();
+    premiumPreviewSession++;
+    setPremiumModalBusy(false);
     document.getElementById('p-file-real').value = "";
     document.getElementById('p-render-area').style.display = 'none';
     document.getElementById('p-msg').style.display = 'flex';
@@ -3990,12 +4344,37 @@ function pResetFile(e) {
     btn.innerText = "UPLOAD IMAGE FIRST";
 }
 function handlePremiumCheckout() {
+    const busyOv = document.getElementById('p-busy-overlay');
+    if (busyOv && busyOv.style.display === 'flex') {
+        alert("Premium file is still loading. Please wait.");
+        return;
+    }
     const pTotalText = document.getElementById('p-total').innerText;
+    const pQty = Math.max(1, parseInt(document.getElementById('p-qty').value, 10) || 1);
+    const pPaper = document.getElementById('p-paper').value;
+    const pFileInput = document.getElementById('p-file-real');
+    const premiumFile = pFileInput && pFileInput.files ? pFileInput.files[0] : null;
+
+    if (!premiumFile) {
+        alert("Please upload premium file first.");
+        return;
+    }
+
     // Siguraduhin na number ang makuha
     currentSubtotal = parseFloat(pTotalText.replace(/[^\d.]/g, '')) || 0;
     
-    isPremiumMode = true; // ITAG NA PREMIUM TO
-
+    // Gumamit ng iisang cart system para walang overlap sa checkout calculation
+    cart.push({
+        file: premiumFile,
+        name: premiumFile.name,
+        type: `premium_${pPaper.toLowerCase()}`,
+        size: "PREMIUM",
+        range: "N/A",
+        meta: `1pg x ${pQty}cp`,
+        price: currentSubtotal
+    });
+    isPremiumMode = false;
+    renderCart();
     refreshFinalTotal();
 
     const btn = document.getElementById('p-submit-btn');
@@ -4014,9 +4393,11 @@ function handlePremiumCheckout() {
 function refreshFinalTotal() {
     let subTotal = 0;
 
-    // CHECK KUNG NASAAN TAYONG MODE
-    if (isPremiumMode) {
-        // Gamitin ang global currentSubtotal na nakuha sa handlePremiumCheckout
+    // Single source of truth: cart total (standard + premium)
+    if (Array.isArray(cart) && cart.length > 0) {
+        subTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+    } else if (isPremiumMode) {
+        // fallback only (legacy behavior)
         subTotal = currentSubtotal;
     } else {
         // RE-CALCULATE STANDARD: (Dito natin kukunin ang standard pricing)
@@ -4305,33 +4686,35 @@ window.onload = initializeSecurity;
     })();
 
     function updatePrice() {
-        // 1. Kuhanin ang values mula sa Terminal Inputs
         const paperSize = document.getElementById('paper-size').value;
         const printType = document.getElementById('print-type').value;
-        const pages = parseInt(document.getElementById('pages').value) || 0;
-        const copies = parseInt(document.getElementById('copies').value) || 0;
+        const pages = Math.max(0, parseInt(document.getElementById('pages').value, 10) || 0);
+        const copies = Math.max(1, parseInt(document.getElementById('copies').value, 10) || 1);
         const destination = document.getElementById('destination').value;
 
-        // 2. Calculate Sub-print (Terminal Price)
-        // Kinukuha ang base price mula sa PRICING object mo sa code
-        const basePrice = PRICING[printType][paperSize];
-        const subPrintTotal = basePrice * pages * copies;
+        let subPrintTotal = 0;
 
-        // 3. Calculate Delivery Fee
-        let deliveryFee = 0;
-        if (destination === 'jhs') {
-            deliveryFee = 15; // Palitan ang amount base sa rate niyo
-        } else if (destination === 'shs') {
-            deliveryFee = 20; // Palitan ang amount base sa rate niyo
+        // Premium branch (fixed price per copy)
+        if (typeof PREMIUM_RATES !== 'undefined' && PREMIUM_RATES.hasOwnProperty(printType)) {
+            const unitPrice = (PREMIUM_RATES[printType] && PREMIUM_RATES[printType][paperSize]) || 0;
+            subPrintTotal = unitPrice * copies;
+            document.getElementById('pages').style.opacity = "0.5";
+        // Standard terminal branch (price per page x copies)
+        } else if (typeof PRICING !== 'undefined' && PRICING.hasOwnProperty(printType)) {
+            const unitPrice = (PRICING[printType] && PRICING[printType][paperSize]) || 0;
+            subPrintTotal = unitPrice * pages * copies;
+            document.getElementById('pages').style.opacity = "1";
         } else {
-            deliveryFee = 0; // Store Pickup
+            // Fallback para hindi mag-NaN/undefined crash
+            document.getElementById('pages').style.opacity = "1";
         }
 
-        // 4. Compute Grand Total
+        let deliveryFee = 0;
+        if (destination === 'jhs') deliveryFee = 15;
+        else if (destination === 'shs') deliveryFee = 20;
+
         const grandTotal = subPrintTotal + deliveryFee;
 
-        // 5. I-display sa UI (Updating the Checkout Card)
-        // Terminal Price Display
         document.getElementById('live-price').innerText = subPrintTotal.toFixed(2);
         
         // Checkout Modal Displays (kung bukas ang modal)
@@ -4341,13 +4724,14 @@ window.onload = initializeSecurity;
         if(document.getElementById('delivery-fee-display')) {
             document.getElementById('delivery-fee-display').innerText = `₱${deliveryFee.toFixed(2)}`;
         }
-        if(document.getElementById('pay-amount')) {
+        if (document.getElementById('pay-amount')) {
             document.getElementById('pay-amount').innerText = `₱${grandTotal.toFixed(2)}`;
         }
     }
 
     // Siguraduhin na naka-listen ang 'destination' dropdown sa pagbabago
-    document.getElementById('destination').addEventListener('change', updatePrice);
+    const destinationSelect = document.getElementById('destination');
+    if (destinationSelect) destinationSelect.addEventListener('change', updatePrice);
 
     function togglePaymentUI() {
         const method = document.getElementById('payment-method').value;
@@ -4580,65 +4964,6 @@ function filterRepairs() {
         `;
     }
     </script>
-    <div id="tech-archive-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; align-items:center; justify-content:center; padding:20px;">
-    <div class="modal-content" style="max-width: 800px; width: 100%; background: #0a0a0a; border: 1px solid #ffcc00; position: relative; border-radius: 25px; padding: 30px;">
-        <button onclick="closeTechArchive()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: #ffcc00; font-size: 30px; cursor: pointer;">&times;</button>
-        
-        <h2 style="font-family:'Syncopate'; color:#ffcc00; font-size: 1.2rem; margin-bottom: 5px;">REPAIR ARCHIVE</h2>
-        <p style="font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 20px;">SEARCH MODEL TO SEE RESULTS</p>
-
-        <div class="input-wrapper" style="margin-bottom: 20px;">
-            <input type="text" id="phone-search" placeholder="SEARCH MODEL (e.g. iPhone 13, Samsung S21...)" onkeyup="filterRepairs()" style="text-align: center; border: 1px solid rgba(255,204,0,0.5); background: rgba(255,255,255,0.05); color: white; padding: 15px; width: 100%; border-radius: 12px; outline: none;">
-        </div>
-
-        <div id="archive-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding-right: 10px;">
-            <div class="repair-item" data-model="iPhone 13" style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid #222;">
-                <p style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00; margin-bottom: 10px;">IPHONE 13 LCD REPLACEMENT</p>
-                <div style="display: flex; gap: 8px;">
-                    <div style="flex: 1;"><img src="GL_Logo.png" style="width: 100%; border-radius: 5px; opacity: 0.6;"><br><span style="font-size:8px; color:#555;">BEFORE</span></div>
-                    <div style="flex: 1;"><img src="GL_Logo.png" style="width: 100%; border-radius: 5px; border: 1px solid #ffcc00;"><br><span style="font-size:8px; color:#ffcc00;">AFTER</span></div>
-                </div>
-            </div>
-            </div>
-    </div>
-</div>
-
-<div id="tech-archive-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:99999; align-items:center; justify-content:center;">
-    <div class="modal-content archive-modal-content" style="max-width: 900px; width: 95%; border-radius: 35px; padding: 40px; position: relative;">
-        
-        <button onclick="closeTechArchive()" class="terminal-exit-btn">&times;</button>
-        
-        <div style="text-align: center; margin-bottom: 30px;">
-            <h2 style="font-family:'Syncopate'; color:#ffcc00; letter-spacing: 8px; font-size: 1.4rem;">REPAIR ARCHIVE</h2>
-            <div style="width: 50px; height: 2px; background: #ffcc00; margin: 10px auto; opacity: 0.5;"></div>
-        </div>
-
-        <div style="position: relative; margin-bottom: 35px;">
-            <input type="text" id="phone-search" placeholder="ENTER DEVICE MODEL..." onkeyup="filterRepairs()" 
-                style="width: 100%; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 100px; color: white; text-align: center; font-family: 'Space Grotesk'; letter-spacing: 3px; outline: none; transition: 0.3s;">
-        </div>
-
-        <div id="archive-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-height: 500px; overflow-y: auto; padding-right: 15px; scrollbar-width: thin;">
-            
-            <div class="repair-item" data-model="iPhone 13">
-                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-family:'Syncopate'; font-size: 9px; color: #ffcc00;">IPHONE 13</span>
-                    <span style="font-size: 8px; color: #444;">LCD RESTORATION</span>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <div class="repair-comparison" style="flex: 1;">
-                        <img src="BEFORE_IMAGE" style="width: 100%; display: block; filter: grayscale(100%);">
-                        <span class="tag-label tag-before">BEFORE</span>
-                    </div>
-                    <div class="repair-comparison" style="flex: 1;">
-                        <img src="AFTER_IMAGE" style="width: 100%; display: block;">
-                        <span class="tag-label tag-after">AFTER</span>
-                    </div>
-                </div>
-            </div>
-            </div>
-    </div>
-</div>
 <div id="design-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:100000; align-items:center; justify-content:center; opacity:0; transition: opacity 0.4s ease;">
     
     <div class="modal-content" style="max-width: 900px; width: 95%; background: #050505; border: 1px solid #00ff96; border-radius: 35px; padding: 40px; position: relative; box-shadow: 0 0 50px rgba(0, 255, 150, 0.15);">
