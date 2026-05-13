@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GL AI Studio (Resume/Formal) • One‑Click Fix</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+
+  <style>
+    :root{
+      --gold:#ffcc00;
+      --gold-glow:rgba(255,204,0,.25);
+      --bg:#050505;
+      --panel:rgba(255,255,255,.03);
+      --border:rgba(255,255,255,.06);
+      --muted:#777;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:20px;
+      min-height:100vh;
+      background:var(--bg);
+      color:#fff;
+      font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      display:flex;
+      justify-content:center;
+      overflow-x:hidden;
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; animation:none !important; }
+    }
+
+    .studio-container{
+      width:100%;
+      max-width:1350px;
+      background:linear-gradient(145deg,#0a0a0a,#000);
+      border:1px solid #141414;
+      border-radius:40px;
+      padding:40px;
+      box-shadow:0 40px 100px rgba(0,0,0,.75);
+      position:relative;
+    }
+    .studio-container::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      z-index:-1;
+      border-radius:42px;
+      background:linear-gradient(45deg,transparent,#333,var(--gold),transparent);
+      opacity:.25;
+    }
+
+    .header-brand{ text-align:center; margin-bottom:28px; }
+    .header-brand h1{
+      font-family:"Syncopate",sans-serif;
+      font-size:1.45rem;
+      letter-spacing:12px;
+      margin:0;
+      color:var(--gold);
+      text-shadow:0 0 18px var(--gold-glow);
+    }
+    .header-brand p{
+      margin:10px 0 0;
+      font-size:10px;
+      letter-spacing:4px;
+      text-transform:uppercase;
+      color:#4d4d4d;
+    }
+
+    .editor-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+      gap:24px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:22px;
+      backdrop-filter: blur(10px);
+    }
+    .panel-label{
+      color:var(--gold);
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:16px;
+    }
+    .panel-label::after{
+      content:"";
+      height:1px;
+      flex-grow:1;
+      background:rgba(255,204,0,.18);
+    }
+
+    .control-group{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+      margin-top:12px;
+    }
+    .control-group label{
+      display:block;
+      font-size:9px;
+      letter-spacing:.8px;
+      color:#777;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+    input[type="file"]{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      background:#000;
+      border:1px dashed #2d2d2d;
+      color:#777;
+      cursor:pointer;
+    }
+    select{
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid #222;
+      background:#111;
+      color:#fff;
+      appearance:none;
+    }
+    input[type="range"]{ width:100%; accent-color:var(--gold); background:transparent; }
+
+    .btn-row{ display:flex; gap:10px; }
+    .btn-sub{
+      background:#000;
+      border:1px solid #222;
+      color:#fff;
+      padding:12px;
+      border-radius:12px;
+      font-size:10px;
+      font-weight:800;
+      cursor:pointer;
+      letter-spacing:.6px;
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .btn-sub:hover{ transform: translateY(-1px); }
+    .btn-sub.active{
+      border-color:var(--gold);
+      background:rgba(255,204,0,.06);
+      color:var(--gold);
+    }
+
+    .btn-main{
+      width:100%;
+      padding:18px 18px;
+      background:var(--gold);
+      color:#000;
+      border:0;
+      border-radius:50px;
+      font-family:"Syncopate",sans-serif;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 12px 30px var(--gold-glow);
+      transition:transform .15s ease, box-shadow .15s ease;
+      margin-top:10px;
+    }
+    .btn-main:hover{ transform:translateY(-2px); box-shadow:0 16px 40px var(--gold-glow); }
+    .btn-main:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+    .btn-outline{
+      width:100%;
+      padding:14px;
+      background:transparent;
+      border:1px solid #222;
+      color:#aaa;
+      border-radius:50px;
+      font-size:10px;
+      font-weight:900;
+      cursor:pointer;
+      letter-spacing:2px;
+      margin-top:10px;
+    }
+    .btn-outline:hover{ border-color:#444; color:#fff; }
+
+    .btn-stack{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:10px; }
+
+    .preview-box{
+      position:relative;
+      border-radius:20px;
+      overflow:hidden;
+      background:#000;
+      border:1px solid #242424;
+      min-height:410px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    #main-canvas{
+      border:4px solid #111;
+      box-shadow:0 0 50px rgba(0,0,0,.55);
+    }
+    #brush-layer{
+      position:absolute;
+      top:0; left:0;
+      cursor:crosshair;
+      display:none;
+      z-index:10;
+    }
+    .tiny{
+      margin:8px 0 0;
+      font-size:8px;
+      color:#4b4b4b;
+      line-height:1.35;
+    }
+    .status{
+      margin-top:10px;
+      font-size:9px;
+      color:#9a9a9a;
+      letter-spacing:.4px;
+      min-height:14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="studio-container">
+    <div class="header-brand">
+      <h1>GL AI STUDIO</h1>
+      <p>One‑Click Resume / Formal Photo Fix • Platinum</p>
+    </div>
+
+    <div class="editor-grid">
+      <!-- PANEL 01 -->
+      <section class="panel">
+        <div class="panel-label">01. Source & Crop</div>
+
+        <input id="file-input" type="file" accept="image/*" />
+
+        <div id="cropper-container" style="height:350px; background:#000; border-radius:20px; overflow:hidden; border:1px solid #1a1a1a; margin-top:14px;">
+          <img id="raw-img" alt="source" />
+        </div>
+
+        <div class="control-group" style="margin-top:14px;">
+          <label>Output Size</label>
+          <select id="size-type">
+            <option value="2x2">2 x 2 Professional (square)</option>
+            <option value="1x1">1 x 1 Standard (square)</option>
+            <option value="passport">Passport (portrait)</option>
+          </select>
+          <p class="tiny">Tip: After AUTO FIX, you can still move/zoom the crop manually.</p>
+        </div>
+
+        <div class="control-group">
+          <label>Background</label>
+          <select id="bg-preset">
+            <option value="#ffffff">White</option>
+            <option value="#e9f2ff">Light Blue</option>
+            <option value="#f0f0f0">Light Gray</option>
+            <option value="custom">Custom…</option>
+          </select>
+          <input id="bg-custom" type="color" value="#ffffff" style="display:none; width:100%; height:44px; border-radius:12px; border:1px solid #222; background:#111; padding:4px; margin-top:10px;">
+
+          <div class="btn-row" style="margin-top:10px;">
+            <button id="bgremove-btn" class="btn-sub" type="button" style="flex-grow:1;">BG Remove: OFF</button>
+            <button id="rebuild-bg-btn" class="btn-sub" type="button">Rebuild</button>
+          </div>
+          <p class="tiny">BG Remove uses AI (needs internet on first load of models).</p>
+        </div>
+      </section>
+
+      <!-- PANEL 02 -->
+      <section class="panel">
+        <div class="panel-label">02. Retouch & Attire</div>
+
+        <div class="control-group">
+          <label>Retouch (Light)</label>
+          <div style="display:grid; gap:10px;">
+            <div>
+              <label style="margin:0 0 6px;">Brightness</label>
+              <input type="range" id="f-bright" min="50" max="150" value="100" />
+            </div>
+            <div>
+              <label style="margin:0 0 6px;">Contrast</label>
+              <input type="range" id="f-con" min="50" max="150" value="100" />
+            </div>
+            <div>
+              <label style="margin:0 0 6px;">Saturation</label>
+              <input type="range" id="f-sat" min="50" max="150" value="100" />
+            </div>
+            <div>
+              <label style="margin:0 0 6px;">Soften (Skin)</label>
+              <input type="range" id="f-soft" min="0" max="50" value="0" />
+              <p class="tiny">Soften is gentle blur blend (for ID photo). Keep low.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Attire Overlay</label>
+          <div class="btn-stack">
+            <button class="btn-sub active" type="button" data-suit="none">Plain</button>
+            <button class="btn-sub" type="button" data-suit="studio_img/male_suit.png.png">Male</button>
+            <button class="btn-sub" type="button" data-suit="studio_img/female_suit.png.png">Female</button>
+          </div>
+
+          <div id="suit-panel" class="control-group" style="display:none; margin-top:12px;">
+            <label>Suit Positioning (Fine tune)</label>
+            <div style="display:grid; gap:10px;">
+              <div>
+                <label style="margin:0 0 6px;">Y Position</label>
+                <input type="range" id="s-y" min="0.5" max="1.5" step="0.001" value="0.84" />
+              </div>
+              <div>
+                <label style="margin:0 0 6px;">Width Scale</label>
+                <input type="range" id="s-w" min="1.0" max="2.0" step="0.001" value="1.45" />
+              </div>
+              <div>
+                <label style="margin:0 0 6px;">Hue Tint</label>
+                <input type="range" id="s-hue" min="0" max="360" value="0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="control-group" style="margin-top:12px;">
+            <label>Upload Custom Attire (PNG transparent)</label>
+            <input id="custom-suit" type="file" accept="image/png" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Neck/Edge Cleanup (Eraser)</label>
+          <div class="btn-row">
+            <button id="brush-btn" class="btn-sub" type="button" style="flex-grow:1;">Eraser: OFF</button>
+            <button id="clear-fix" class="btn-sub" type="button">Reset Fix</button>
+          </div>
+          <p class="tiny">Use eraser to clean extra shirt around neck.</p>
+        </div>
+      </section>
+
+      <!-- PANEL 03 -->
+      <section class="panel">
+        <div class="panel-label">03. Output</div>
+
+        <div class="preview-box">
+          <canvas id="main-canvas"></canvas>
+          <canvas id="brush-layer"></canvas>
+        </div>
+
+        <div id="action-btns" style="display:none; margin-top:14px;">
+          <button id="auto-fix" class="btn-main" type="button">AUTO FIX (1‑CLICK)</button>
+          <button id="download" class="btn-main" type="button">DOWNLOAD PNG</button>
+          <button id="sheet" class="btn-outline" type="button">GENERATE 4R SHEET</button>
+          <div class="status" id="status"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <!-- AI (MediaPipe) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+
+  <script>
+    // ===== DOM =====
+    const el = (id) => document.getElementById(id);
+    const fileInput = el("file-input");
+    const image = el("raw-img");
+    const sizeType = el("size-type");
+    const bgPreset = el("bg-preset");
+    const bgCustom = el("bg-custom");
+    const bgRemoveBtn = el("bgremove-btn");
+    const rebuildBgBtn = el("rebuild-bg-btn");
+    const brushBtn = el("brush-btn");
+    const clearFixBtn = el("clear-fix");
+    const autoFixBtn = el("auto-fix");
+    const downloadBtn = el("download");
+    const sheetBtn = el("sheet");
+    const statusEl = el("status");
+
+    const canvas = el("main-canvas");
+    const ctx = canvas.getContext("2d");
+    const brushCanvas = el("brush-layer");
+    const bctx = brushCanvas.getContext("2d");
+
+    // ===== STATE =====
+    let cropper = null;
+    let suit = new Image();
+    let suitOn = false;
+    let suitLoadToken = 0;
+
+    let activeBG = "#ffffff";
+    let bgRemoveOn = false;
+    let processedCanvas = null; // cached subject on solid background, sized to output
+
+    let drawing = false;
+    let brushOn = false;
+
+    // AI
+    let smartInitPromise = null;
+    let selfieSegmentation = null;
+    let faceMesh = null;
+    let smartJobToken = 0;
+
+    function setStatus(msg){
+      statusEl.textContent = msg || "";
+    }
+
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function getAspectRatioForMode(){
+      const mode = sizeType.value;
+      if (mode === "passport") return 413 / 531; // portrait
+      return 1; // square for 2x2 and 1x1
+    }
+
+    function getOutputSize(){
+      const mode = sizeType.value;
+      if (mode === "1x1") return { w: 300, h: 300 };
+      if (mode === "passport") return { w: 413, h: 531 };
+      return { w: 600, h: 600 }; // 2x2 default
+    }
+
+    function syncCanvasCssSize(w, h){
+      const cssW = (sizeType.value === "1x1") ? 180 : 240;
+      const cssH = (h * (cssW / w));
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
+      brushCanvas.style.width = canvas.style.width;
+      brushCanvas.style.height = canvas.style.height;
+    }
+
+    function updateAspectRatio(){
+      if (!cropper) return;
+      cropper.setAspectRatio(getAspectRatioForMode());
+    }
+
+    function invalidateProcessed(){
+      processedCanvas = null;
+    }
+
+    // ===== INIT / FILE LOAD =====
+    fileInput.addEventListener("change", (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        image.src = ev.target.result;
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(image, {
+          aspectRatio: getAspectRatioForMode(),
+          viewMode: 1,
+          dragMode: "move",
+          autoCropArea: 1,
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          ready(){
+            updateAspectRatio();
+            el("action-btns").style.display = "block";
+            setStatus("Ready.");
+            invalidateProcessed();
+            draw();
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    sizeType.addEventListener("change", () => {
+      updateAspectRatio();
+      invalidateProcessed();
+      draw();
+    });
+
+    // ===== BACKGROUND UI =====
+    bgPreset.addEventListener("change", () => {
+      const val = bgPreset.value;
+      if (val === "custom"){
+        bgCustom.style.display = "block";
+        activeBG = bgCustom.value;
+      } else {
+        bgCustom.style.display = "none";
+        activeBG = val;
+        bgCustom.value = val;
+      }
+      invalidateProcessed();
+      draw();
+    });
+    bgCustom.addEventListener("change", () => {
+      activeBG = bgCustom.value;
+      invalidateProcessed();
+      draw();
+    });
+
+    // ===== SUIT (PRESETS) =====
+    document.querySelectorAll(".btn-stack .btn-sub").forEach((btn) => {
+      btn.addEventListener("click", () => setSuit(btn.getAttribute("data-suit"), btn));
+    });
+
+    function setSuit(path, btn){
+      // Active state only within suit preset buttons
+      document.querySelectorAll(".btn-stack .btn-sub").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (path === "none"){
+        suitOn = false;
+        suitLoadToken++;
+        el("suit-panel").style.display = "none";
+        draw();
+        return;
+      }
+
+      const token = ++suitLoadToken;
+      const nextSuit = new Image();
+      nextSuit.onload = () => {
+        if (token !== suitLoadToken) return;
+        suit = nextSuit;
+        suitOn = true;
+        el("suit-panel").style.display = "block";
+        draw();
+      };
+      nextSuit.onerror = () => {
+        if (token !== suitLoadToken) return;
+        suitOn = false;
+        el("suit-panel").style.display = "none";
+        setStatus("Failed to load attire overlay. Check file path.");
+        draw();
+      };
+      nextSuit.src = path;
+    }
+
+    // Custom attire upload
+    el("custom-suit").addEventListener("change", (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      const url = URL.createObjectURL(e.target.files[0]);
+      const token = ++suitLoadToken;
+      const nextSuit = new Image();
+      nextSuit.onload = () => {
+        if (token !== suitLoadToken) return;
+        suit = nextSuit;
+        suitOn = true;
+        el("suit-panel").style.display = "block";
+        // don't change preset button active state (custom can be used anytime)
+        draw();
+      };
+      nextSuit.onerror = () => {
+        if (token !== suitLoadToken) return;
+        suitOn = false;
+        el("suit-panel").style.display = "none";
+        setStatus("Custom attire PNG failed to load.");
+        draw();
+      };
+      nextSuit.src = url;
+    });
+
+    // ===== BRUSH (ERASER) =====
+    brushBtn.addEventListener("click", () => {
+      brushOn = !brushOn;
+      brushBtn.textContent = brushOn ? "Eraser: ON" : "Eraser: OFF";
+      brushBtn.classList.toggle("active", brushOn);
+      brushCanvas.style.display = brushOn ? "block" : "none";
+    });
+    clearFixBtn.addEventListener("click", () => {
+      bctx.clearRect(0,0,brushCanvas.width, brushCanvas.height);
+      draw();
+    });
+    brushCanvas.addEventListener("mousedown", (e) => { drawing = true; paint(e); });
+    brushCanvas.addEventListener("mousemove", (e) => paint(e));
+    window.addEventListener("mouseup", () => { drawing = false; draw(); });
+
+    function paint(e){
+      if (!drawing || !brushOn) return;
+      const rect = brushCanvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (brushCanvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (brushCanvas.height / rect.height);
+      bctx.fillStyle = "#ffffff";
+      bctx.beginPath();
+      bctx.arc(x, y, 16, 0, Math.PI * 2);
+      bctx.fill();
+    }
+
+    // ===== RETOUCH INPUTS =====
+    ["f-bright","f-con","f-sat","f-soft","s-y","s-w","s-hue"].forEach((id) => {
+      const node = el(id);
+      if (!node) return;
+      node.addEventListener("input", () => draw());
+    });
+
+    // ===== DRAW PIPELINE =====
+    function getSourceCanvasForDraw(w, h){
+      if (!cropper) return null;
+      if (bgRemoveOn && processedCanvas && processedCanvas.width === w && processedCanvas.height === h){
+        return processedCanvas;
+      }
+      return cropper.getCroppedCanvas({ width: w, height: h });
+    }
+
+    function draw(){
+      if (!cropper) return;
+      const { w, h } = getOutputSize();
+      canvas.width = w; canvas.height = h;
+      brushCanvas.width = w; brushCanvas.height = h;
+      syncCanvasCssSize(w, h);
+
+      // BG base
+      ctx.fillStyle = activeBG;
+      ctx.fillRect(0,0,w,h);
+
+      // Face + retouch
+      const bright = el("f-bright").value;
+      const con = el("f-con").value;
+      const sat = el("f-sat").value;
+      const soft = Number(el("f-soft").value || 0);
+
+      const src = getSourceCanvasForDraw(w, h);
+      if (!src) return;
+
+      ctx.save();
+      ctx.filter = `brightness(${bright}%) contrast(${con}%) saturate(${sat}%)`;
+      ctx.drawImage(src, 0, 0, w, h);
+      ctx.restore();
+
+      // Soften (gentle blur blend) - applies to whole image; keep low
+      if (soft > 0){
+        const alpha = clamp(soft / 100, 0, 0.45);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.filter = `blur(${clamp(soft/10, 0.5, 6)}px)`;
+        ctx.drawImage(canvas, 0, 0, w, h);
+        ctx.restore();
+      }
+
+      // Suit overlay
+      if (suitOn){
+        ctx.save();
+        const hue = el("s-hue").value;
+        ctx.filter = `hue-rotate(${hue}deg)`;
+        const sw = w * Number(el("s-w").value);
+        const sh = sw * (suit.height / suit.width);
+        const sx = (w - sw) / 2;
+        const sy = h - (sh * Number(el("s-y").value));
+        ctx.drawImage(suit, sx, sy, sw, h * 1.2);
+        ctx.restore();
+      }
+
+      // Brush cleanup overlay
+      ctx.drawImage(brushCanvas, 0, 0, w, h);
+    }
+
+    // ===== DOWNLOADS =====
+    downloadBtn.addEventListener("click", () => {
+      const mode = sizeType.value;
+      const link = document.createElement("a");
+      link.download = `GL_${mode.toUpperCase()}_RESULT.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    sheetBtn.addEventListener("click", () => {
+      const mode = sizeType.value;
+      const sheet = document.createElement("canvas");
+      const sctx = sheet.getContext("2d");
+      sheet.width = 1200; sheet.height = 1800; // 4R @ 300dpi
+      sctx.fillStyle = "#fff";
+      sctx.fillRect(0,0,sheet.width, sheet.height);
+
+      const margin = 30;
+      const gap = 30;
+      const cols = 2;
+      const rows = 3;
+      let imgW = 550, imgH = 550;
+      if (mode === "passport"){
+        imgH = (sheet.height - (margin*2) - (gap*(rows-1))) / rows; // = 560
+        imgW = imgH * (413/531); // keep ratio
+      }
+      for (let r=0; r<rows; r++){
+        for (let c=0; c<cols; c++){
+          const x = margin + (c * (imgW + gap));
+          const y = margin + (r * (imgH + gap));
+          sctx.drawImage(canvas, x, y, imgW, imgH);
+        }
+      }
+      const link = document.createElement("a");
+      link.download = `GL_${mode.toUpperCase()}_4R_SHEET.png`;
+      link.href = sheet.toDataURL("image/png");
+      link.click();
+    });
+
+    // ===== AI / ONE CLICK =====
+    function ensureSmartTools(){
+      if (smartInitPromise) return smartInitPromise;
+      smartInitPromise = new Promise((resolve, reject) => {
+        try{
+          selfieSegmentation = new SelfieSegmentation({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+          });
+          selfieSegmentation.setOptions({ modelSelection: 1 });
+
+          faceMesh = new FaceMesh({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+          });
+          faceMesh.setOptions({
+            maxNumFaces: 1,
+            refineLandmarks: true,
+            staticImageMode: true,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+          });
+          resolve();
+        } catch(err){
+          reject(err);
+        }
+      });
+      return smartInitPromise;
+    }
+
+    function runFaceMesh(input){
+      return new Promise(async (resolve) => {
+        await ensureSmartTools();
+        faceMesh.onResults((results) => resolve(results));
+        await faceMesh.send({ image: input });
+      });
+    }
+
+    function runSegmentation(input){
+      return new Promise(async (resolve) => {
+        await ensureSmartTools();
+        selfieSegmentation.onResults((results) => resolve(results));
+        await selfieSegmentation.send({ image: input });
+      });
+    }
+
+    async function autoCropToFace(){
+      if (!cropper) return;
+      const res = await runFaceMesh(image);
+      const faces = res && res.multiFaceLandmarks ? res.multiFaceLandmarks : [];
+      if (!faces.length){
+        setStatus("No face detected — try better lighting or front-facing photo.");
+        return;
+      }
+
+      const lm = faces[0];
+      const iw = image.naturalWidth || image.width;
+      const ih = image.naturalHeight || image.height;
+
+      let minX=1, minY=1, maxX=0, maxY=0;
+      for (const p of lm){
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+        maxX = Math.max(maxX, p.x);
+        maxY = Math.max(maxY, p.y);
+      }
+
+      const faceW = (maxX - minX) * iw;
+      const faceH = (maxY - minY) * ih;
+      const cx = ((minX + maxX) / 2) * iw;
+      const cy = ((minY + maxY) / 2) * ih;
+
+      // Bigger box for hair + shoulders area
+      const baseSize = Math.max(faceW * 2.3, faceH * 2.8);
+      const ratio = getAspectRatioForMode();
+      let boxH = baseSize;
+      let boxW = boxH * ratio;
+
+      const x = clamp(cx - boxW/2, 0, iw - boxW);
+      const y = clamp(cy - boxH*0.55, 0, ih - boxH);
+      cropper.setData({ x, y, width: boxW, height: boxH });
+    }
+
+    async function refreshBgRemoval(){
+      if (!cropper) return;
+      const { w, h } = getOutputSize();
+      const base = cropper.getCroppedCanvas({ width: w, height: h });
+      const seg = await runSegmentation(base);
+      if (!seg || !seg.segmentationMask){
+        setStatus("BG Remove failed (no mask).");
+        return;
+      }
+
+      const out = document.createElement("canvas");
+      out.width = w; out.height = h;
+      const octx = out.getContext("2d");
+
+      // Subject
+      octx.drawImage(base, 0, 0, w, h);
+      octx.globalCompositeOperation = "destination-in";
+      octx.filter = "blur(6px)";
+      octx.drawImage(seg.segmentationMask, 0, 0, w, h);
+      octx.filter = "none";
+
+      // Solid BG behind
+      octx.globalCompositeOperation = "destination-over";
+      octx.fillStyle = activeBG;
+      octx.fillRect(0, 0, w, h);
+      octx.globalCompositeOperation = "source-over";
+
+      processedCanvas = out;
+    }
+
+    async function autoSuitPosition(){
+      if (!cropper || !suitOn) return;
+      const { w, h } = getOutputSize();
+      const base = cropper.getCroppedCanvas({ width: w, height: h });
+      const res = await runFaceMesh(base);
+      const faces = res && res.multiFaceLandmarks ? res.multiFaceLandmarks : [];
+      if (!faces.length) return;
+
+      const lm = faces[0];
+      const chin = lm[152];
+      let minX=1, maxX=0;
+      for (const p of lm){ minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); }
+
+      const faceRelW = (maxX - minX);
+      const chinRelY = chin ? chin.y : 0.55;
+
+      const sY = clamp(1.05 - ((chinRelY - 0.5) * 0.8), 0.6, 1.35);
+      const sW = clamp((0.55 / Math.max(0.18, faceRelW)) * 0.9, 1.1, 1.85);
+
+      el("s-y").value = sY.toFixed(3);
+      el("s-w").value = sW.toFixed(3);
+    }
+
+    async function setBgRemove(forceState){
+      bgRemoveOn = (typeof forceState === "boolean") ? forceState : !bgRemoveOn;
+      bgRemoveBtn.textContent = bgRemoveOn ? "BG Remove: ON" : "BG Remove: OFF";
+      bgRemoveBtn.classList.toggle("active", bgRemoveOn);
+      invalidateProcessed();
+      if (bgRemoveOn){
+        await refreshBgRemoval();
+      }
+      draw();
+    }
+
+    bgRemoveBtn.addEventListener("click", async () => {
+      try{
+        setStatus("Loading AI…");
+        await setBgRemove(); // toggle
+        setStatus(bgRemoveOn ? "BG Remove ON." : "BG Remove OFF.");
+      } catch(err){
+        setStatus("AI load failed. Check internet.");
+        console.warn(err);
+      }
+    });
+
+    rebuildBgBtn.addEventListener("click", async () => {
+      if (!bgRemoveOn){
+        setStatus("Turn BG Remove ON first.");
+        return;
+      }
+      try{
+        setStatus("Rebuilding background…");
+        await refreshBgRemoval();
+        setStatus("Background rebuilt.");
+        draw();
+      } catch(err){
+        setStatus("Rebuild failed.");
+        console.warn(err);
+      }
+    });
+
+    function applyAutoDefaults(){
+      el("f-bright").value = 105;
+      el("f-con").value = 110;
+      el("f-sat").value = 105;
+      el("f-soft").value = 12; // light soften
+    }
+
+    autoFixBtn.addEventListener("click", async () => {
+      if (!cropper) return;
+      const token = ++smartJobToken;
+      autoFixBtn.disabled = true;
+      autoFixBtn.textContent = "AUTO FIX…";
+      try{
+        setStatus("Auto fixing… (AI)");
+        updateAspectRatio();
+        await ensureSmartTools();
+
+        await autoCropToFace();
+        if (token !== smartJobToken) return;
+
+        // Force BG remove ON for 1-click result
+        await setBgRemove(true);
+        if (token !== smartJobToken) return;
+
+        applyAutoDefaults();
+        await autoSuitPosition(); // only affects if suit is ON
+        if (token !== smartJobToken) return;
+
+        draw();
+        setStatus("Done. Fine tune if needed, then Download.");
+      } catch(err){
+        console.warn(err);
+        setStatus("Auto Fix failed. Check internet + use clear front photo.");
+      } finally {
+        autoFixBtn.disabled = false;
+        autoFixBtn.textContent = "AUTO FIX (1‑CLICK)";
+      }
+    });
+  </script>
+</body>
+</html>
+
