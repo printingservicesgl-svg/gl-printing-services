@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fil">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GL ENCODER | PREMIUM DOCUMENT SYSTEM</title>
+    <title>GL Smart AI Encoder | Document Fixer</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,17 +13,20 @@
         :root {
             --accent: #00f2ff;
             --success: #00ff88;
+            --warn: #ffd36a;
             --bg-dark: #0f0f12;
             --panel-bg: #1a1a1f;
             --border: #2d2d35;
             --card-bg: rgba(255, 255, 255, 0.03);
+            --muted: rgba(255,255,255,0.65);
+            --text: #e9e9ef;
         }
 
         * { box-sizing: border-box; }
 
         body {
             background: var(--bg-dark);
-            color: #e0e0e0;
+            color: var(--text);
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
@@ -182,13 +185,85 @@
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        /* --- Extra UI (Upload + AI Encoder) --- */
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        input[type="password"], input[type="text"] {
+            background: #000;
+            color: #fff;
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn-warn { background: var(--warn); color: #000; font-weight: 800; }
+        .btn-ghost { background: transparent; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+        .dropzone {
+            border: 1px dashed rgba(255,255,255,0.25);
+            border-radius: 12px;
+            padding: 14px;
+            background: rgba(0,0,0,0.15);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .dropzone:hover { border-color: rgba(0,242,255,0.75); }
+        .dropzone.dragover {
+            border-color: rgba(0,242,255,1);
+            background: rgba(0,242,255,0.08);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .toast {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            background: rgba(15,15,18,0.92);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            padding: 10px 12px;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            max-width: 360px;
+            display: none;
+            z-index: 9999;
+        }
+        .toast .t-title { font-weight: 800; font-size: 12px; }
+        .toast .t-msg { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
     </style>
 </head>
 <body>
 
+<div class="toast" id="toast">
+    <div class="t-title" id="toast-title">Notice</div>
+    <div class="t-msg" id="toast-msg">...</div>
+</div>
+
 <div class="sidebar">
     <div class="sidebar-header">
-        <div class="brand"><h1>GL ENCODER <span style="font-size:12px; color:var(--accent)">PRO</span></h1></div>
+        <div class="brand"><h1>GL Smart Encoder <span style="font-size:12px; color:var(--accent)">AI</span></h1></div>
     </div>
 
     <div class="sidebar-content">
@@ -199,12 +274,41 @@
             </div>
         </div>
 
-        <button class="btn-tool btn-accent" onclick="document.getElementById('file-upload').click()">+ UPLOAD DOCUMENT</button>
-        <input type="file" id="file-upload" style="display:none" accept="image/*">
+        <div class="control-card">
+            <span class="label-sm">Upload / OCR</span>
+            <div class="dropzone" id="dropzone" tabindex="0">
+                <div style="display:flex; gap:10px; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="font-weight:800; font-size:13px;">I-drop ang file dito</div>
+                        <div class="muted">Image (JPG/PNG/WebP). Tip: mas malinaw = mas accurate ang OCR.</div>
+                    </div>
+                    <div class="pill">Drag & Drop</div>
+                </div>
+            </div>
+            <div class="tool-row">
+                <button class="btn-tool btn-accent" id="btn-browse">Browse</button>
+                <button class="btn-tool" id="btn-run-ocr" title="Run OCR sa current reference image">Run OCR</button>
+            </div>
+            <input type="file" id="file-upload" style="display:none" accept="image/*">
+            <div class="tool-row">
+                <select id="ocr-lang" title="OCR language">
+                    <option value="eng">English (eng)</option>
+                    <option value="eng+fil">English + Filipino (eng+fil)</option>
+                </select>
+                <select id="ocr-mode" title="OCR mode">
+                    <option value="layout">Preserve layout</option>
+                    <option value="list">List mode</option>
+                </select>
+            </div>
+            <div class="muted">
+                Shortcut: <span style="font-family:'JetBrains Mono', monospace;">Ctrl+O</span> upload,
+                <span style="font-family:'JetBrains Mono', monospace;">Ctrl+Enter</span> run OCR.
+            </div>
+        </div>
 
         <div class="control-card">
             <span class="label-sm">Document Layout</span>
-            <select id="paper-size" onchange="adjustCanvas()">
+            <select id="paper-size" onchange="setPaperSize(this.value)">
                 <option value="letter">Short Bond (8.5 x 11)</option>
                 <option value="a4">A4 Standard</option>
                 <option value="long">Long Bond (8.5 x 13)</option>
@@ -227,17 +331,79 @@
                 <span class="label-sm" style="margin-right:10px">Color:</span>
                 <input type="color" id="text-color" value="#000000" onchange="setTextColor(this.value)">
             </div>
+            <div class="tool-row">
+                <button class="btn-tool btn-ghost" onclick="addNewText()">+ Add Text</button>
+                <button class="btn-tool btn-ghost" onclick="duplicateText()">Duplicate</button>
+            </div>
         </div>
 
         <div class="control-card">
-            <span class="label-sm">Quick Editor</span>
-            <textarea id="edit-box" rows="3" placeholder="Select text to edit..."></textarea>
+            <span class="label-sm">AI Style Encoder</span>
+            <div class="tool-row">
+                <select id="rewrite-scope" title="Alin ang babaguhin?">
+                    <option value="active">Selected text</option>
+                    <option value="all">Lahat ng text sa page</option>
+                </select>
+                <select id="rewrite-engine" title="Engine">
+                    <option value="offline">Offline (basic)</option>
+                    <option value="openai">AI (OpenAI API)</option>
+                </select>
+            </div>
+
+            <details id="ai-settings" style="margin-top:2px;">
+                <summary class="muted" style="cursor:pointer;">AI settings (optional)</summary>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                    <input id="ai-baseurl" type="text" placeholder="Base URL (default: https://api.openai.com/v1)" />
+                    <input id="ai-model" type="text" placeholder="Model (default: gpt-4o-mini)" />
+                    <input id="ai-key" type="password" placeholder="API key (hindi ito sine-save online)" />
+                    <div class="muted">Note: Kung walang API key, gagamit ng Offline mode.</div>
+                </div>
+            </details>
+
+            <div class="tool-row">
+                <button class="btn-tool btn-success" onclick="runRewrite('fix')">Ayusin</button>
+                <button class="btn-tool" onclick="runRewrite('formal')">Formal</button>
+            </div>
+            <div class="tool-row">
+                <button class="btn-tool" onclick="runRewrite('casual')">Casual</button>
+                <button class="btn-tool" onclick="runRewrite('informal')">Informal</button>
+            </div>
+
+            <textarea id="out-fix" placeholder="Result: Ayusin (grammar/clarity)"></textarea>
+            <div class="tool-row">
+                <button class="btn-tool btn-ghost" onclick="applyOutput('out-fix')">Apply</button>
+                <button class="btn-tool btn-ghost" onclick="copyOutput('out-fix')">Copy</button>
+            </div>
+
+            <textarea id="out-formal" placeholder="Result: Formal"></textarea>
+            <div class="tool-row">
+                <button class="btn-tool btn-ghost" onclick="applyOutput('out-formal')">Apply</button>
+                <button class="btn-tool btn-ghost" onclick="copyOutput('out-formal')">Copy</button>
+            </div>
+
+            <textarea id="out-casual" placeholder="Result: Casual"></textarea>
+            <div class="tool-row">
+                <button class="btn-tool btn-ghost" onclick="applyOutput('out-casual')">Apply</button>
+                <button class="btn-tool btn-ghost" onclick="copyOutput('out-casual')">Copy</button>
+            </div>
+
+            <textarea id="out-informal" placeholder="Result: Informal"></textarea>
+            <div class="tool-row">
+                <button class="btn-tool btn-ghost" onclick="applyOutput('out-informal')">Apply</button>
+                <button class="btn-tool btn-ghost" onclick="copyOutput('out-informal')">Copy</button>
+            </div>
+        </div>
+
+        <div class="control-card">
+            <span class="label-sm">Quick Editor (Selected)</span>
+            <textarea id="edit-box" rows="4" placeholder="Piliin ang text sa canvas para ma-edit dito..."></textarea>
+            <div class="muted">Tip: Double-click text para mag-edit diretso sa canvas.</div>
         </div>
     </div>
 
     <div class="sidebar-footer">
         <button class="btn-tool btn-success" onclick="savePDF()">EXPORT TO PDF</button>
-        <button class="btn-tool" onclick="location.reload()">RESET SYSTEM</button>
+        <button class="btn-tool" onclick="resetSystem()">RESET SYSTEM</button>
     </div>
 </div>
 
@@ -246,9 +412,10 @@
         <span class="label-sm" style="display:block; margin-bottom:10px">Reference</span>
         <img id="ref-image" style="width: 100%; border-radius: 4px; filter: contrast(1.1);">
         <div style="margin-top:15px; font-size:10px; color:#555; line-height:1.6">
-            • Scroll to Zoom Canvas<br>
-            • Backspace to Delete Text<br>
-            • Drag text to reposition
+            • Mousewheel = Zoom<br>
+            • Backspace = Delete selected<br>
+            • Drag text to reposition<br>
+            • Ctrl+O upload | Ctrl+Enter OCR
         </div>
     </div>
     
@@ -266,6 +433,9 @@
 </div>
 
 <script>
+    const $ = (id) => document.getElementById(id);
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+
     const paperSizes = {
         letter: { w: 816, h: 1056 },
         a4: { w: 794, h: 1123 },
@@ -276,45 +446,190 @@
     const canvas = new fabric.Canvas('main-canvas', { 
         backgroundColor: '#fff',
         width: paperSizes.letter.w,
-        height: paperSizes.letter.h
+        height: paperSizes.letter.h,
+        preserveObjectStacking: true
     });
 
-    // File Upload & OCR
-    document.getElementById('file-upload').onchange = function(e) {
-        const file = e.target.files[0];
+    // --- UI helpers ---
+    let toastTimer = null;
+    function showToast(title, msg) {
+        if (toastTimer) clearTimeout(toastTimer);
+        $('toast-title').innerText = title || 'Notice';
+        $('toast-msg').innerText = msg || '';
+        $('toast').style.display = 'block';
+        toastTimer = setTimeout(() => ($('toast').style.display = 'none'), 3500);
+    }
+
+    function setStatus(msg, progress = null) {
+        $('status-msg').innerText = msg || '';
+        if (typeof progress === 'number') {
+            $('progress-bar').style.width = clamp(progress, 0, 100) + '%';
+        }
+    }
+
+    function getPaperKey() {
+        return $('paper-size')?.value || 'letter';
+    }
+
+    function applyPaperAndZoom() {
+        const sizeKey = getPaperKey();
+        const base = paperSizes[sizeKey] || paperSizes.letter;
+        // Screen size (canvas element) is scaled, while objects stay in document coordinates.
+        canvas.setZoom(zoom);
+        canvas.setDimensions({ width: base.w * zoom, height: base.h * zoom });
+        canvas.calcOffset();
+        canvas.requestRenderAll();
+        $('zoom-text').innerText = Math.round(zoom * 100) + "%";
+    }
+
+    // Exposed for inline onchange/onClick attributes
+    function setPaperSize(sizeKey) {
+        if (!paperSizes[sizeKey]) sizeKey = 'letter';
+        $('paper-size').value = sizeKey;
+        applyPaperAndZoom();
+        showToast('Layout', `Paper size set to: ${sizeKey.toUpperCase()}`);
+    }
+
+    function zoomCanvas(val) {
+        zoom = clamp(zoom + val, 0.3, 2.0);
+        applyPaperAndZoom();
+    }
+
+    // --- File Upload / Drag&Drop ---
+    let currentImageDataUrl = null;
+    let currentImageNatural = { w: 0, h: 0 };
+    let ocrRunning = false;
+
+    function loadImageFile(file) {
         if (!file) return;
+        if (!file.type?.startsWith('image/')) {
+            showToast('Invalid file', 'Image lang ang supported sa ngayon (JPG/PNG/WebP).');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function(event) {
-            document.getElementById('ref-image').src = event.target.result;
-            document.getElementById('status-msg').innerText = "Starting OCR...";
-            
-            Tesseract.recognize(event.target.result, 'eng', {
-                logger: m => {
-                    if(m.status === 'recognizing text') {
-                        const p = Math.round(m.progress * 100);
-                        document.getElementById('progress-bar').style.width = p + "%";
-                        document.getElementById('status-msg').innerText = `Analyzing: ${p}%`;
-                    }
-                }
-            }).then(({ data: { lines } }) => {
-                canvas.clear();
-                canvas.setBackgroundColor('#fff', canvas.renderAll.bind(canvas));
-                lines.forEach((line, i) => {
-                    const txt = line.text.replace(/[^a-zA-Z0-9\s.,/-]/g, '').trim();
-                    if(txt.length > 1) {
-                        canvas.add(new fabric.IText(txt, {
-                            left: 80, top: 100 + (i * 35),
-                            fontSize: 18, fontFamily: document.getElementById('font-family').value,
-                            fill: '#000', editable: true
-                        }));
-                    }
-                });
-                document.getElementById('status-msg').innerText = "Analysis Complete";
-                canvas.renderAll();
-            });
+            currentImageDataUrl = event.target.result;
+            $('ref-image').src = currentImageDataUrl;
+            setStatus('Image loaded. Ready for OCR.', 0);
+
+            const img = new Image();
+            img.onload = () => {
+                currentImageNatural = { w: img.naturalWidth || img.width, h: img.naturalHeight || img.height };
+            };
+            img.src = currentImageDataUrl;
         };
         reader.readAsDataURL(file);
-    };
+    }
+
+    $('file-upload').addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        loadImageFile(file);
+        // allow re-upload of same file
+        e.target.value = '';
+    });
+
+    $('btn-browse').addEventListener('click', () => $('file-upload').click());
+
+    // Dropzone behavior
+    const dz = $('dropzone');
+    dz.addEventListener('click', () => $('file-upload').click());
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        const file = e.dataTransfer?.files?.[0];
+        loadImageFile(file);
+    });
+
+    $('btn-run-ocr').addEventListener('click', () => runOCR());
+
+    async function runOCR() {
+        if (ocrRunning) return;
+        if (!currentImageDataUrl) {
+            showToast('Walang image', 'Mag-upload muna ng image bago mag-OCR.');
+            return;
+        }
+
+        ocrRunning = true;
+        setStatus('Starting OCR...', 1);
+        const lang = $('ocr-lang').value || 'eng';
+        const mode = $('ocr-mode').value || 'layout';
+
+        try {
+            const res = await Tesseract.recognize(currentImageDataUrl, lang, {
+                logger: (m) => {
+                    if (m.status === 'recognizing text') {
+                        const p = Math.round((m.progress || 0) * 100);
+                        setStatus(`Analyzing: ${p}%`, p);
+                    }
+                }
+            });
+
+            const lines = res?.data?.lines || [];
+            canvas.clear();
+            canvas.setBackgroundColor('#fff', canvas.renderAll.bind(canvas));
+
+            const sizeKey = getPaperKey();
+            const base = paperSizes[sizeKey] || paperSizes.letter;
+            const margin = 60;
+            const pageW = base.w;
+            const pageH = base.h;
+
+            // best-effort mapping of OCR bbox to page coords
+            const imgW = currentImageNatural.w || 1;
+            const imgH = currentImageNatural.h || 1;
+
+            // Sort lines top-to-bottom for stability
+            const sorted = [...lines].sort((a, b) => (a.bbox?.y0 ?? 0) - (b.bbox?.y0 ?? 0));
+
+            let listTop = margin;
+            for (const line of sorted) {
+                const raw = (line.text || '').replace(/\s+/g, ' ').trim();
+                if (raw.length <= 0) continue;
+
+                let left = margin;
+                let top = listTop;
+                let fontSize = 16;
+
+                if (mode === 'layout' && line.bbox) {
+                    const bw = (line.bbox.x1 - line.bbox.x0) || 0;
+                    const bh = (line.bbox.y1 - line.bbox.y0) || 0;
+                    left = margin + (line.bbox.x0 / imgW) * (pageW - margin * 2);
+                    top = margin + (line.bbox.y0 / imgH) * (pageH - margin * 2);
+                    fontSize = clamp(Math.round((bh / imgH) * pageH * 0.9), 10, 32);
+                    // small nudge so it doesn't stick to edges
+                    left = clamp(left, margin, pageW - margin);
+                    top = clamp(top, margin, pageH - margin);
+                } else {
+                    // list mode
+                    top = listTop;
+                    listTop += 28;
+                }
+
+                const txt = new fabric.IText(raw, {
+                    left,
+                    top,
+                    fontSize,
+                    fontFamily: $('font-family').value,
+                    fill: '#000',
+                    editable: true
+                });
+                canvas.add(txt);
+            }
+
+            setStatus('OCR complete. Ready to edit.', 100);
+            showToast('OCR', 'Tapos na. Pwede mo nang i-edit yung mga text sa page.');
+            canvas.requestRenderAll();
+        } catch (err) {
+            console.error(err);
+            setStatus('OCR failed', 0);
+            showToast('OCR error', (err?.message || 'May error sa OCR. Subukan ulit.'));
+        } finally {
+            ocrRunning = false;
+        }
+    }
 
     // Tools Logic
     function setTextAlign(align) {
@@ -327,31 +642,53 @@
         if(active) { active.set('fill', color); canvas.renderAll(); }
     }
 
-    function adjustCanvas() {
-        const size = document.getElementById('paper-size').value;
-        canvas.setDimensions({ width: paperSizes[size].w * zoom, height: paperSizes[size].h * zoom });
-        canvas.renderAll();
+    function addNewText() {
+        const obj = new fabric.IText('New text...', {
+            left: 80,
+            top: 80,
+            fontSize: 18,
+            fontFamily: $('font-family').value,
+            fill: $('text-color').value || '#000000',
+            editable: true
+        });
+        canvas.add(obj);
+        canvas.setActiveObject(obj);
+        canvas.requestRenderAll();
+        showToast('Text', 'New text added. Double-click para mag-edit.');
     }
 
-    function zoomCanvas(val) {
-        zoom = Math.min(Math.max(zoom + val, 0.3), 2.0);
-        canvas.setZoom(zoom);
-        adjustCanvas();
-        document.getElementById('zoom-text').innerText = Math.round(zoom * 100) + "%";
+    function duplicateText() {
+        const active = canvas.getActiveObject();
+        if (!active || active.type !== 'i-text') {
+            showToast('Walang selected', 'Pumili muna ng text para ma-duplicate.');
+            return;
+        }
+        active.clone((cloned) => {
+            cloned.set({ left: active.left + 18, top: active.top + 18 });
+            canvas.add(cloned);
+            canvas.setActiveObject(cloned);
+            canvas.requestRenderAll();
+        });
     }
 
     function updateFontStyle() {
-        const font = document.getElementById('font-family').value;
+        const font = $('font-family').value;
         canvas.getObjects('i-text').forEach(obj => obj.set('fontFamily', font));
         canvas.renderAll();
     }
 
     // Interaction
-    canvas.on('selection:created', (e) => {
-        document.getElementById('edit-box').value = e.selected[0].text;
-    });
+    function syncEditBoxFromSelection() {
+        const active = canvas.getActiveObject();
+        if (active && active.type === 'i-text') $('edit-box').value = active.text || '';
+        else $('edit-box').value = '';
+    }
 
-    document.getElementById('edit-box').oninput = function() {
+    canvas.on('selection:created', syncEditBoxFromSelection);
+    canvas.on('selection:updated', syncEditBoxFromSelection);
+    canvas.on('selection:cleared', syncEditBoxFromSelection);
+
+    $('edit-box').oninput = function() {
         const active = canvas.getActiveObject();
         if(active && active.type === 'i-text') {
             active.set('text', this.value);
@@ -360,27 +697,305 @@
     };
 
     window.addEventListener('keydown', (e) => {
-        if(e.key === "Backspace" && canvas.getActiveObject() && !canvas.getActiveObject().isEditing) {
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        const typing = tag === 'textarea' || tag === 'input' || document.activeElement?.isContentEditable;
+
+        // Shortcuts
+        if (e.ctrlKey && (e.key === 'o' || e.key === 'O')) {
+            e.preventDefault();
+            $('file-upload').click();
+            return;
+        }
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            runOCR();
+            return;
+        }
+
+        // Delete selected object (only if not typing)
+        if(!typing && e.key === "Backspace" && canvas.getActiveObject() && !canvas.getActiveObject().isEditing) {
+            e.preventDefault();
             canvas.remove(canvas.getActiveObject());
+            syncEditBoxFromSelection();
         }
     });
 
-    function savePDF() {
-        const { jsPDF } = window.jspdf;
-        const sizeKey = document.getElementById('paper-size').value;
-        canvas.setZoom(1);
-        canvas.setDimensions({ width: paperSizes[sizeKey].w, height: paperSizes[sizeKey].h });
-        
-        const data = canvas.toDataURL({ format: 'png', multiplier: 2 });
-        const pdf = new jsPDF('p', 'px', [paperSizes[sizeKey].w, paperSizes[sizeKey].h]);
-        pdf.addImage(data, 'PNG', 0, 0, paperSizes[sizeKey].w, paperSizes[sizeKey].h);
-        pdf.save(`ENCODED_DOC_${Date.now()}.pdf`);
-        
-        zoomCanvas(0); // Restore view
+    // Mousewheel zoom (as shown in tips)
+    canvas.on('mouse:wheel', (opt) => {
+        const delta = opt.e.deltaY;
+        const step = -delta / 700; // tune sensitivity
+        zoomCanvas(step);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+    });
+
+    // --- AI Style Encoder (Fix/Formal/Casual/Informal) ---
+    function getSelectedText() {
+        const active = canvas.getActiveObject();
+        if (active && active.type === 'i-text') return active.text || '';
+        return '';
     }
 
-    // Run once to fit
-    zoomCanvas(0);
+    function getAllText() {
+        const objs = canvas.getObjects('i-text')
+            .slice()
+            .sort((a, b) => (a.top - b.top) || (a.left - b.left));
+        return objs.map(o => (o.text || '').trim()).filter(Boolean).join('\n');
+    }
+
+    function getRewriteInputText() {
+        const scope = $('rewrite-scope').value || 'active';
+        if (scope === 'all') return getAllText();
+        return getSelectedText();
+    }
+
+    function setOutputBox(kind, value) {
+        const map = {
+            fix: 'out-fix',
+            formal: 'out-formal',
+            casual: 'out-casual',
+            informal: 'out-informal'
+        };
+        const id = map[kind];
+        if (id) $(id).value = value || '';
+    }
+
+    function normalizeText(text) {
+        return (text || '')
+            .replace(/\r\n/g, '\n')
+            .replace(/[ \t]+\n/g, '\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .replace(/[ \t]{2,}/g, ' ')
+            .trim();
+    }
+
+    function sentenceCase(text) {
+        const t = normalizeText(text);
+        if (!t) return t;
+        // very basic sentence capitalization
+        return t.replace(/(^|[.!?]\s+)([a-zà-ÿ])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+    }
+
+    function offlineRewrite(text, kind) {
+        let out = normalizeText(text);
+        if (!out) return out;
+
+        if (kind === 'fix') {
+            out = sentenceCase(out);
+            if (!/[.!?]$/.test(out)) out += '.';
+            return out;
+        }
+
+        // Minimal offline heuristics (best-effort only)
+        if (kind === 'formal') {
+            out = sentenceCase(out)
+                .replace(/\bcan't\b/gi, 'cannot')
+                .replace(/\bwon't\b/gi, 'will not')
+                .replace(/\bI'm\b/g, 'I am')
+                .replace(/\bI’m\b/g, 'I am')
+                .replace(/\bwe're\b/gi, 'we are')
+                .replace(/\bthey're\b/gi, 'they are');
+            return out;
+        }
+        if (kind === 'casual') {
+            // Slightly friendlier, keep meaning
+            out = sentenceCase(out);
+            return out;
+        }
+        if (kind === 'informal') {
+            // Relax punctuation a bit
+            out = normalizeText(out);
+            return out;
+        }
+        return out;
+    }
+
+    async function openAIRewrite(text, kind) {
+        const baseUrl = ($('ai-baseurl').value || 'https://api.openai.com/v1').trim().replace(/\/$/, '');
+        const model = ($('ai-model').value || 'gpt-4o-mini').trim();
+        const key = ($('ai-key').value || '').trim();
+        if (!key) {
+            showToast('AI settings', 'Walang API key. Gagamit muna ng Offline mode.');
+            return offlineRewrite(text, kind);
+        }
+
+        const toneMap = {
+            fix: 'Fix grammar and clarity',
+            formal: 'Formal',
+            casual: 'Casual',
+            informal: 'Informal'
+        };
+
+        const sys = [
+            "You are a writing assistant.",
+            "Rewrite the user's text in the requested style while preserving meaning, names, numbers, and the original language.",
+            "Do not add new information.",
+            "Output ONLY the rewritten text."
+        ].join(' ');
+
+        const user = `Style: ${toneMap[kind] || kind}\n\nText:\n${text}`;
+
+        const resp = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+                model,
+                temperature: 0.4,
+                messages: [
+                    { role: 'system', content: sys },
+                    { role: 'user', content: user }
+                ]
+            })
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            const msg = data?.error?.message || `Request failed (${resp.status})`;
+            throw new Error(msg);
+        }
+        const out = data?.choices?.[0]?.message?.content;
+        return normalizeText(out || '');
+    }
+
+    async function runRewrite(kind) {
+        const input = getRewriteInputText();
+        if (!input) {
+            showToast('Walang text', 'Pumili muna ng text (Selected) o gumamit ng "Lahat ng text sa page".');
+            return;
+        }
+
+        const engine = $('rewrite-engine').value || 'offline';
+        try {
+            setStatus('Rewriting text...', 35);
+            const result = engine === 'openai'
+                ? await openAIRewrite(input, kind)
+                : offlineRewrite(input, kind);
+            setOutputBox(kind, result);
+            setStatus('Rewrite complete.', 100);
+            showToast('Done', `Ready na yung "${kind}" output. Pwede mo i-Apply o i-Copy.`);
+        } catch (err) {
+            console.error(err);
+            setStatus('Rewrite failed', 0);
+            showToast('Rewrite error', err?.message || 'May error sa rewrite. Subukan ulit.');
+        }
+    }
+
+    function applyOutput(textareaId) {
+        const out = ($(textareaId)?.value || '').trim();
+        if (!out) {
+            showToast('Walang output', 'Walang laman yung output box.');
+            return;
+        }
+
+        const scope = $('rewrite-scope').value || 'active';
+        if (scope === 'active') {
+            const active = canvas.getActiveObject();
+            if (!active || active.type !== 'i-text') {
+                showToast('Walang selected', 'Pumili muna ng text sa canvas para ma-apply.');
+                return;
+            }
+            active.set('text', out);
+            canvas.requestRenderAll();
+            syncEditBoxFromSelection();
+            showToast('Applied', 'Na-apply na sa selected text.');
+            return;
+        }
+
+        // Scope: all (best-effort distribute by line count and object order)
+        const objs = canvas.getObjects('i-text')
+            .slice()
+            .sort((a, b) => (a.top - b.top) || (a.left - b.left));
+        if (objs.length === 0) {
+            showToast('Walang text', 'Walang i-text objects sa page.');
+            return;
+        }
+        const parts = out.split('\n').map(s => s.trim()).filter(Boolean);
+        const fallback = out;
+
+        for (let i = 0; i < objs.length; i++) {
+            const next = parts[i] ?? (i === 0 ? fallback : '');
+            objs[i].set('text', next);
+        }
+        canvas.requestRenderAll();
+        showToast('Applied (all)', 'Na-apply na sa lahat (best-effort). I-check mo yung layout.');
+    }
+
+    async function copyOutput(textareaId) {
+        const out = ($(textareaId)?.value || '').trim();
+        if (!out) {
+            showToast('Walang output', 'Walang laman yung output box.');
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(out);
+            showToast('Copied', 'Naka-copy na sa clipboard.');
+        } catch {
+            // Fallback
+            const tmp = document.createElement('textarea');
+            tmp.value = out;
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            showToast('Copied', 'Naka-copy na sa clipboard.');
+        }
+    }
+
+    function savePDF() {
+        const { jsPDF } = window.jspdf;
+        const sizeKey = getPaperKey();
+        const base = paperSizes[sizeKey] || paperSizes.letter;
+
+        // Temporarily export at 100% (document coords)
+        const prevZoom = zoom;
+        zoom = 1;
+        canvas.setZoom(1);
+        canvas.setDimensions({ width: base.w, height: base.h });
+        
+        const data = canvas.toDataURL({ format: 'png', multiplier: 2 });
+        const pdf = new jsPDF('p', 'px', [base.w, base.h]);
+        pdf.addImage(data, 'PNG', 0, 0, base.w, base.h);
+        pdf.save(`ENCODED_DOC_${Date.now()}.pdf`);
+        
+        // Restore view
+        zoom = prevZoom;
+        applyPaperAndZoom();
+        setStatus('Exported PDF', 100);
+    }
+
+    function resetSystem() {
+        const ok = window.confirm('Reset system? (Mawawala ang current canvas text)');
+        if (!ok) return;
+        canvas.clear();
+        canvas.setBackgroundColor('#fff', canvas.renderAll.bind(canvas));
+        $('ref-image').removeAttribute('src');
+        currentImageDataUrl = null;
+        $('edit-box').value = '';
+        $('out-fix').value = '';
+        $('out-formal').value = '';
+        $('out-casual').value = '';
+        $('out-informal').value = '';
+        setStatus('System Ready', 0);
+        showToast('Reset', 'Na-reset na yung workspace.');
+    }
+
+    // Expose functions used by inline handlers
+    window.setPaperSize = setPaperSize;
+    window.zoomCanvas = zoomCanvas;
+    window.addNewText = addNewText;
+    window.duplicateText = duplicateText;
+    window.runRewrite = runRewrite;
+    window.applyOutput = applyOutput;
+    window.copyOutput = copyOutput;
+    window.savePDF = savePDF;
+    window.resetSystem = resetSystem;
+
+    // Initial fit
+    applyPaperAndZoom();
+    setStatus('System Ready', 0);
 </script>
 </body>
 </html>
